@@ -1,0 +1,4 @@
+normal      : GBGGGBGBGG  → GOOD 7/10
+nice-20     : BBGGBGGBGG  → GOOD 6/10
+fifo50      : BGGBFGGBBB  → GOOD 4/10
+clean

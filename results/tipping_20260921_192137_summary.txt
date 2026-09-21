@@ -1,0 +1,9 @@
+run1: tip_at=none avg=29.4G
+run2: tip_at=none avg=46.0G
+run3: tip_at=none avg=46.0G
+run4: tip_at=0.00 avg=41.5G
+run5: tip_at=none avg=46.0G
+run6: tip_at=none avg=46.0G
+run7: tip_at=0.00 avg=41.5G
+run8: tip_at=none avg=46.0G
+clean

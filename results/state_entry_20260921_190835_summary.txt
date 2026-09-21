@@ -1,0 +1,8 @@
+DIMoff_shedOFF   @46G: GBBBBGBGGB  → GOOD 4/10 (flake 0
+0)
+DIMon_shedOFF    @46G: BBBBFGBGGG  → GOOD 4/10 (flake 1)
+DIMoff_shedON    @46G: BGGBGGGBBG  → GOOD 6/10 (flake 0
+0)
+DIMon_shedON     @46G: GBBBGBGGBB  → GOOD 4/10 (flake 0
+0)
+clean

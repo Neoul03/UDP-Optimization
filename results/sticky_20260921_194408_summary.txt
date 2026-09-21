@@ -1,0 +1,7 @@
+inst1 : GBGBG
+inst2 : GGBGB
+inst3 : BFGGB
+inst4 : GBBGG
+inst5 : BGBGG
+inst6 : BGGBG
+clean
