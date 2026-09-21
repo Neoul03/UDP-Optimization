@@ -1,0 +1,89 @@
+diff -ur work-autotune-only/include/net/netns/ipv4.h work/include/net/netns/ipv4.h
+--- work-autotune-only/include/net/netns/ipv4.h	2026-09-17 18:56:03.245174978 +0900
++++ work/include/net/netns/ipv4.h	2026-09-17 18:56:03.341174654 +0900
+@@ -195,6 +195,7 @@
+ 	int sysctl_udp_rmem_min;
+ 	u8 sysctl_udp_rmem_autotune;
+ 	int sysctl_udp_rmem_autotune_max;
++	u8 sysctl_udp_early_drop;
+ 
+ 	u8 sysctl_fib_notify_on_flag_change;
+ 	u8 sysctl_tcp_syn_linear_timeouts;
+diff -ur work-autotune-only/net/ipv4/sysctl_net_ipv4.c work/net/ipv4/sysctl_net_ipv4.c
+--- work-autotune-only/net/ipv4/sysctl_net_ipv4.c	2026-09-17 18:56:03.245174978 +0900
++++ work/net/ipv4/sysctl_net_ipv4.c	2026-09-17 18:56:03.341174654 +0900
+@@ -1431,6 +1431,15 @@
+ 		.extra1		= SYSCTL_ONE,
+ 	},
+ 	{
++		.procname	= "udp_early_drop",
++		.data		= &init_net.ipv4.sysctl_udp_early_drop,
++		.maxlen		= sizeof(u8),
++		.mode		= 0644,
++		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++	{
+ 		.procname	= "udp_wmem_min",
+ 		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
+ 		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
+diff -ur work-autotune-only/net/ipv4/udp.c work/net/ipv4/udp.c
+--- work-autotune-only/net/ipv4/udp.c	2026-09-17 18:56:03.245174978 +0900
++++ work/net/ipv4/udp.c	2026-09-17 18:56:03.341174654 +0900
+@@ -2202,11 +2202,47 @@
+ 	return -1;
+ }
+ 
++/* Early drop (opt-in): if the socket receive buffer is already full,
++ * every segment of this (super-)skb would be dropped at enqueue anyway -
++ * but only after paying for GSO re-segmentation, checksum validation and
++ * per-segment queue attempts, all of which steal CPU from the consumer
++ * that is trying to drain the very same queue (receive livelock).
++ * Shed the whole skb up front, mirroring enqueue-failure accounting.
++ * Encap sockets are exempt: their skbs are consumed by the tunnel
++ * callback, not queued to this socket's receive buffer.
++ */
++static bool udp_early_drop(struct sock *sk, struct sk_buff *skb)
++{
++	int is_udplite = IS_UDPLITE(sk);
++	struct net *net = sock_net(sk);
++	int segs;
++
++	if (!READ_ONCE(net->ipv4.sysctl_udp_early_drop))
++		return false;
++	if (static_branch_unlikely(&udp_encap_needed_key) &&
++	    READ_ONCE(udp_sk(sk)->encap_type))
++		return false;
++	if (atomic_read(&sk->sk_rmem_alloc) <= READ_ONCE(sk->sk_rcvbuf))
++		return false;
++
++	segs = skb_is_gso(skb) ? skb_shinfo(skb)->gso_segs : 1;
++	atomic_add(segs, &sk->sk_drops);
++	while (segs--) {
++		__UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS, is_udplite);
++		__UDP_INC_STATS(net, UDP_MIB_INERRORS, is_udplite);
++	}
++	kfree_skb_reason(skb, SKB_DROP_REASON_SOCKET_RCVBUFF);
++	return true;
++}
++
+ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct sk_buff *next, *segs;
+ 	int ret;
+ 
++	if (udp_early_drop(sk, skb))
++		return 0;
++
+ 	if (likely(!udp_unexpected_gso(sk, skb)))
+ 		return udp_queue_rcv_one_skb(sk, skb);
+ 
+@@ -3454,6 +3490,7 @@
+ 	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
+ 	net->ipv4.sysctl_udp_rmem_autotune = 1;
+ 	net->ipv4.sysctl_udp_rmem_autotune_max = 32 << 20;
++	net->ipv4.sysctl_udp_early_drop = 0;
+ 
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
