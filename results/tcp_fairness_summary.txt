@@ -1,0 +1,29 @@
+===== REP 1 =====
+sys319_default   r1 | rx=33.1   busy=100% eff=0.331  retr=1923
+v320_default     r1 | rx=35.1   busy=100% eff=0.351  retr=741
+v320_l1M         r1 | rx=32.7   busy=100% eff=0.327  retr=2586
+v320_l256K       r1 | rx=32.3   busy=100% eff=0.323  retr=492
+v320_Z           r1 | rx=33.3   busy=100% eff=0.333  retr=491
+v320_l1M_Z       r1 | rx=33.7   busy=100% eff=0.337  retr=1
+v320_l1M_w64M    r1 | rx=NA     busy=0%   eff=NA     retr=NA
+
+===== REP 2 =====
+sys319_default   r2 | rx=32.9   busy=100% eff=0.329  retr=2155
+v320_default     r2 | rx=34.4   busy=100% eff=0.344  retr=1334
+v320_l1M         r2 | rx=32.6   busy=100% eff=0.326  retr=3011
+v320_l256K       r2 | rx=32.4   busy=100% eff=0.324  retr=408
+v320_Z           r2 | rx=33.5   busy=100% eff=0.335  retr=1307
+v320_l1M_Z       r2 | rx=33.9   busy=100% eff=0.339  retr=0
+v320_l1M_w64M    r2 | rx=NA     busy=0%   eff=NA     retr=NA
+
+===== REP 3 =====
+sys319_default   r3 | rx=32.7   busy=100% eff=0.327  retr=2475
+v320_default     r3 | rx=33.3   busy=100% eff=0.333  retr=2371
+v320_l1M         r3 | rx=32.9   busy=100% eff=0.329  retr=3672
+v320_l256K       r3 | rx=33.0   busy=100% eff=0.330  retr=306
+v320_Z           r3 | rx=33.1   busy=100% eff=0.331  retr=1395
+v320_l1M_Z       r3 | rx=33.5   busy=100% eff=0.335  retr=0
+v320_l1M_w64M    r3 | rx=NA     busy=0%   eff=NA     retr=NA
+
+clean
+clean

@@ -1,0 +1,23 @@
+===== REP 1 =====
+1M5  b=38  r1 | rx=35.1   loss=7.5%     busy=80%  eff=0.439  tx=38.0
+1M5  b=40  r1 | rx=35.7   loss=11%      busy=83%  eff=0.430  tx=40.0
+1M5  b=41  r1 | rx=41.0   loss=0.1%     busy=92%  eff=0.446  tx=41.0
+1M5  b=42  r1 | rx=41.9   loss=0.3%     busy=95%  eff=0.441  tx=42.0
+1M5  b=43  r1 | rx=36.2   loss=16%      busy=87%  eff=0.416  tx=43.0
+
+===== REP 2 =====
+1M5  b=38  r2 | rx=38.0   loss=0.0036%  busy=83%  eff=0.458  tx=38.0
+1M5  b=40  r2 | rx=35.7   loss=11%      busy=83%  eff=0.430  tx=40.0
+1M5  b=41  r2 | rx=35.9   loss=12%      busy=85%  eff=0.422  tx=41.0
+1M5  b=42  r2 | rx=38.2   loss=9%       busy=89%  eff=0.429  tx=42.0
+1M5  b=43  r2 | rx=42.9   loss=0.32%    busy=97%  eff=0.442  tx=43.0
+
+===== REP 3 =====
+1M5  b=38  r3 | rx=38.0   loss=0.00046% busy=88%  eff=0.432  tx=38.0
+1M5  b=40  r3 | rx=35.5   loss=11%      busy=83%  eff=0.428  tx=40.0
+1M5  b=41  r3 | rx=38.7   loss=5.7%     busy=89%  eff=0.435  tx=41.0
+1M5  b=42  r3 | rx=41.9   loss=0.35%    busy=95%  eff=0.441  tx=42.0
+1M5  b=43  r3 | rx=42.9   loss=0.35%    busy=95%  eff=0.452  tx=43.0
+
+clean
+clean

@@ -1,0 +1,59 @@
+===== REP 1 =====
+B15_S0    b=35  r1 | rx=35.0   loss=0.0043%  busy=81%  tx=35.0
+B15_S1    b=35  r1 | rx=33.5   loss=4.2%     busy=75%  tx=35.0
+B512_S0   b=35  r1 | rx=17.1   loss=51%      busy=100% tx=35.0
+B512_S1   b=35  r1 | rx=35.0   loss=0%       busy=82%  tx=35.0
+B208K_S0  b=35  r1 | rx=19.4   loss=44%      busy=55%  tx=35.0
+
+B15_S0    b=40  r1 | rx=35.8   loss=11%      busy=85%  tx=40.0
+B15_S1    b=40  r1 | rx=36.0   loss=10%      busy=81%  tx=40.0
+B512_S0   b=40  r1 | rx=15.8   loss=60%      busy=100% tx=40.0
+B512_S1   b=40  r1 | rx=17.2   loss=57%      busy=100% tx=40.0
+B208K_S0  b=40  r1 | rx=17.1   loss=57%      busy=57%  tx=40.0
+
+B15_S0    b=0   r1 | rx=20.8   loss=74%      busy=100% tx=80.5
+B15_S1    b=0   r1 | rx=33.0   loss=59%      busy=99%  tx=82.1
+B512_S0   b=0   r1 | rx=10.1   loss=88%      busy=100% tx=82.0
+B512_S1   b=0   r1 | rx=15.0   loss=82%      busy=100% tx=82.0
+B208K_S0  b=0   r1 | rx=8.26   loss=90%      busy=74%  tx=82.1
+
+===== REP 2 =====
+B15_S0    b=35  r2 | rx=35.0   loss=0%       busy=77%  tx=35.0
+B15_S1    b=35  r2 | rx=33.6   loss=4.1%     busy=73%  tx=35.0
+B512_S0   b=35  r2 | rx=18.5   loss=47%      busy=100% tx=35.0
+B512_S1   b=35  r2 | rx=19.1   loss=45%      busy=100% tx=35.0
+B208K_S0  b=35  r2 | rx=19.0   loss=45%      busy=55%  tx=35.0
+
+B15_S0    b=40  r2 | rx=40.0   loss=0.00058% busy=88%  tx=40.0
+B15_S1    b=40  r2 | rx=36.0   loss=10%      busy=82%  tx=40.0
+B512_S0   b=40  r2 | rx=15.0   loss=62%      busy=100% tx=40.0
+B512_S1   b=40  r2 | rx=17.3   loss=56%      busy=100% tx=40.0
+B208K_S0  b=40  r2 | rx=13.2   loss=67%      busy=43%  tx=40.0
+
+B15_S0    b=0   r2 | rx=20.1   loss=75%      busy=100% tx=82.1
+B15_S1    b=0   r2 | rx=33.4   loss=59%      busy=99%  tx=82.1
+B512_S0   b=0   r2 | rx=10.0   loss=88%      busy=100% tx=82.0
+B512_S1   b=0   r2 | rx=15.0   loss=81%      busy=100% tx=82.0
+B208K_S0  b=0   r2 | rx=8.47   loss=90%      busy=75%  tx=82.0
+
+===== REP 3 =====
+B15_S0    b=35  r3 | rx=35.0   loss=0%       busy=75%  tx=35.0
+B15_S1    b=35  r3 | rx=33.6   loss=3.9%     busy=73%  tx=35.0
+B512_S0   b=35  r3 | rx=35.0   loss=0%       busy=63%  tx=35.0
+B512_S1   b=35  r3 | rx=19.8   loss=43%      busy=100% tx=35.0
+B208K_S0  b=35  r3 | rx=18.1   loss=48%      busy=54%  tx=35.0
+
+B15_S0    b=40  r3 | rx=35.4   loss=12%      busy=86%  tx=40.0
+B15_S1    b=40  r3 | rx=40.0   loss=0.029%   busy=90%  tx=40.0
+B512_S0   b=40  r3 | rx=14.9   loss=62%      busy=100% tx=40.0
+B512_S1   b=40  r3 | rx=18.0   loss=55%      busy=100% tx=40.0
+B208K_S0  b=40  r3 | rx=16.6   loss=58%      busy=54%  tx=40.0
+
+B15_S0    b=0   r3 | rx=29.4   loss=0.0042%  busy=61%  tx=29.4
+B15_S1    b=0   r3 | rx=33.2   loss=59%      busy=99%  tx=81.9
+B512_S0   b=0   r3 | rx=10.0   loss=88%      busy=100% tx=82.0
+B512_S1   b=0   r3 | rx=15.0   loss=82%      busy=100% tx=82.1
+B208K_S0  b=0   r3 | rx=8.26   loss=90%      busy=73%  tx=82.0
+
+clean
+clean
