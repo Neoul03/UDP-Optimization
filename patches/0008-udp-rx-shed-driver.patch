@@ -1,0 +1,164 @@
+diff -ur work-v1-snapshot/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c work/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+--- work-v1-snapshot/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-17 19:20:46.736132184 +0900
++++ work/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-17 19:21:26.276014532 +0900
+@@ -47,6 +47,7 @@
+ #include "en_tc.h"
+ #include "eswitch.h"
+ #include "en_rep.h"
++#include <net/udp.h>
+ #include "en/rep/tc.h"
+ #include "ipoib/ipoib.h"
+ #include "en_accel/ipsec.h"
+@@ -69,6 +70,25 @@
+ 				   struct mlx5_cqe64 *cqe, u16 cqe_bcnt, u32 head_offset,
+ 				   u32 page_idx);
+ static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
++
++/* UDP RX shed (prototype): drop at CQE level - before skb alloc/build, GRO
++ * and stack traversal - while the UDP layer signals receive-buffer overflow
++ * on this queue. The consumed WQE is recycled exactly like the !skb path.
++ */
++static inline bool mlx5e_udp_rx_shed(struct mlx5e_rq *rq)
++{
++	u64 until;
++
++	if (rq->ix >= UDP_RX_SHED_MAX_QUEUES)
++		return false;
++	until = READ_ONCE(udp_rx_shed[rq->ix].until_ns);
++	if (likely(!until))
++		return false;
++	if (ktime_get_mono_fast_ns() < until)
++		return true;
++	WRITE_ONCE(udp_rx_shed[rq->ix].until_ns, 0);
++	return false;
++}
+ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+ 
+@@ -1836,6 +1856,9 @@
+ 		goto wq_cyc_pop;
+ 	}
+ 
++	if (unlikely(mlx5e_udp_rx_shed(rq)))
++		goto wq_cyc_pop;
++
+ 	skb = INDIRECT_CALL_3(rq->wqe.skb_from_cqe,
+ 			      mlx5e_skb_from_cqe_linear,
+ 			      mlx5e_skb_from_cqe_nonlinear,
+@@ -2408,6 +2431,9 @@
+ 		goto mpwrq_cqe_out;
+ 	}
+ 
++	if (unlikely(mlx5e_udp_rx_shed(rq)))
++		goto mpwrq_cqe_out;
++
+ 	cqe_bcnt = mpwrq_get_cqe_byte_cnt(cqe);
+ 
+ 	skb = INDIRECT_CALL_3(rq->mpwqe.skb_from_cqe_mpwrq,
+diff -ur work-v1-snapshot/include/net/netns/ipv4.h work/include/net/netns/ipv4.h
+--- work-v1-snapshot/include/net/netns/ipv4.h	2026-09-17 19:20:46.732132196 +0900
++++ work/include/net/netns/ipv4.h	2026-09-17 19:21:26.276014532 +0900
+@@ -196,6 +196,7 @@
+ 	u8 sysctl_udp_rmem_autotune;
+ 	int sysctl_udp_rmem_autotune_max;
+ 	u8 sysctl_udp_early_drop;
++	u8 sysctl_udp_rx_shed;
+ 
+ 	u8 sysctl_fib_notify_on_flag_change;
+ 	u8 sysctl_tcp_syn_linear_timeouts;
+diff -ur work-v1-snapshot/include/net/udp.h work/include/net/udp.h
+--- work-v1-snapshot/include/net/udp.h	2026-09-17 19:20:46.732132196 +0900
++++ work/include/net/udp.h	2026-09-17 19:21:26.276014532 +0900
+@@ -101,6 +101,18 @@
+ /* sysctl variables for udp */
+ extern long sysctl_udp_mem[3];
+ extern int sysctl_udp_rmem_min;
++
++/* Driver-level RX shedding (prototype): when a UDP socket's receive buffer
++ * overflows, the UDP layer stamps a short shed window for the RX queue that
++ * feeds it; the NIC driver drops packets of that queue before building skbs,
++ * so overload is shed at ~zero CPU cost instead of after full stack traversal.
++ */
++#define UDP_RX_SHED_MAX_QUEUES	256
++struct udp_rx_shed_slot {
++	u64 until_ns;
++} ____cacheline_aligned_in_smp;
++extern struct udp_rx_shed_slot udp_rx_shed[UDP_RX_SHED_MAX_QUEUES];
++void udp_rx_shed_mark(const struct sock *sk);
+ extern int sysctl_udp_wmem_min;
+ 
+ struct sk_buff;
+diff -ur work-v1-snapshot/net/ipv4/sysctl_net_ipv4.c work/net/ipv4/sysctl_net_ipv4.c
+--- work-v1-snapshot/net/ipv4/sysctl_net_ipv4.c	2026-09-17 19:20:46.732132196 +0900
++++ work/net/ipv4/sysctl_net_ipv4.c	2026-09-17 19:21:26.276014532 +0900
+@@ -1440,6 +1440,15 @@
+ 		.extra2		= SYSCTL_ONE,
+ 	},
+ 	{
++		.procname	= "udp_rx_shed",
++		.data		= &init_net.ipv4.sysctl_udp_rx_shed,
++		.maxlen		= sizeof(u8),
++		.mode		= 0644,
++		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++	{
+ 		.procname	= "udp_wmem_min",
+ 		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
+ 		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
+diff -ur work-v1-snapshot/net/ipv4/udp.c work/net/ipv4/udp.c
+--- work-v1-snapshot/net/ipv4/udp.c	2026-09-17 19:20:46.732132196 +0900
++++ work/net/ipv4/udp.c	2026-09-17 19:21:26.276014532 +0900
+@@ -2069,6 +2069,8 @@
+ 			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
+ 					is_udplite);
+ 			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
++			if (READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rx_shed))
++				udp_rx_shed_mark(sk);
+ 		} else {
+ 			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
+ 				      is_udplite);
+@@ -2202,6 +2204,24 @@
+ 	return -1;
+ }
+ 
++/* Driver-level RX shed (prototype, see include/net/udp.h). 200us window,
++ * renewed for as long as enqueue keeps failing - self-clocking pulse.
++ */
++struct udp_rx_shed_slot udp_rx_shed[UDP_RX_SHED_MAX_QUEUES];
++EXPORT_SYMBOL_GPL(udp_rx_shed);
++
++#define UDP_RX_SHED_WINDOW_NS	(200 * NSEC_PER_USEC)
++
++void udp_rx_shed_mark(const struct sock *sk)
++{
++	int q = sk_rx_queue_get(sk);
++
++	if (q < 0 || q >= UDP_RX_SHED_MAX_QUEUES)
++		q = 0;
++	WRITE_ONCE(udp_rx_shed[q].until_ns,
++		   ktime_get_mono_fast_ns() + UDP_RX_SHED_WINDOW_NS);
++}
++
+ /* Early drop (opt-in): if the socket receive buffer is already full,
+  * every segment of this (super-)skb would be dropped at enqueue anyway -
+  * but only after paying for GSO re-segmentation, checksum validation and
+@@ -2225,6 +2245,9 @@
+ 	if (atomic_read(&sk->sk_rmem_alloc) <= READ_ONCE(sk->sk_rcvbuf))
+ 		return false;
+ 
++	if (READ_ONCE(net->ipv4.sysctl_udp_rx_shed))
++		udp_rx_shed_mark(sk);
++
+ 	segs = skb_is_gso(skb) ? skb_shinfo(skb)->gso_segs : 1;
+ 	atomic_add(segs, &sk->sk_drops);
+ 	while (segs--) {
+@@ -3491,6 +3514,7 @@
+ 	net->ipv4.sysctl_udp_rmem_autotune = 1;
+ 	net->ipv4.sysctl_udp_rmem_autotune_max = 32 << 20;
+ 	net->ipv4.sysctl_udp_early_drop = 0;
++	net->ipv4.sysctl_udp_rx_shed = 0;
+ 
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
