@@ -1,0 +1,187 @@
+--- net/ipv4/udp.c.orig	2026-06-04 11:53:14.253306403 +0900
++++ net/ipv4/udp.c	2026-06-04 11:54:59.016915784 +0900
+@@ -1553,6 +1553,119 @@
+ }
+ EXPORT_SYMBOL_GPL(__udp_enqueue_schedule_skb);
+ 
++/* Batched variant of __udp_enqueue_schedule_skb(): enqueue a whole list of
++ * skbs that are all destined to @sk (e.g. the segments obtained from one
++ * GRO super-skb) while paying the serialized cost only once:
++ *   - a single sk_receive_queue.lock acquisition,
++ *   - a single forward-allocation scheduling step,
++ *   - a single ->sk_data_ready() wakeup.
++ *
++ * Per-skb rmem charging and the sk_rcvbuf overflow decision are preserved
++ * exactly as in the single-skb path, so sk_rcvbuf semantics, sk_drops and
++ * UDP_MIB_RCVBUFERRORS accounting are unchanged. Only the work that TCP
++ * already amortizes (lock + wakeup) is amortized here.
++ *
++ * @batch is consumed: on return it is empty and every skb has either been
++ * queued to sk->sk_receive_queue or freed with the proper drop accounting.
++ */
++static void __udp_enqueue_schedule_skb_list(struct sock *sk,
++					    struct sk_buff_head *batch)
++{
++	struct sk_buff_head *list = &sk->sk_receive_queue;
++	int rcvbuf = READ_ONCE(sk->sk_rcvbuf);
++	struct sk_buff_head ready, drop;
++	struct sk_buff *skb, *next;
++	spinlock_t *busy = NULL;
++	bool queued = false;
++	int total = 0, rmem;
++
++	__skb_queue_head_init(&ready);
++	__skb_queue_head_init(&drop);
++
++	rmem = atomic_read(&sk->sk_rmem_alloc);
++	if (rmem > (rcvbuf >> 1))
++		busy = busylock_acquire(sk);
++
++	/* Phase 1 (lockless): charge rmem and decide overflow per skb,
++	 * exactly mirroring __udp_enqueue_schedule_skb().
++	 */
++	skb_queue_walk_safe(batch, skb, next) {
++		int size;
++
++		__skb_unlink(skb, batch);
++
++		rmem = atomic_read(&sk->sk_rmem_alloc);
++		if (rmem > rcvbuf) {
++			__skb_queue_tail(&drop, skb);
++			continue;
++		}
++
++		if (rmem > (rcvbuf >> 1))
++			skb_condense(skb);
++
++		size = skb->truesize;
++		udp_set_dev_scratch(skb);
++
++		rmem = atomic_add_return(size, &sk->sk_rmem_alloc);
++		if (rmem > (size + (unsigned int)rcvbuf)) {
++			atomic_sub(size, &sk->sk_rmem_alloc);
++			__skb_queue_tail(&drop, skb);
++			continue;
++		}
++
++		sock_skb_set_dropcount(sk, skb);
++		__skb_queue_tail(&ready, skb);
++		total += size;
++	}
++
++	/* Phase 2 (single lock): schedule forward alloc and splice the whole
++	 * ready list in one shot. sk_forward_alloc is protected by list->lock.
++	 */
++	if (!skb_queue_empty(&ready)) {
++		spin_lock(&list->lock);
++		if (likely(!udp_rmem_schedule(sk, total))) {
++			sk_forward_alloc_add(sk, -total);
++			skb_queue_splice_tail_init(&ready, list);
++			queued = true;
++			spin_unlock(&list->lock);
++		} else {
++			spin_unlock(&list->lock);
++			/* Memory pressure: fall back to per-skb scheduling so
++			 * partial progress is still possible. Rare path.
++			 */
++			skb_queue_walk_safe(&ready, skb, next) {
++				__skb_unlink(skb, &ready);
++				spin_lock(&list->lock);
++				if (udp_rmem_schedule(sk, skb->truesize)) {
++					spin_unlock(&list->lock);
++					atomic_sub(skb->truesize,
++						   &sk->sk_rmem_alloc);
++					__skb_queue_tail(&drop, skb);
++					continue;
++				}
++				sk_forward_alloc_add(sk, -skb->truesize);
++				__skb_queue_tail(list, skb);
++				queued = true;
++				spin_unlock(&list->lock);
++			}
++		}
++	}
++
++	/* Phase 3 (lockless): single wakeup, then drop accounting. */
++	if (queued && !sock_flag(sk, SOCK_DEAD))
++		INDIRECT_CALL_1(sk->sk_data_ready, sock_def_readable, sk);
++
++	busylock_release(busy);
++
++	skb_queue_walk_safe(&drop, skb, next) {
++		__skb_unlink(skb, &drop);
++		atomic_inc(&sk->sk_drops);
++		UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS, IS_UDPLITE(sk));
++		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, IS_UDPLITE(sk));
++		kfree_skb_reason(skb, SKB_DROP_REASON_SOCKET_RCVBUFF);
++	}
++}
++
+ void udp_destruct_common(struct sock *sk)
+ {
+ 	/* reclaim completely the forward allocated memory */
+@@ -2066,7 +2179,8 @@
+  * Note that in the success and error cases, the skb is assumed to
+  * have either been requeued or freed.
+  */
+-static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
++static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb,
++				 struct sk_buff_head *batch)
+ {
+ 	int drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	struct udp_sock *up = udp_sk(sk);
+@@ -2165,6 +2279,24 @@
+ 	udp_csum_pull_header(skb);
+ 
+ 	ipv4_pktinfo_prepare(sk, skb);
++
++	if (batch) {
++		/* Defer the actual enqueue: do the per-skb rps/napi bookkeeping
++		 * now (mirrors __udp_queue_rcv_skb()), then collect the skb so
++		 * the whole list is enqueued under a single lock by
++		 * __udp_enqueue_schedule_skb_list().
++		 */
++		if (inet_sk(sk)->inet_daddr) {
++			sock_rps_save_rxhash(sk, skb);
++			sk_mark_napi_id(sk, skb);
++			sk_incoming_cpu_update(sk);
++		} else {
++			sk_mark_napi_id_once(sk, skb);
++		}
++		__skb_queue_tail(batch, skb);
++		return 0;
++	}
++
+ 	return __udp_queue_rcv_skb(sk, skb);
+ 
+ csum_error:
+@@ -2179,23 +2311,27 @@
+ 
+ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ {
++	struct sk_buff_head batch;
+ 	struct sk_buff *next, *segs;
+ 	int ret;
+ 
+ 	if (likely(!udp_unexpected_gso(sk, skb)))
+-		return udp_queue_rcv_one_skb(sk, skb);
++		return udp_queue_rcv_one_skb(sk, skb, NULL);
+ 
+ 	BUILD_BUG_ON(sizeof(struct udp_skb_cb) > SKB_GSO_CB_OFFSET);
+ 	__skb_push(skb, -skb_mac_offset(skb));
+ 	segs = udp_rcv_segment(sk, skb, true);
++	__skb_queue_head_init(&batch);
+ 	skb_list_walk_safe(segs, skb, next) {
+ 		__skb_pull(skb, skb_transport_offset(skb));
+ 
+ 		udp_post_segment_fix_csum(skb);
+-		ret = udp_queue_rcv_one_skb(sk, skb);
++		ret = udp_queue_rcv_one_skb(sk, skb, &batch);
+ 		if (ret > 0)
+ 			ip_protocol_deliver_rcu(dev_net(skb->dev), skb, ret);
+ 	}
++	if (!skb_queue_empty(&batch))
++		__udp_enqueue_schedule_skb_list(sk, &batch);
+ 	return 0;
+ }
+ 
