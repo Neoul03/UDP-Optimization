@@ -1,0 +1,44 @@
+===== REP 1 =====
+GSOon_GROon    b=25  r1 | rx=25.0   loss=0%       busy=49%
+GSOon_GROoff   b=25  r1 | rx=25.0   loss=87%      busy=69%
+GSOoff_GROon   b=25  r1 | rx=24.7   loss=0%       busy=51%
+GSOoff_GROoff  b=25  r1 | rx=25.0   loss=0.033%   busy=69%
+GSOon_GROon    b=35  r1 | rx=35.0   loss=0.0013%  busy=74%
+GSOon_GROoff   b=35  r1 | rx=32.0   loss=89%      busy=93%
+GSOoff_GROon   b=35  r1 | rx=31.3   loss=0%       busy=62%
+GSOoff_GROoff  b=35  r1 | rx=33.6   loss=0.11%    busy=86%
+GSOon_GROon    b=43  r1 | rx=43.0   loss=0.0026%  busy=87%
+GSOon_GROoff   b=43  r1 | rx=26.4   loss=92%      busy=96%
+GSOoff_GROon   b=43  r1 | rx=36.0   loss=0%       busy=69%
+GSOoff_GROoff  b=43  r1 | rx=35.1   loss=0.15%    busy=89%
+
+===== REP 2 =====
+GSOon_GROon    b=25  r2 | rx=25.0   loss=0%       busy=22%
+GSOon_GROoff   b=25  r2 | rx=25.0   loss=87%      busy=70%
+GSOoff_GROon   b=25  r2 | rx=24.9   loss=0%       busy=56%
+GSOoff_GROoff  b=25  r2 | rx=24.9   loss=0.0012%  busy=70%
+GSOon_GROon    b=35  r2 | rx=35.0   loss=0%       busy=75%
+GSOon_GROoff   b=35  r2 | rx=32.0   loss=89%      busy=93%
+GSOoff_GROon   b=35  r2 | rx=35.0   loss=0%       busy=67%
+GSOoff_GROoff  b=35  r2 | rx=35.0   loss=0.094%   busy=89%
+GSOon_GROon    b=43  r2 | rx=43.0   loss=0.0013%  busy=87%
+GSOon_GROoff   b=43  r2 | rx=26.2   loss=92%      busy=96%
+GSOoff_GROon   b=43  r2 | rx=27.6   loss=0%       busy=54%
+GSOoff_GROoff  b=43  r2 | rx=35.0   loss=0.16%    busy=89%
+
+===== REP 3 =====
+GSOon_GROon    b=25  r3 | rx=25.0   loss=0%       busy=52%
+GSOon_GROoff   b=25  r3 | rx=25.0   loss=87%      busy=67%
+GSOoff_GROon   b=25  r3 | rx=24.9   loss=0%       busy=53%
+GSOoff_GROoff  b=25  r3 | rx=25.0   loss=0.049%   busy=71%
+GSOon_GROon    b=35  r3 | rx=34.1   loss=2.6%     busy=71%
+GSOon_GROoff   b=35  r3 | rx=32.0   loss=89%      busy=92%
+GSOoff_GROon   b=35  r3 | rx=28.4   loss=0%       busy=59%
+GSOoff_GROoff  b=35  r3 | rx=35.0   loss=0.092%   busy=89%
+GSOon_GROon    b=43  r3 | rx=38.3   loss=11%      busy=85%
+GSOon_GROoff   b=43  r3 | rx=30.0   loss=91%      busy=100%
+GSOoff_GROon   b=43  r3 | rx=35.8   loss=0%       busy=67%
+GSOoff_GROoff  b=43  r3 | rx=34.9   loss=0.14%    busy=89%
+
+clean
+clean

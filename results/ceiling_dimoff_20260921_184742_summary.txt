@@ -1,0 +1,17 @@
+b=43  r1 | rx=42.9   loss=0.15%     busy=80%  eff=0.536  tx=43.0
+b=46  r1 | rx=45.2   loss=1.7%      busy=86%  eff=0.526  tx=46.0
+b=48  r1 | rx=43.5   loss=9.2%      busy=89%  eff=0.489  tx=48.0
+b=50  r1 | rx=47.0   loss=5.9%      busy=93%  eff=0.505  tx=50.0
+b=52  r1 | rx=51.7   loss=0.5%      busy=98%  eff=0.528  tx=52.0
+b=43  r2 | rx=40.4   loss=5.9%      busy=81%  eff=0.499  tx=43.0
+b=46  r2 | rx=46.0   loss=0.002%    busy=87%  eff=0.529  tx=46.0
+b=48  r2 | rx=43.5   loss=9.2%      busy=89%  eff=0.489  tx=48.0
+b=50  r2 | rx=49.9   loss=0.24%     busy=95%  eff=0.525  tx=50.0
+b=52  r2 | rx=48.8   loss=6.1%      busy=100% eff=0.488  tx=52.0
+b=43  r3 | rx=43.0   loss=0%        busy=81%  eff=0.531  tx=43.0
+b=46  r3 | rx=46.0   loss=0.0022%   busy=86%  eff=0.535  tx=46.0
+b=48  r3 | rx=43.3   loss=9.7%      busy=89%  eff=0.487  tx=48.0
+b=50  r3 | rx=47.8   loss=4.4%      busy=94%  eff=0.509  tx=50.0
+b=52  r3 | rx=48.3   loss=7%        busy=100% eff=0.483  tx=52.0
+clean
+clean
