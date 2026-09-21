@@ -15,12 +15,22 @@ Linux UDP 수신 경로(RX)를 계측·분석하고, 커널을 수정해 단일�
 |---|---|---|---|
 | Linux 기본값 UDP (208KB rcvbuf) | 8-22 G | 26-55% | — |
 | TCP (최적: DIM off, rmem 6MB) | 39.6 G | 100% | 0.396 G/%CPU |
-| **UDP 최적 구성** (good state) | **51.7 G @0.5% loss** | 98% | **0.53 G/%CPU** |
-| UDP 최적 구성 (collapsed state) | 41.5 G @9% loss | 86% | 0.48 G/%CPU |
+| **UDP 최적 구성 (기댓값)** | **48.5 G** @ 52 G offered | 100% | **0.485 G/%CPU** |
+| UDP 최적 구성 (최선 관측) | 51.7 G @0.5% loss | 98% | 0.53 G/%CPU |
 
 **UDP RX는 per-byte로 TCP보다 싸다.** 문제는 처리 비용이 아니라
 **수신 버퍼 오버런과 그로 인한 상태 붕괴(collapse)** 이고, 이를 제거하면
-같은 코어 하나로 TCP보다 **21% 높은 처리량**을 낸다.
+같은 코어 하나로 TCP보다 **22% 높은 처리량**(기댓값 기준)을 낸다.
+
+부하 구간별로 동작이 다르다.
+
+| offered | 동작 |
+|---|---|
+| ~42 Gbps 이하 | 항상 무손실, CPU 여유 |
+| 43-50 Gbps | **bistable** — 무손실이거나 41.5 Gbps로 붕괴 (진입률 약 56%) |
+| 52 Gbps 이상 | 단일 CPU 포화 영역, 46-51 Gbps 전달 (bistability 소멸) |
+
+기댓값이 최대가 되는 지점은 **52 Gbps를 제공해 48.5 Gbps를 받는 것**이다.
 
 최적 구성 = 정적 rcvbuf 1.5 MB + DIM off + app GSO/GRO (+ flood 시에만 shed)
 

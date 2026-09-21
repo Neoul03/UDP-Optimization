@@ -1,0 +1,7 @@
+b=46 : GGBFGG
+b=50 : BGBBGG
+b=52 : BBBBBB
+b=54 : BBBBBB
+b=56 : BBBBBB
+b=58 : FBBBBB
+clean

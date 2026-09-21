@@ -1,0 +1,5 @@
+app1000   : GBGBGBGBGB  → GOOD 5/10 (flake 0)
+app100    : FGGGBBGGBG  → GOOD 6/10 (flake 1)
+app20     : GBBFGGGBBG  → GOOD 5/10 (flake 1)
+app5      : GBBGGBGBGG  → GOOD 6/10 (flake 0)
+clean
