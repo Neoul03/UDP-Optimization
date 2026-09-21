@@ -52,15 +52,25 @@ Linux UDP 수신 경로(RX)를 계측·분석하고, 커널을 수정해 단일�
 버퍼 크기는 비단조(non-monotonic) 최적점을 가진다. 너무 작으면 GSO 버스트를 흡수하지 못하고,
 너무 크면 적체가 LLC를 넘겨 copyout이 DRAM-bound가 된다.
 
-| 정적 버퍼 | flood(82G) goodput | core busy |
-|---|---|---|
-| 208 KB (리눅스 기본값) | 7.1 G | 33% |
-| 1 MB | 25.6 G | 80% |
-| **1.5 MB** | **32.3 G** | 99% |
-| 4 MB | 23.8 G | 100% |
-| 512 MB | 16.5 G | 100% |
+정적 버퍼 크기 스윕 (진짜 단일코어, 2회 평균, L3 = 36 MiB):
 
-*(예비 결과 — 정밀 스윕 진행 중. L3가 36 MiB인 머신 기준)*
+| 정적 버퍼 | b=35G | b=40G | flood 82G | flood busy |
+|---|---|---|---|---|
+| 208 KB (리눅스 기본값) | 8.4 G | 12.8 G | 7.3 G | 34% |
+| 512 KB | 23.8 G | 23.6 G | 15.6 G | 55% |
+| 1 MB | 34.0 G | 37.1 G | 25.4 G | 80% |
+| **1.5 MB** | 34.2 G | **38.8 G** | **32.3 G** | **99%** |
+| 3 MB | 34.4 G | 37.5 G | 26.9 G | 100% |
+| 8 MB | 34.6 G | 33.9 G | 21.8 G | 100% |
+
+최적점은 **1.5 MB = L3의 1/24**. 기본값 대비 4.4배, 512 MB 대비 2배다.
+양쪽 실패 원인이 다르다는 점이 중요하다.
+
+- **너무 작으면**(208 KB~512 KB) core busy가 26~55%에 그친다. CPU가 남는데도 받지 못한다 —
+  GSO 버스트를 흡수하지 못해 shed가 과도하게 발동한다.
+- **너무 크면**(3 MB 이상) core busy는 100%인데 goodput이 떨어진다. 적체가 LLC를 넘겨
+  copyout이 DRAM-bound가 되는 순손실이다.
+- **1.5 MB만 busy 99%** 로 낭비 없이 포화한다. b=40G에서 38.8 G로 TCP(36.5 G)를 넘는다.
 
 ---
 
@@ -68,6 +78,7 @@ Linux UDP 수신 경로(RX)를 계측·분석하고, 커널을 수정해 단일�
 
 ```
 patches/   커널 및 iperf3 패치 (0001-0008)
+           iperf3 패치는 receiver/sender 빌드가 다르므로 주의 (ENVIRONMENT.md)
 scripts/   실험 자동화 스크립트 (baseline, A/B, sweep, perf/bpftrace probe)
 tools/     벤치마크 도구 (udp_blast, udp_sink, af_xdp_sink)
 results/   측정 결과 요약 (raw 로그는 제외, summary와 CSV만)
@@ -107,6 +118,7 @@ docs/      분석 노트, 설계 문서, 실험 환경 문서
 - [x] rcvbuf autotune 구현·검증
 - [x] driver-level RX shed 구현·검증
 - [x] bistability 원인 규명 (캐시 지역성)
-- [ ] 버퍼 최적점 정밀 확정 및 autotune 기본값 수정
+- [x] 버퍼 최적점 정밀 확정 (1.5 MB)
+- [ ] autotune 기본 cap을 32 MB에서 1.5 MB로 수정
 - [ ] shed 히스테리시스 / startup guard (상태 진입 제어)
 - [ ] transparent GRO (app opt-in 없이 GRO 이득 제공)

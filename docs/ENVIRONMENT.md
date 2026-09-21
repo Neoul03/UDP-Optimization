@@ -69,8 +69,27 @@ taskset -c 1 <server>
 
 ## 벤치마크 도구
 
-- `iperf3`: 수정판 (`patches/0005`) — TX GSO(`UDP_SEGMENT`) + RX GRO(`UDP_GRO` opt-in) 지원.
-  RX GRO는 기본 ON이며 `IPERF3_UDP_GRO=0`으로 비활성화(A/B용).
+### 수정판 iperf3
+
+베이스: upstream iperf3 커밋 **`0ae94b6`** (`3.20-11-g0ae94b6`). 수정 파일은 `src/iperf_udp.c` 하나뿐이다.
+
+```bash
+git clone https://github.com/esnet/iperf.git iperf3-source
+cd iperf3-source && git checkout 0ae94b6
+patch -p1 < <repo>/patches/0005-iperf3-udp-gso-gro-receiver.patch   # sslab4 (receiver)
+./configure && make
+```
+
+**⚠️ 두 호스트의 빌드가 다르다.** 측정 대상인 수신 경로는 receiver(sslab4) 빌드가 결정한다.
+
+| 호스트 | 패치 | 내용 |
+|---|---|---|
+| sslab4 (receiver) | `0005-...-receiver.patch` | TX GSO + RX GRO + **drain loop** (select 이벤트루프당 가용 datagram을 모두 배수, MSG_DONTWAIT으로 EAGAIN까지) + `arrival_time` 전달 |
+| sslab3 (sender) | `0005b-...-sender.patch` | TX GSO + RX GRO (drain loop 없음) |
+
+- TX: `UDP_SEGMENT` 설정 → `-l`을 MTU 초과로 주면 GSO 동작 (예: `-l 65000`)
+- RX: `UDP_GRO` opt-in, coalesce된 버퍼를 `gso_size` cmsg 단위로 잘라 per-datagram seq/loss 회계 유지
+- RX GRO는 기본 ON이며 `IPERF3_UDP_GRO=0`으로 비활성화(A/B용)
 - `tools/udp_blast.c`, `tools/udp_sink.c`: 경량 송수신기 (iperf3 오버헤드 배제용)
 - `tools/af_xdp_sink.c`: AF_XDP zero-copy 수신기 (상한 실증용)
 

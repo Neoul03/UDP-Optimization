@@ -1,0 +1,82 @@
+===== REP 1 =====
+208K   b=35  r1 | rx=8.41   loss=76%     busy=30%  tx=35.0   rb212992
+256K   b=35  r1 | rx=8.87   loss=74%     busy=24%  tx=35.0   rb262144
+384K   b=35  r1 | rx=14.8   loss=57%     busy=35%  tx=35.0   rb393216
+512K   b=35  r1 | rx=24.0   loss=31%     busy=57%  tx=35.0   rb524288
+768K   b=35  r1 | rx=30.0   loss=14%     busy=67%  tx=35.0   rb786432
+1M     b=35  r1 | rx=33.0   loss=5.6%    busy=72%  tx=35.0   rb1048576
+1M5    b=35  r1 | rx=35.0   loss=0.004%  busy=74%  tx=35.0   rb1572864
+2M     b=35  r1 | rx=33.7   loss=3.7%    busy=75%  tx=35.0   rb2097152
+3M     b=35  r1 | rx=33.8   loss=3.3%    busy=76%  tx=35.0   rb3145728
+4M     b=35  r1 | rx=34.2   loss=2.4%    busy=79%  tx=35.0   rb4194304
+6M     b=35  r1 | rx=34.4   loss=1.8%    busy=89%  tx=35.0   rb6291456
+8M     b=35  r1 | rx=35.0   loss=0.009%  busy=78%  tx=35.0   rb8388608
+
+208K   b=40  r1 | rx=13.0   loss=67%     busy=36%  tx=40.0   rb212992
+256K   b=40  r1 | rx=14.0   loss=65%     busy=38%  tx=40.0   rb262144
+384K   b=40  r1 | rx=18.5   loss=54%     busy=46%  tx=40.0   rb393216
+512K   b=40  r1 | rx=28.3   loss=29%     busy=63%  tx=40.0   rb524288
+768K   b=40  r1 | rx=29.2   loss=27%     busy=67%  tx=40.0   rb786432
+1M     b=40  r1 | rx=34.3   loss=14%     busy=79%  tx=40.0   rb1048576
+1M5    b=40  r1 | rx=37.5   loss=6.3%    busy=85%  tx=40.0   rb1572864
+2M     b=40  r1 | rx=36.1   loss=9.8%    busy=85%  tx=40.0   rb2097152
+3M     b=40  r1 | rx=40.0   loss=0.058%  busy=87%  tx=40.0   rb3145728
+4M     b=40  r1 | rx=34.5   loss=14%     busy=91%  tx=40.0   rb4194304
+6M     b=40  r1 | rx=33.6   loss=16%     busy=94%  tx=40.0   rb6291456
+8M     b=40  r1 | rx=33.2   loss=17%     busy=100% tx=40.0   rb8388608
+
+208K   b=0   r1 | rx=7.12   loss=91%     busy=33%  tx=82.0   rb212992
+256K   b=0   r1 | rx=9.89   loss=88%     busy=41%  tx=82.0   rb262144
+384K   b=0   r1 | rx=15.4   loss=81%     busy=53%  tx=82.0   rb393216
+512K   b=0   r1 | rx=15.3   loss=81%     busy=55%  tx=82.1   rb524288
+768K   b=0   r1 | rx=22.6   loss=72%     busy=74%  tx=81.8   rb786432
+1M     b=0   r1 | rx=25.6   loss=68%     busy=80%  tx=80.5   rb1048576
+1M5    b=0   r1 | rx=32.3   loss=61%     busy=99%  tx=82.0   rb1572864
+2M     b=0   r1 | rx=30.2   loss=63%     busy=100% tx=82.1   rb2097152
+3M     b=0   r1 | rx=26.9   loss=67%     busy=100% tx=82.0   rb3145728
+4M     b=0   r1 | rx=23.8   loss=71%     busy=100% tx=81.9   rb4194304
+6M     b=0   r1 | rx=22.0   loss=73%     busy=100% tx=82.1   rb6291456
+8M     b=0   r1 | rx=22.0   loss=73%     busy=100% tx=81.9   rb8388608
+
+===== REP 2 =====
+208K   b=35  r2 | rx=8.32   loss=76%     busy=21%  tx=35.0   rb212992
+256K   b=35  r2 | rx=8.30   loss=76%     busy=22%  tx=35.0   rb262144
+384K   b=35  r2 | rx=11.8   loss=66%     busy=28%  tx=35.0   rb393216
+512K   b=35  r2 | rx=23.6   loss=33%     busy=52%  tx=35.0   rb524288
+768K   b=35  r2 | rx=29.2   loss=17%     busy=64%  tx=35.0   rb786432
+1M     b=35  r2 | rx=35.0   loss=0.0056% busy=75%  tx=35.0   rb1048576
+1M5    b=35  r2 | rx=33.5   loss=4.2%    busy=75%  tx=35.0   rb1572864
+2M     b=35  r2 | rx=33.7   loss=3.6%    busy=74%  tx=35.0   rb2097152
+3M     b=35  r2 | rx=35.0   loss=0%      busy=81%  tx=35.0   rb3145728
+4M     b=35  r2 | rx=34.2   loss=2.3%    busy=80%  tx=35.0   rb4194304
+6M     b=35  r2 | rx=34.5   loss=1.5%    busy=89%  tx=35.0   rb6291456
+8M     b=35  r2 | rx=34.2   loss=0.85%   busy=95%  tx=35.0   rb8388608
+
+208K   b=40  r2 | rx=12.6   loss=68%     busy=35%  tx=40.0   rb212992
+256K   b=40  r2 | rx=11.2   loss=72%     busy=39%  tx=40.0   rb262144
+384K   b=40  r2 | rx=18.5   loss=54%     busy=46%  tx=40.0   rb393216
+512K   b=40  r2 | rx=18.8   loss=53%     busy=46%  tx=40.0   rb524288
+768K   b=40  r2 | rx=27.5   loss=31%     busy=63%  tx=40.0   rb786432
+1M     b=40  r2 | rx=39.9   loss=0.18%   busy=89%  tx=40.0   rb1048576
+1M5    b=40  r2 | rx=40.0   loss=0.016%  busy=89%  tx=40.0   rb1572864
+2M     b=40  r2 | rx=36.1   loss=9.9%    busy=86%  tx=40.0   rb2097152
+3M     b=40  r2 | rx=34.9   loss=13%     busy=88%  tx=40.0   rb3145728
+4M     b=40  r2 | rx=39.7   loss=0.75%   busy=89%  tx=40.0   rb4194304
+6M     b=40  r2 | rx=34.2   loss=15%     busy=94%  tx=40.0   rb6291456
+8M     b=40  r2 | rx=34.6   loss=14%     busy=100% tx=40.0   rb8388608
+
+208K   b=0   r2 | rx=7.51   loss=91%     busy=36%  tx=82.0   rb212992
+256K   b=0   r2 | rx=10.0   loss=88%     busy=41%  tx=81.8   rb262144
+384K   b=0   r2 | rx=15.2   loss=81%     busy=53%  tx=82.0   rb393216
+512K   b=0   r2 | rx=15.9   loss=81%     busy=55%  tx=82.1   rb524288
+768K   b=0   r2 | rx=22.3   loss=72%     busy=74%  tx=82.0   rb786432
+1M     b=0   r2 | rx=25.1   loss=69%     busy=80%  tx=82.0   rb1048576
+1M5    b=0   r2 | rx=32.4   loss=60%     busy=99%  tx=82.1   rb1572864
+2M     b=0   r2 | rx=30.6   loss=63%     busy=100% tx=82.1   rb2097152
+3M     b=0   r2 | rx=26.8   loss=67%     busy=100% tx=82.0   rb3145728
+4M     b=0   r2 | rx=23.9   loss=71%     busy=100% tx=81.9   rb4194304
+6M     b=0   r2 | rx=22.0   loss=73%     busy=100% tx=81.8   rb6291456
+8M     b=0   r2 | rx=21.6   loss=73%     busy=100% tx=82.1   rb8388608
+
+clean
+clean
