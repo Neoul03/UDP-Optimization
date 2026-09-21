@@ -1,0 +1,231 @@
+From: chanseo <skkusyslab@gmail.com>
+Subject: [PATCH RFC v2] net/dim: dynamic SIGNIFICANT_DIFF + drop-signal priority
+
+# Why v2 (vs v1)
+
+v1 added a drop signal to dim_sample as a secondary input. After deeper
+measurement (Sec 12 of H1_analysis.md), the real failure mode is more
+fundamental:
+
+  `IS_SIGNIFICANT_DIFF = 10%` (include/linux/dim.h:23) is too conservative
+  for UDP under socket-overflow load. Because the NIC receives *the same*
+  byte rate whether the socket drains it or not, the bpms/ppms variation
+  between consecutive 64-event windows stays under 10%, so
+  `net_dim_stats_compare` returns SAME 99.5% of the time. With SAME, the
+  algorithm doesn't step → DIM is effectively frozen at whatever profile_ix
+  it happened to land on during ramp-up.
+
+Measured (CX5 mlx5_core, MTU 9000, GSO on, CPU1 pin, bitrate 40G):
+  net_dim_stats_compare retval distribution:
+                    BETTER   SAME    WORSE   step_taken
+    TCP             35%      65%     0%      94%
+    UDP 40G (drop)  0.5%     99.5%   0%      0.7%
+  → DIM is making 1300 comparisons per 30s but only stepping 9 times.
+
+# What v2 does
+
+1. Add `drop_ctr` to `dim_sample` and `dpms` to `dim_stats` (same as v1).
+2. In `net_dim_stats_compare`:
+     a) If dpms is increasing significantly, return WORSE immediately
+        (overrides bpms/ppms). This gives DIM the WORSE signal it cannot
+        otherwise produce when load > drain capacity.
+     b) If dpms is non-zero (any drops), use a *tighter* DIM_DIFF_HOT
+        threshold (2%) for bpms/ppms instead of 10%. This makes DIM react
+        to smaller fluctuations when the system is in trouble.
+3. Wire mlx5e_handle_rx_dim to feed UDP_MIB_RCVBUFERRORS per-cpu sum.
+
+# Expected behavior change
+
+- At low load (no overflow): identical to current DIM.
+- At overflow: DIM gets a constant WORSE signal whenever drops increase,
+  walks back down the profile_ix tree (smaller bursts), and the tighter
+  threshold lets it converge to a *different* operating point than the
+  random-stuck-ix it lands on today.
+
+# Risk
+- Tight threshold can cause oscillation if drops are not monotonic.
+  Hysteresis: only react when dpms increases for 2 consecutive samples.
+
+---
+
+ include/linux/dim.h                                     | 16 ++++++++++--
+ lib/dim/dim.c                                           |  4 ++++
+ lib/dim/net_dim.c                                       | 28 ++++++++++++++++++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c       | 14 +++++++++++--
+ 4 files changed, 57 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/dim.h b/include/linux/dim.h
+--- a/include/linux/dim.h
++++ b/include/linux/dim.h
+@@ -19,9 +19,13 @@
+ /*
+  * Is a difference between values justifies taking an action.
+  * We consider 10% difference as significant.
++ * DIM_DIFF_HOT (2%) is used when the consumer reports active drops,
++ * making DIM more reactive when downstream is in trouble.
+  */
+ #define IS_SIGNIFICANT_DIFF(val, ref) \
+ 	((ref) && (((100UL * abs((val) - (ref))) / (ref)) > 10))
++#define IS_SIGNIFICANT_DIFF_HOT(val, ref) \
++	((ref) && (((100UL * abs((val) - (ref))) / (ref)) > 2))
+
+ /*
+  * Calculate the gap between two values.
+@@ -59,6 +63,7 @@ struct dim_sample {
+ 	u32 pkt_ctr;
+ 	u32 byte_ctr;
+ 	u16 event_ctr;
++	u32 drop_ctr;   /* NEW: socket-layer (or consumer-side) drop counter */
+ 	u32 comp_ctr;
+ };
+
+@@ -78,6 +83,7 @@ struct dim_sample {
+ struct dim_stats {
+ 	int ppms;
+ 	int bpms;
++	int dpms;       /* NEW: drops per msec */
+ 	int epms;
+ 	int cpms;
+ 	int cpe_ratio;
+@@ -240,12 +246,18 @@ bool dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
+ 		    struct dim_stats *curr_stats);
+
+ static inline void dim_update_sample(u16 event_ctr, u64 packets, u64 bytes,
++				     struct dim_sample *s)
++{
++	dim_update_sample_ext(event_ctr, packets, bytes, 0, s);
++}
++
++static inline void dim_update_sample_ext(u16 event_ctr, u64 packets,
++				     u64 bytes, u32 drops,
+ 				     struct dim_sample *s)
+ {
+ 	s->time      = ktime_get();
+ 	s->pkt_ctr   = packets;
+ 	s->byte_ctr  = bytes;
+ 	s->event_ctr = event_ctr;
++	s->drop_ctr  = drops;
+ }
+
+diff --git a/lib/dim/dim.c b/lib/dim/dim.c
+--- a/lib/dim/dim.c
++++ b/lib/dim/dim.c
+@@ -62,6 +62,8 @@ bool dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
+ 	u32 npkts  = BIT_GAP(BITS_PER_TYPE(u32), end->pkt_ctr,  start->pkt_ctr);
+ 	u32 nbytes = BIT_GAP(BITS_PER_TYPE(u32), end->byte_ctr, start->byte_ctr);
++	u32 ndrops = BIT_GAP(BITS_PER_TYPE(u32), end->drop_ctr, start->drop_ctr);
+ 	u32 ncomps = BIT_GAP(BITS_PER_TYPE(u32), end->comp_ctr, start->comp_ctr);
+
+ 	if (!delta_us)
+ 		return false;
+
+ 	curr_stats->ppms = DIV_ROUND_UP(npkts  * USEC_PER_MSEC, delta_us);
+ 	curr_stats->bpms = DIV_ROUND_UP(nbytes * USEC_PER_MSEC, delta_us);
++	curr_stats->dpms = DIV_ROUND_UP(ndrops * USEC_PER_MSEC, delta_us);
+ 	curr_stats->epms = DIV_ROUND_UP(DIM_NEVENTS * USEC_PER_MSEC, delta_us);
+
+diff --git a/lib/dim/net_dim.c b/lib/dim/net_dim.c
+--- a/lib/dim/net_dim.c
++++ b/lib/dim/net_dim.c
+@@ -137,11 +137,37 @@ static int net_dim_stats_compare(struct dim_stats *curr,
+ 				 struct dim_stats *prev)
+ {
++	bool hot = (curr->dpms || prev->dpms);
++
++	/* NEW: socket-layer drops dominate the decision. If drops are
++	 * increasing significantly, current state is WORSE regardless of how
++	 * many bytes the NIC saw. This is the missing WORSE signal that
++	 * unsticks DIM from a bad operating point under UDP overflow load.
++	 */
++	if (curr->dpms > prev->dpms &&
++	    IS_SIGNIFICANT_DIFF_HOT(curr->dpms, prev->dpms))
++		return DIM_STATS_WORSE;
++
++	/* If drops are decreasing significantly, current state is BETTER. */
++	if (curr->dpms < prev->dpms &&
++	    IS_SIGNIFICANT_DIFF_HOT(prev->dpms, curr->dpms))
++		return DIM_STATS_BETTER;
++
++	/* Use tighter threshold for bpms/ppms when the system has any drops
++	 * happening — small bpms/ppms changes carry real signal once the
++	 * downstream is contended. Without this, the 10% baseline threshold
++	 * is too coarse and DIM returns SAME ~99% of the time, freezing.
++	 */
++#define SIG_BPMS(c, p) (hot ? IS_SIGNIFICANT_DIFF_HOT(c, p) \
++			    : IS_SIGNIFICANT_DIFF(c, p))
++
+ 	if (!prev->bpms)
+ 		return curr->bpms ? DIM_STATS_BETTER : DIM_STATS_SAME;
+
+-	if (IS_SIGNIFICANT_DIFF(curr->bpms, prev->bpms))
++	if (SIG_BPMS(curr->bpms, prev->bpms))
+ 		return (curr->bpms > prev->bpms) ? DIM_STATS_BETTER :
+ 						   DIM_STATS_WORSE;
+
+ 	if (!prev->ppms)
+ 		return curr->ppms ? DIM_STATS_BETTER :
+ 				    DIM_STATS_SAME;
+
+-	if (IS_SIGNIFICANT_DIFF(curr->ppms, prev->ppms))
++	if (SIG_BPMS(curr->ppms, prev->ppms))
+ 		return (curr->ppms > prev->ppms) ? DIM_STATS_BETTER :
+ 						   DIM_STATS_WORSE;
+
+ 	if (!prev->epms)
+ 		return DIM_STATS_SAME;
+
+ 	if (IS_SIGNIFICANT_DIFF(curr->epms, prev->epms))
+ 		return (curr->epms < prev->epms) ? DIM_STATS_BETTER :
+ 						   DIM_STATS_WORSE;
+
++#undef SIG_BPMS
+ 	return DIM_STATS_SAME;
+ }
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+@@ -61,12 +61,22 @@ static void mlx5e_handle_rx_dim(struct mlx5e_rq *rq)
+ {
+ 	struct mlx5e_rq_stats *stats = rq->stats;
+ 	struct dim_sample dim_sample = {};
++	struct net *net = dev_net(rq->netdev);
++	u64 udp_drops = 0;
++	int cpu;
+
+ 	if (unlikely(!test_bit(MLX5E_RQ_STATE_DIM, &rq->state)))
+ 		return;
+
+-	dim_update_sample(rq->cq.event_ctr, stats->packets, stats->bytes,
+-			  &dim_sample);
++	/* Aggregate UdpRcvbufErrors across CPUs in this net namespace.
++	 * Cheap (per-CPU read, called only on NAPI complete).
++	 */
++	for_each_possible_cpu(cpu)
++		udp_drops += snmp_get_cpu_field(
++			net->mib.udp_statistics, cpu, UDP_MIB_RCVBUFERRORS);
++
++	dim_update_sample_ext(rq->cq.event_ctr, stats->packets, stats->bytes,
++			      (u32)udp_drops, &dim_sample);
+ 	net_dim(&rq->dim, dim_sample);
+ }
+
+--
+2.40.0
+
+# Build & test plan (for the user to execute):
+#
+# 1. Apply patch in ~/lab/kernel/linux-6.6.9/
+# 2. Build lib/dim/ and mlx5_core module only:
+#       cd ~/lab/kernel/linux-6.6.9
+#       make M=lib/dim modules
+#       make M=drivers/net/ethernet/mellanox/mlx5/core modules
+#    (or rebuild full kernel if needed — net_dim_stats_compare is inline
+#     in net_dim.c so vmlinux needs rebuild)
+# 3. Install:
+#       sudo rmmod mlx5_core; sudo modprobe mlx5_core  # NIC down/up
+#    (only safe if you have console access — NIC reset)
+# 4. Repeat measurement (Sec 12 of H1_analysis.md):
+#       BITRATE=40G LEN_OPT="-l 9000" ~/lab/scripts/run_dim_cycle.sh on 30
+#    Expected with patch: stack throughput 6.96 G → ~15-20 G (recovery via
+#    DIM walking down profile_ix when drops increase).

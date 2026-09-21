@@ -1,0 +1,162 @@
+From: chanseo <skkusyslab@gmail.com>
+Subject: [PATCH RFC] net/dim: integrate socket-layer drop signal into RX DIM feedback loop
+
+# Motivation
+
+Current `net_dim` decision uses only NIC RQ counters (bytes/packets/events)
+fetched at `mlx5e_handle_rx_dim` via `dim_update_sample(... stats->packets,
+stats->bytes, ...)`. These counters are incremented *before* the packet
+reaches the socket queue, so socket-level drops (e.g. UDP_MIB_RCVBUFERRORS
+when `__udp_enqueue_schedule_skb` overflows `sk_rcvbuf`) are completely
+invisible to DIM.
+
+Result: on UDP RX with high coalescing, NIC bpms keeps increasing (NIC sees
+all the bytes, including those later dropped) and DIM keeps interpreting it
+as BETTER, converging to higher moderation while user-space goodput plummets.
+
+Measured (CX5 mlx5_core, MTU 9000, CPU1 pin, 40G bitrate, GSO on):
+  DIM on:       NIC 31.5 Gbps / stack 6.96 Gbps / UdpRcvbufErrors 631K/s
+  DIM off-pure: NIC 31.5 Gbps / stack 10.1 Gbps / UdpRcvbufErrors 596K/s
+
+# Approach
+
+Add an optional per-RQ "drop counter" that the DIM consumer can register
+along with the RQ pointer. `dim_calc_stats` computes drops-per-ms (`dpms`)
+in addition to bpms/ppms/epms, and `net_dim_stats_compare` checks `dpms`
+*before* bpms/ppms: if drops are getting significantly worse, the algorithm
+treats it as WORSE regardless of how many bytes the NIC reported.
+
+For mlx5e, the consumer is `mlx5e_handle_rx_dim`, which gets the drop count
+from the RQ's associated socket netns via `net->mib.udp_stats_in[0].
+UDP_MIB_RCVBUFERRORS` (and TCP equivalent). For now this RFC wires only the
+UDP path; TCP can be added similarly.
+
+The change is opt-in: legacy DIM consumers that don't supply a drop counter
+pass 0 and behave identically to the current code.
+
+---
+
+ include/linux/dim.h                              | 11 +++++++++--
+ lib/dim/dim.c                                    |  4 ++++
+ lib/dim/net_dim.c                                | 21 +++++++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c| 14 ++++++++++++--
+ 4 files changed, 46 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/dim.h b/include/linux/dim.h
+--- a/include/linux/dim.h
++++ b/include/linux/dim.h
+@@ -59,6 +59,7 @@ struct dim_sample {
+ 	u32 pkt_ctr;
+ 	u32 byte_ctr;
+ 	u16 event_ctr;
++	u32 drop_ctr;   /* NEW: socket-layer drop counter snapshot */
+ 	u32 comp_ctr;
+ };
+
+@@ -77,6 +78,7 @@ struct dim_sample {
+ struct dim_stats {
+ 	int ppms; /* packets per msec */
+ 	int bpms; /* bytes per msec */
++	int dpms; /* NEW: drops per msec (socket-layer) */
+ 	int epms; /* events per msec */
+ 	int cpms; /* completions per msec */
+ 	int cpe_ratio;
+@@ -240,11 +242,16 @@ bool dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
+ 		    struct dim_stats *curr_stats);
+
+ static inline void dim_update_sample(u16 event_ctr, u64 packets, u64 bytes,
++				     struct dim_sample *s)
++{
++	dim_update_sample_with_drops(event_ctr, packets, bytes, 0, s);
++}
++
++static inline void dim_update_sample_with_drops(u16 event_ctr, u64 packets,
++				     u64 bytes, u32 drops,
+ 				     struct dim_sample *s)
+ {
+ 	s->time      = ktime_get();
+ 	s->pkt_ctr   = packets;
+ 	s->byte_ctr  = bytes;
+ 	s->event_ctr = event_ctr;
++	s->drop_ctr  = drops;
+ }
+
+diff --git a/lib/dim/dim.c b/lib/dim/dim.c
+--- a/lib/dim/dim.c
++++ b/lib/dim/dim.c
+@@ -62,6 +62,8 @@ bool dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
+ 	u32 npkts  = BIT_GAP(BITS_PER_TYPE(u32), end->pkt_ctr,  start->pkt_ctr);
+ 	u32 nbytes = BIT_GAP(BITS_PER_TYPE(u32), end->byte_ctr, start->byte_ctr);
++	u32 ndrops = BIT_GAP(BITS_PER_TYPE(u32), end->drop_ctr, start->drop_ctr);
+ 	u32 ncomps = BIT_GAP(BITS_PER_TYPE(u32), end->comp_ctr, start->comp_ctr);
+
+ 	if (!delta_us)
+ 		return false;
+
+ 	curr_stats->ppms = DIV_ROUND_UP(npkts  * USEC_PER_MSEC, delta_us);
+ 	curr_stats->bpms = DIV_ROUND_UP(nbytes * USEC_PER_MSEC, delta_us);
++	curr_stats->dpms = DIV_ROUND_UP(ndrops * USEC_PER_MSEC, delta_us);
+ 	curr_stats->epms = DIV_ROUND_UP(DIM_NEVENTS * USEC_PER_MSEC, delta_us);
+
+diff --git a/lib/dim/net_dim.c b/lib/dim/net_dim.c
+--- a/lib/dim/net_dim.c
++++ b/lib/dim/net_dim.c
+@@ -137,6 +137,27 @@ static int net_dim_stats_compare(struct dim_stats *curr,
+ 				 struct dim_stats *prev)
+ {
++	/* NEW: drop-rate has highest priority — if downstream is dropping
++	 * more, more NIC throughput is not "BETTER". This breaks the
++	 * pathological case where coalescing is increased to a level the
++	 * socket queue cannot drain, which DIM has no other way to detect.
++	 *
++	 * Hysteresis: only react on SIGNIFICANT_DIFF (same as bpms/ppms)
++	 * so brief drop spikes don't cause oscillation.
++	 */
++	if (curr->dpms || prev->dpms) {
++		if (!prev->dpms)
++			return curr->dpms ? DIM_STATS_WORSE : DIM_STATS_SAME;
++		if (IS_SIGNIFICANT_DIFF(curr->dpms, prev->dpms))
++			return (curr->dpms < prev->dpms) ? DIM_STATS_BETTER :
++							   DIM_STATS_WORSE;
++		/* drops are non-zero but stable — fall through to bpms/ppms
++		 * so we can still find a smaller-burst profile that doesn't
++		 * make drops worse. This lets DIM walk DOWN the profile_ix
++		 * tree (less coalescing → smaller bursts) even at stable
++		 * NIC throughput.
++		 */
++	}
++
+ 	if (!prev->bpms)
+ 		return curr->bpms ? DIM_STATS_BETTER : DIM_STATS_SAME;
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+@@ -61,15 +61,25 @@ static void mlx5e_handle_rx_dim(struct mlx5e_rq *rq)
+ {
+ 	struct mlx5e_rq_stats *stats = rq->stats;
+ 	struct dim_sample dim_sample = {};
++	struct net *net = read_pnet(&rq->priv->ndev->nd_net);
++	u64 udp_drops = 0;
++	int cpu;
+
+ 	if (unlikely(!test_bit(MLX5E_RQ_STATE_DIM, &rq->state)))
+ 		return;
+
+-	dim_update_sample(rq->cq.event_ctr, stats->packets, stats->bytes,
+-			  &dim_sample);
++	/* NEW: aggregate UdpRcvbufErrors across CPUs in this net namespace
++	 * so DIM can react when its decisions cause socket-layer overflow.
++	 * Cheap to read (per-CPU counter) and only every NAPI complete.
++	 */
++	for_each_possible_cpu(cpu) {
++		udp_drops +=
++		    *per_cpu_ptr(net->mib.udp_statistics->mibs, cpu)[UDP_MIB_RCVBUFERRORS];
++	}
++	dim_update_sample_with_drops(rq->cq.event_ctr, stats->packets,
++				     stats->bytes, (u32)udp_drops, &dim_sample);
+ 	net_dim(&rq->dim, dim_sample);
+ }
+
+--
+2.40.0
