@@ -1,0 +1,90 @@
+diff -ur orig/include/net/netns/ipv4.h work/include/net/netns/ipv4.h
+--- orig/include/net/netns/ipv4.h	2026-09-17 18:10:19.178539042 +0900
++++ work/include/net/netns/ipv4.h	2026-09-17 18:11:01.258389819 +0900
+@@ -193,6 +193,8 @@
+ 
+ 	int sysctl_udp_wmem_min;
+ 	int sysctl_udp_rmem_min;
++	u8 sysctl_udp_rmem_autotune;
++	int sysctl_udp_rmem_autotune_max;
+ 
+ 	u8 sysctl_fib_notify_on_flag_change;
+ 	u8 sysctl_tcp_syn_linear_timeouts;
+diff -ur orig/net/ipv4/sysctl_net_ipv4.c work/net/ipv4/sysctl_net_ipv4.c
+--- orig/net/ipv4/sysctl_net_ipv4.c	2026-09-17 18:10:19.126539233 +0900
++++ work/net/ipv4/sysctl_net_ipv4.c	2026-09-17 18:11:01.258389819 +0900
+@@ -1414,6 +1414,23 @@
+ 		.extra1		= SYSCTL_ONE
+ 	},
+ 	{
++		.procname	= "udp_rmem_autotune",
++		.data		= &init_net.ipv4.sysctl_udp_rmem_autotune,
++		.maxlen		= sizeof(u8),
++		.mode		= 0644,
++		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++	{
++		.procname	= "udp_rmem_autotune_max",
++		.data		= &init_net.ipv4.sysctl_udp_rmem_autotune_max,
++		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_rmem_autotune_max),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ONE,
++	},
++	{
+ 		.procname	= "udp_wmem_min",
+ 		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
+ 		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
+diff -ur orig/net/ipv4/udp.c work/net/ipv4/udp.c
+--- orig/net/ipv4/udp.c	2026-09-17 18:10:19.070539438 +0900
++++ work/net/ipv4/udp.c	2026-09-17 18:11:01.258389819 +0900
+@@ -1485,6 +1485,30 @@
+ 	return 0;
+ }
+ 
++/* UDP receive buffer autotuning (TCP-DRS-like, but occupancy driven since
++ * UDP has no RTT clock): when the producer finds the queue more than half
++ * full, the consumer is falling behind the arrival burst - grow sk_rcvbuf
++ * (up to udp_rmem_autotune_max) instead of dropping at a static clamp.
++ * Applications that set SO_RCVBUF explicitly are left untouched.
++ */
++static void udp_rcvbuf_autotune(struct sock *sk, int rmem)
++{
++	int rcvbuf = READ_ONCE(sk->sk_rcvbuf);
++	struct net *net = sock_net(sk);
++	int max;
++
++	if (rmem <= (rcvbuf >> 1))
++		return;
++	if (!READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune))
++		return;
++	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK)
++		return;
++	max = READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune_max);
++	if (rcvbuf >= max)
++		return;
++	WRITE_ONCE(sk->sk_rcvbuf, (int)min_t(long, (long)rcvbuf << 1, (long)max));
++}
++
+ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct sk_buff_head *list = &sk->sk_receive_queue;
+@@ -1496,6 +1520,7 @@
+ 	 * queue is full; always allow at least a packet
+ 	 */
+ 	rmem = atomic_read(&sk->sk_rmem_alloc);
++	udp_rcvbuf_autotune(sk, rmem);
+ 	if (rmem > sk->sk_rcvbuf)
+ 		goto drop;
+ 
+@@ -3427,6 +3452,8 @@
+ {
+ 	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
+ 	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
++	net->ipv4.sysctl_udp_rmem_autotune = 1;
++	net->ipv4.sysctl_udp_rmem_autotune_max = 32 << 20;
+ 
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
