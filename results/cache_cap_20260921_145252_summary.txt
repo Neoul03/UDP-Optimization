@@ -1,0 +1,82 @@
+===== ① perf cache counters (good vs bad) =====
+--- r1_good_b33 offered=33G loss=0% ---
+[  5]   0.00-30.00  sec   115 GBytes  33.0 Gbits/sec  0.000 ms  0/15230968 (0%)  receiver
+  29,604,985,924      cycles                                                      
+  31,985,536,091      instructions              #    1.08  insn per cycle         
+  1,059,561,502      cache-references                                            
+  186,775,781      cache-misses              #   17.628 % of all cache refs    
+  66,488,283      LLC-load-misses                                             
+  skmem:(r0,rb13631488
+
+--- r1_maybebad_b35 offered=35G loss=25% ---
+[  5]   0.00-30.00  sec  90.7 GBytes  26.0 Gbits/sec  0.005 ms  4092982/16073256 (25%)  receiver
+  39,541,746,615      cycles                                                      
+  25,125,731,776      instructions              #    0.64  insn per cycle         
+  999,209,231      cache-references                                            
+  441,105,304      cache-misses              #   44.145 % of all cache refs    
+  204,955,548      LLC-load-misses                                             
+  skmem:(r536493824,rb536870912
+
+--- r2_good_b33 offered=33G loss=0% ---
+[  5]   0.00-30.00  sec   105 GBytes  30.1 Gbits/sec  0.009 ms  0/13903080 (0%)  receiver
+  26,563,233,441      cycles                                                      
+  28,776,166,230      instructions              #    1.08  insn per cycle         
+  959,654,550      cache-references                                            
+  167,174,795      cache-misses              #   17.420 % of all cache refs    
+  60,254,093      LLC-load-misses                                             
+  skmem:(r0,rb6815744
+
+--- r2_maybebad_b35 offered=35G loss=26% ---
+[  5]   0.00-30.00  sec  89.5 GBytes  25.6 Gbits/sec  0.001 ms  4258775/16072976 (26%)  receiver
+  39,540,372,591      cycles                                                      
+  25,143,117,491      instructions              #    0.64  insn per cycle         
+  1,002,111,306      cache-references                                            
+  443,212,111      cache-misses              #   44.228 % of all cache refs    
+  205,545,774      LLC-load-misses                                             
+  skmem:(r536295936,rb536870912
+
+--- r3_good_b33 offered=33G loss=0% ---
+[  5]   0.00-30.00  sec   104 GBytes  29.8 Gbits/sec  0.003 ms  0/13739472 (0%)  receiver
+  26,135,664,617      cycles                                                      
+  28,485,174,479      instructions              #    1.09  insn per cycle         
+  938,495,662      cache-references                                            
+  163,402,508      cache-misses              #   17.411 % of all cache refs    
+  58,755,935      LLC-load-misses                                             
+  skmem:(r294144,rb6815744
+
+--- r3_maybebad_b35 offered=35G loss=0% ---
+[  5]   0.00-30.00  sec   122 GBytes  35.0 Gbits/sec  0.000 ms  0/16153904 (0%)  receiver
+  31,194,755,622      cycles                                                      
+  33,670,845,811      instructions              #    1.08  insn per cycle         
+  1,135,045,641      cache-references                                            
+  200,147,407      cache-misses              #   17.633 % of all cache refs    
+  69,628,623      LLC-load-misses                                             
+  skmem:(r514304,rb6815744
+
+===== ② autotune cap sweep =====
+cap=1M b=35G | 77.1 GBytes  33.1 Gbits/sec  0.000 ms  585372/10769240 (5.4%)  receiver | busy=74%
+cap=4M b=35G | 80.0 GBytes  34.4 Gbits/sec  0.001 ms  196000/10769421 (1.8%)  receiver | busy=82%
+cap=16M b=35G | 68.3 GBytes  29.4 Gbits/sec  0.002 ms  0/9032358 (0%)  receiver | busy=63%
+cap=512M b=35G | 81.5 GBytes  35.0 Gbits/sec  0.000 ms  0/10769285 (0%)  receiver | busy=66%
+cap=1M b=40G | 81.1 GBytes  34.9 Gbits/sec  0.004 ms  1584191/12307800 (13%)  receiver | busy=80%
+cap=4M b=40G | 79.2 GBytes  34.0 Gbits/sec  0.001 ms  1846322/12307480 (15%)  receiver | busy=92%
+cap=16M b=40G | 69.0 GBytes  29.6 Gbits/sec  0.002 ms  3191680/12305640 (26%)  receiver | busy=100%
+cap=512M b=40G | 68.4 GBytes  29.4 Gbits/sec  0.003 ms  0/9037312 (0%)  receiver | busy=62%
+cap=1M b=0G | 59.3 GBytes  25.2 Gbits/sec  0.000 ms  17350936/25190264 (69%)  receiver | busy=81%
+cap=4M b=0G | 53.4 GBytes  22.7 Gbits/sec  0.000 ms  18153913/25222256 (72%)  receiver | busy=100%
+cap=16M b=0G | 50.4 GBytes  21.6 Gbits/sec  0.006 ms  18582305/25252488 (74%)  receiver | busy=100%
+cap=512M b=0G | 38.5 GBytes  16.5 Gbits/sec  0.001 ms  19851100/24953640 (80%)  receiver | busy=100%
+cap=1M b=35G | 81.5 GBytes  35.0 Gbits/sec  0.001 ms  734/10769736 (0.0068%)  receiver | busy=74%
+cap=4M b=35G | 80.1 GBytes  34.4 Gbits/sec  0.000 ms  188106/10769299 (1.7%)  receiver | busy=81%
+cap=16M b=35G | 70.6 GBytes  30.3 Gbits/sec  0.002 ms  1438962/10767736 (13%)  receiver | busy=100%
+cap=512M b=35G | 68.3 GBytes  29.3 Gbits/sec  0.003 ms  0/9030712 (0%)  receiver | busy=62%
+cap=1M b=40G | 93.1 GBytes  40.0 Gbits/sec  0.004 ms  4765/12307760 (0.039%)  receiver | busy=88%
+cap=4M b=40G | 79.8 GBytes  34.3 Gbits/sec  0.001 ms  1767698/12307656 (14%)  receiver | busy=92%
+cap=16M b=40G | 68.2 GBytes  29.3 Gbits/sec  0.001 ms  3296144/12304728 (27%)  receiver | busy=100%
+cap=512M b=40G | 57.6 GBytes  24.7 Gbits/sec  0.001 ms  4600352/12211432 (38%)  receiver | busy=100%
+cap=1M b=0G | 59.7 GBytes  25.4 Gbits/sec  0.000 ms  17361596/25244496 (69%)  receiver | busy=80%
+cap=4M b=0G | 53.3 GBytes  22.9 Gbits/sec  0.001 ms  18230113/25287304 (72%)  receiver | busy=100%
+cap=16M b=0G | 50.6 GBytes  21.5 Gbits/sec  0.000 ms  18538406/25243536 (73%)  receiver | busy=100%
+cap=512M b=0G | 38.4 GBytes  16.5 Gbits/sec  0.002 ms  19856437/24942112 (80%)  receiver | busy=100%
+clean
+clean

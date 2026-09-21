@@ -1,0 +1,38 @@
+=== good_r1_b33 (offered 33G) ===
+[  5]   0.00-30.00  sec   103 GBytes  29.4 Gbits/sec  0.009 ms  0/13574944 (0%)  receiver
+@enqueue: 1275818
+@rcv_one: 1273991
+@recv_calls: 1413595
+@recv_total: 606926559971790
+  → bytes/recvmsg = 429,349,679  (47854.4 datagrams/recvmsg)
+  → condense/rcv_one = 0.00   enqueue/rcv_one = 1.00
+
+=== bad_r1_b35 (offered 35G) ===
+[  5]   0.00-30.00  sec  86.6 GBytes  24.8 Gbits/sec  0.003 ms  4641533/16072808 (29%)  receiver
+@enqueue: 1051461
+@rcv_one: 1049110
+@recv_calls: 1013455
+@recv_total: 60764237984
+@skb_condense: 1011110
+  → bytes/recvmsg = 59,958  (6.7 datagrams/recvmsg)
+  → condense/rcv_one = 0.96   enqueue/rcv_one = 1.00
+
+=== good_r2_b33 (offered 33G) ===
+[  5]   0.00-30.00  sec   103 GBytes  29.5 Gbits/sec  0.001 ms  0/13637264 (0%)  receiver
+@enqueue: 1275325
+@rcv_one: 1273500
+@recv_calls: 1412543
+@recv_total: 606471243324580
+  → bytes/recvmsg = 429,347,102  (47854.1 datagrams/recvmsg)
+  → condense/rcv_one = 0.00   enqueue/rcv_one = 1.00
+
+=== bad_r2_b35 (offered 35G) ===
+[  5]   0.00-30.00  sec   103 GBytes  29.4 Gbits/sec  0.007 ms  0/13555352 (0%)  receiver
+@enqueue: 1275991
+@rcv_one: 1273634
+@recv_calls: 1413120
+@recv_total: 606789097748670
+  → bytes/recvmsg = 429,396,723  (47859.6 datagrams/recvmsg)
+  → condense/rcv_one = 0.00   enqueue/rcv_one = 1.00
+
+clean

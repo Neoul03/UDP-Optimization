@@ -1,0 +1,8 @@
+== tcp_b20 ==
+[  5]   0.00-15.00  sec  34.9 GBytes  20.0 Gbits/sec                  receiver
+== udp_plain_b20 ==
+[  5]   0.00-15.00  sec  34.9 GBytes  20.0 Gbits/sec  0.003 ms  0/4179702 (0%)  receiver
+== udp_gsogro_b20 ==
+[  5]   0.00-15.00  sec  34.9 GBytes  20.0 Gbits/sec  0.002 ms  0/4615416 (0%)  receiver
+== udp_gsogro_b28 ==
+[  5]   0.00-15.00  sec  48.9 GBytes  28.0 Gbits/sec  0.001 ms  0/6461576 (0%)  receiver
