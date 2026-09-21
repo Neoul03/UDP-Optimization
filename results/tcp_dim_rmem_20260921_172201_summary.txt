@@ -1,0 +1,20 @@
+===== REP 1 =====
+DIMon_6M       r1 | rx=35.9   busy=100% retr=1403   ipc=0.83  miss=39.245% rb6291456
+DIMoff_6M      r1 | rx=39.6   busy=100% retr=811    ipc=0.95  miss=35.347% rb6291456
+DIMon_512M     r1 | rx=33.5   busy=100% retr=4044   ipc=0.76  miss=32.226% rb131072
+DIMoff_512M    r1 | rx=36.5   busy=100% retr=2176   ipc=0.86  miss=49.074% rb9487097
+
+===== REP 2 =====
+DIMon_6M       r2 | rx=40.4   busy=99%  retr=5925   ipc=0.93  miss=34.263% rb131072
+DIMoff_6M      r2 | rx=39.5   busy=100% retr=944    ipc=0.94  miss=35.229% rb131072
+DIMon_512M     r2 | rx=32.9   busy=100% retr=4075   ipc=0.75  miss=33.483% rb18049250
+DIMoff_512M    r2 | rx=33.6   busy=100% retr=5929   ipc=0.79  miss=31.858% rb131072
+
+===== REP 3 =====
+DIMon_6M       r3 | rx=40.4   busy=99%  retr=5093   ipc=0.93  miss=34.451% rb6291456
+DIMoff_6M      r3 | rx=39.7   busy=100% retr=1087   ipc=0.96  miss=32.247% rb6291456
+DIMon_512M     r3 | rx=34.9   busy=100% retr=7111   ipc=0.78  miss=31.600% rb131072
+DIMoff_512M    r3 | rx=38.3   busy=100% retr=974    ipc=0.92  miss=39.253% rb6995331
+
+clean
+clean

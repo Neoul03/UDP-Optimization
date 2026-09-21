@@ -13,21 +13,28 @@ Linux UDP 수신 경로(RX)를 계측·분석하고, 커널을 수정해 단일�
 
 | 구성 | goodput | core busy | 바이트당 효율 |
 |---|---|---|---|
-| TCP | 36.5 G | **93%** (포화) | 0.39 G/%CPU |
-| UDP + GSO/GRO (good state) | **37.0 G** | 81-85% (여유) | **0.45 G/%CPU** |
-| UDP + GSO/GRO (bad state) | 25.6 G | **100%** | 0.26 G/%CPU |
-| UDP plain (app GRO 미사용) | 22 G | 49-53% | — |
+| Linux 기본값 UDP (208KB rcvbuf) | 8-22 G | 26-55% | — |
+| TCP (최적: DIM off, rmem 6MB) | 39.6 G | 100% | 0.396 G/%CPU |
+| **UDP 최적 구성** | **47.9 G @0.29% loss** | 98% | **0.489 G/%CPU** |
 
-**UDP RX는 per-byte로는 TCP보다 싸다.** 문제는 처리 비용이 아니라
-**수신 버퍼 오버런과 그로 인한 상태 붕괴(collapse)** 다.
+**UDP RX는 per-byte로 TCP보다 싸다.** 문제는 처리 비용이 아니라
+**수신 버퍼 오버런과 그로 인한 상태 붕괴(collapse)** 이고, 이를 제거하면
+같은 코어 하나로 TCP보다 **21% 높은 처리량**을 낸다.
+
+최적 구성 = 정적 rcvbuf 1.5 MB + DIM off + app GSO/GRO (+ flood 시에만 shed)
 
 ### 확인된 사실 (측정 기반)
 
 1. **드롭은 NIC ring이 아니라 socket buffer에서 발생** — `UdpRcvbufErrors`가 `rx_out_of_buffer`의 15~18배
 2. **lock도 syscall도 병목이 아니다** — producer lock을 99.9% 줄여도(patch 0003),
    recvmsg를 100배 줄여도(patch 0004) throughput 변화 없음
-3. **bistable**: 같은 offered rate에서 0% loss(37G)와 26% loss(25.6G)가 갈린다.
-   상태는 **flow 시작 첫 1초에 결정**되고 30초간 전이가 일어나지 않는다
+3. **bistable**: 같은 offered rate에서 0% loss와 20%+ loss가 갈린다.
+   상태는 **flow 시작 첫 1초에 결정**되고 30초간 전이가 일어나지 않는다.
+   원인은 **DIM(적응형 인터럽트 모더레이션)** 이며, 끄면 43 Gbps가 3/3 결정적으로 나온다
+6. **threaded NAPI는 해법이 아니다**: flood에서 19.2 G로 shed 없는 경우(19.6 G)와 동일.
+   문제는 스케줄링 공정성이 아니라 버려질 패킷에 낭비되는 작업량이다
+7. **캐시 효과는 TCP에서도 재현된다**: `tcp_rmem` 상한을 6MB에서 512MB로 올리면
+   39.3 → 33.8 G (-14%), IPC 0.94 → 0.77. 프로토콜 무관한 일반 현상이다
 4. **bad state의 정체는 DRAM-bound**: IPC 1.08→0.64, cache-miss 17.5%→44%,
    LLC-miss 3.1배. 큐에 536MB가 적체되어 copyout 시점에 데이터가 캐시에서 밀려남
 5. **GRO는 무죄**: 두 상태에서 recvmsg 반환 크기 분포가 동일 (32-64KB super-skb)

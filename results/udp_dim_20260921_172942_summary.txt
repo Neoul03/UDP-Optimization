@@ -1,0 +1,56 @@
+===== REP 1 =====
+DIMon_shedON     b=35  r1 | rx=35.0   loss=0.0093%  busy=69%
+DIMoff_shedON    b=35  r1 | rx=34.2   loss=2.3%     busy=71%
+DIMoff_shedOFF   b=35  r1 | rx=34.1   loss=2.6%     busy=72%
+DIMon_shedOFF    b=35  r1 | rx=34.2   loss=2.2%     busy=71%
+DIMon_shedON     b=40  r1 | rx=37.2   loss=7%       busy=77%
+DIMoff_shedON    b=40  r1 | rx=37.1   loss=7.3%     busy=78%
+DIMoff_shedOFF   b=40  r1 | rx=36.9   loss=7.6%     busy=80%
+DIMon_shedOFF    b=40  r1 | rx=37.7   loss=5.7%     busy=79%
+DIMon_shedON     b=43  r1 | rx=38.9   loss=9.6%     busy=81%
+DIMoff_shedON    b=43  r1 | rx=38.9   loss=9.5%     busy=83%
+DIMoff_shedOFF   b=43  r1 | rx=43.0   loss=0.0018%  busy=87%
+DIMon_shedOFF    b=43  r1 | rx=39.3   loss=8.5%     busy=84%
+DIMon_shedON     b=0   r1 | rx=37.3   loss=54%      busy=85%
+DIMoff_shedON    b=0   r1 | rx=38.8   loss=52%      busy=91%
+DIMoff_shedOFF   b=0   r1 | rx=27.8   loss=66%      busy=100%
+DIMon_shedOFF    b=0   r1 | rx=30.0   loss=63%      busy=100%
+
+===== REP 2 =====
+DIMon_shedON     b=35  r2 | rx=35.0   loss=0%       busy=72%
+DIMoff_shedON    b=35  r2 | rx=34.1   loss=2.5%     busy=71%
+DIMoff_shedOFF   b=35  r2 | rx=35.0   loss=NA%      busy=72%
+DIMon_shedOFF    b=35  r2 | rx=34.2   loss=2.2%     busy=71%
+DIMon_shedON     b=40  r2 | rx=37.1   loss=7.2%     busy=76%
+DIMoff_shedON    b=40  r2 | rx=36.9   loss=7.7%     busy=78%
+DIMoff_shedOFF   b=40  r2 | rx=36.7   loss=8.1%     busy=80%
+DIMon_shedOFF    b=40  r2 | rx=37.6   loss=6.1%     busy=79%
+DIMon_shedON     b=43  r2 | rx=43.0   loss=0.0098%  busy=87%
+DIMoff_shedON    b=43  r2 | rx=38.9   loss=9.5%     busy=83%
+DIMoff_shedOFF   b=43  r2 | rx=43.0   loss=0.001%   busy=87%
+DIMon_shedOFF    b=43  r2 | rx=42.8   loss=0.49%    busy=88%
+DIMon_shedON     b=0   r2 | rx=36.8   loss=54%      busy=87%
+DIMoff_shedON    b=0   r2 | rx=38.8   loss=53%      busy=91%
+DIMoff_shedOFF   b=0   r2 | rx=27.7   loss=66%      busy=100%
+DIMon_shedOFF    b=0   r2 | rx=30.0   loss=63%      busy=100%
+
+===== REP 3 =====
+DIMon_shedON     b=35  r3 | rx=35.0   loss=0%       busy=70%
+DIMoff_shedON    b=35  r3 | rx=34.1   loss=2.6%     busy=72%
+DIMoff_shedOFF   b=35  r3 | rx=34.0   loss=2.7%     busy=73%
+DIMon_shedOFF    b=35  r3 | rx=34.2   loss=2.4%     busy=70%
+DIMon_shedON     b=40  r3 | rx=37.1   loss=7.1%     busy=77%
+DIMoff_shedON    b=40  r3 | rx=40.0   loss=0.0019%  busy=77%
+DIMoff_shedOFF   b=40  r3 | rx=40.0   loss=0%       busy=81%
+DIMon_shedOFF    b=40  r3 | rx=37.5   loss=6.2%     busy=80%
+DIMon_shedON     b=43  r3 | rx=38.8   loss=9.9%     busy=81%
+DIMoff_shedON    b=43  r3 | rx=38.9   loss=9.5%     busy=83%
+DIMoff_shedOFF   b=43  r3 | rx=43.0   loss=0.0045%  busy=87%
+DIMon_shedOFF    b=43  r3 | rx=39.3   loss=8.6%     busy=84%
+DIMon_shedON     b=0   r3 | rx=37.4   loss=54%      busy=87%
+DIMoff_shedON    b=0   r3 | rx=38.8   loss=53%      busy=91%
+DIMoff_shedOFF   b=0   r3 | rx=27.9   loss=66%      busy=100%
+DIMon_shedOFF    b=0   r3 | rx=30.2   loss=63%      busy=100%
+
+clean
+clean

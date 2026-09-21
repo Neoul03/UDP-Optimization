@@ -1,0 +1,44 @@
+===== REP 1 =====
+thrOFF_shedON    b=35  r1 | rx=35.0   loss=0%       busy=79%  | cpus:
+thrOFF_shedOFF   b=35  r1 | rx=33.7   loss=3.8%     busy=75%  | cpus:
+thrOFF_shedON    b=40  r1 | rx=40.0   loss=0.0044%  busy=89%  | cpus:
+thrOFF_shedOFF   b=40  r1 | rx=35.5   loss=11%      busy=85%  | cpus:
+thrOFF_shedON    b=0   r1 | rx=32.7   loss=60%      busy=99%  | cpus:
+thrOFF_shedOFF   b=0   r1 | rx=19.6   loss=76%      busy=100% | cpus:
+thrON_shedOFF    b=35  r1 | rx=34.3   loss=2%       busy=77%  | cpus:
+thrON_shedON     b=35  r1 | rx=33.8   loss=3.4%     busy=73%  | cpus:
+thrON_shedOFF    b=40  r1 | rx=40.0   loss=0.015%   busy=86%  | cpus:
+thrON_shedON     b=40  r1 | rx=36.0   loss=9.1%     busy=82%  | cpus:
+thrON_shedOFF    b=0   r1 | rx=19.2   loss=77%      busy=100% | cpus:
+thrON_shedON     b=0   r1 | rx=32.8   loss=60%      busy=100% | cpus:
+
+===== REP 2 =====
+thrOFF_shedON    b=35  r2 | rx=35.0   loss=0%       busy=76%  | cpus:
+thrOFF_shedOFF   b=35  r2 | rx=33.7   loss=3.6%     busy=75%  | cpus:
+thrOFF_shedON    b=40  r2 | rx=35.9   loss=10%      busy=82%  | cpus:
+thrOFF_shedOFF   b=40  r2 | rx=40.0   loss=0.0021%  busy=89%  | cpus:
+thrOFF_shedON    b=0   r2 | rx=33.0   loss=60%      busy=99%  | cpus:
+thrOFF_shedOFF   b=0   r2 | rx=19.6   loss=76%      busy=100% | cpus:
+thrON_shedOFF    b=35  r2 | rx=35.0   loss=0.0013%  busy=78%  | cpus:
+thrON_shedON     b=35  r2 | rx=33.8   loss=3.5%     busy=74%  | cpus:
+thrON_shedOFF    b=40  r2 | rx=35.7   loss=11%      busy=85%  | cpus:
+thrON_shedON     b=40  r2 | rx=36.4   loss=9%       busy=82%  | cpus:
+thrON_shedOFF    b=0   r2 | rx=19.1   loss=77%      busy=100% | cpus:
+thrON_shedON     b=0   r2 | rx=33.0   loss=60%      busy=100% | cpus:
+
+===== REP 3 =====
+thrOFF_shedON    b=35  r3 | rx=34.2   loss=2.1%     busy=72%  | cpus:
+thrOFF_shedOFF   b=35  r3 | rx=32.6   loss=7%       busy=75%  | cpus:
+thrOFF_shedON    b=40  r3 | rx=35.8   loss=10%      busy=82%  | cpus:
+thrOFF_shedOFF   b=40  r3 | rx=35.5   loss=11%      busy=85%  | cpus:
+thrOFF_shedON    b=0   r3 | rx=33.2   loss=59%      busy=99%  | cpus:
+thrOFF_shedOFF   b=0   r3 | rx=19.5   loss=76%      busy=100% | cpus:
+thrON_shedOFF    b=35  r3 | rx=34.3   loss=2.1%     busy=77%  | cpus:
+thrON_shedON     b=35  r3 | rx=33.8   loss=3.5%     busy=73%  | cpus:
+thrON_shedOFF    b=40  r3 | rx=35.7   loss=11%      busy=86%  | cpus:
+thrON_shedON     b=40  r3 | rx=36.3   loss=9.1%     busy=82%  | cpus:
+thrON_shedOFF    b=0   r3 | rx=19.2   loss=77%      busy=100% | cpus:
+thrON_shedON     b=0   r3 | rx=33.1   loss=60%      busy=100% | cpus:
+
+clean
+clean
