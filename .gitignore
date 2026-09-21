@@ -1,0 +1,14 @@
+# Kernel source trees (huge, fetched separately)
+kernel/
+linux-*/
+*.tar.gz
+*.tar.xz
+
+# Build artifacts
+*.o
+*.ko
+vmlinux
+System.map
+
+# Raw per-run logs (only curated summaries are tracked)
+results/raw/

@@ -1,0 +1,112 @@
+# UDP-Optimization
+
+Linux UDP 수신 경로(RX)를 계측·분석하고, 커널을 수정해 단일코어 성능을 끌어올리는 프로젝트.
+
+대학원 *네트워크시스템설계* 텀프로젝트. 100GbE ConnectX-5 환경에서 **진짜 단일코어**
+(NIC IRQ + NAPI + consumer 프로세스를 모두 같은 코어에 고정) 조건으로 측정한다.
+
+---
+
+## 문제
+
+동일 조건 단일코어에서 UDP는 TCP보다 느리다. 하지만 그 원인은 통념과 다르다.
+
+| 구성 | goodput | core busy | 바이트당 효율 |
+|---|---|---|---|
+| TCP | 36.5 G | **93%** (포화) | 0.39 G/%CPU |
+| UDP + GSO/GRO (good state) | **37.0 G** | 81-85% (여유) | **0.45 G/%CPU** |
+| UDP + GSO/GRO (bad state) | 25.6 G | **100%** | 0.26 G/%CPU |
+| UDP plain (app GRO 미사용) | 22 G | 49-53% | — |
+
+**UDP RX는 per-byte로는 TCP보다 싸다.** 문제는 처리 비용이 아니라
+**수신 버퍼 오버런과 그로 인한 상태 붕괴(collapse)** 다.
+
+### 확인된 사실 (측정 기반)
+
+1. **드롭은 NIC ring이 아니라 socket buffer에서 발생** — `UdpRcvbufErrors`가 `rx_out_of_buffer`의 15~18배
+2. **lock도 syscall도 병목이 아니다** — producer lock을 99.9% 줄여도(patch 0003),
+   recvmsg를 100배 줄여도(patch 0004) throughput 변화 없음
+3. **bistable**: 같은 offered rate에서 0% loss(37G)와 26% loss(25.6G)가 갈린다.
+   상태는 **flow 시작 첫 1초에 결정**되고 30초간 전이가 일어나지 않는다
+4. **bad state의 정체는 DRAM-bound**: IPC 1.08→0.64, cache-miss 17.5%→44%,
+   LLC-miss 3.1배. 큐에 536MB가 적체되어 copyout 시점에 데이터가 캐시에서 밀려남
+5. **GRO는 무죄**: 두 상태에서 recvmsg 반환 크기 분포가 동일 (32-64KB super-skb)
+
+---
+
+## 수정 사항
+
+| patch | 내용 | 결과 |
+|---|---|---|
+| `0006-udp-rcvbuf-autotune` | occupancy(`rmem > rcvbuf/2`) 기반 `sk_rcvbuf` 동적 확장 | 기본값 208KB에서 **수동 512MB 튜닝과 동일 성능**. plain 6.0→22 G (3.7배). 실사용 메모리는 1/100 |
+| `0007-udp-early-drop` | socket layer에서 overflow 시 whole-skb 선폐기 | **효과 없음 (negative result)** — 그 지점은 이미 skb build/GRO/스택 비용을 지불한 뒤라 너무 늦다 |
+| `0008-udp-rx-shed-driver` | overflow 시 RX 큐에 shed window를 걸고 **mlx5 CQE 레벨**(skb 생성 전)에서 폐기 | flood 시 goodput **9.5→16.7 G (+76%)**, `%soft` 52→27, consumer `%sys` 34→58 |
+
+세 기능 모두 sysctl 런타임 토글이라 재부팅 없이 A/B 가능:
+`net.ipv4.udp_rmem_autotune`, `udp_rmem_autotune_max`, `udp_early_drop`, `udp_rx_shed`
+
+### 설계 원칙
+
+> **UDP 수신 버퍼의 상한은 "메모리"가 아니라 "캐시" 기준으로 정해야 한다.**
+
+버퍼 크기는 비단조(non-monotonic) 최적점을 가진다. 너무 작으면 GSO 버스트를 흡수하지 못하고,
+너무 크면 적체가 LLC를 넘겨 copyout이 DRAM-bound가 된다.
+
+| 정적 버퍼 | flood(82G) goodput | core busy |
+|---|---|---|
+| 208 KB (리눅스 기본값) | 7.1 G | 33% |
+| 1 MB | 25.6 G | 80% |
+| **1.5 MB** | **32.3 G** | 99% |
+| 4 MB | 23.8 G | 100% |
+| 512 MB | 16.5 G | 100% |
+
+*(예비 결과 — 정밀 스윕 진행 중. L3가 36 MiB인 머신 기준)*
+
+---
+
+## 저장소 구성
+
+```
+patches/   커널 및 iperf3 패치 (0001-0008)
+scripts/   실험 자동화 스크립트 (baseline, A/B, sweep, perf/bpftrace probe)
+tools/     벤치마크 도구 (udp_blast, udp_sink, af_xdp_sink)
+results/   측정 결과 요약 (raw 로그는 제외, summary와 CSV만)
+docs/      분석 노트, 설계 문서, 실험 환경 문서
+```
+
+주요 문서:
+- [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md) — 하드웨어·커널 변종·**단일코어 측정 방법론**(필독)
+- [`docs/udp_recv_optimization_design.md`](docs/udp_recv_optimization_design.md) — 비용 분해와 Tier별 최적화 설계
+- [`docs/260917_DailyNote.md`](docs/260917_DailyNote.md) — baseline 확정부터 shed 구현까지의 전체 실험 기록
+
+## 재현
+
+```bash
+# 1. 환경 검증 후 baseline (docs/ENVIRONMENT.md의 방법론 필수)
+./scripts/baseline_confirm_1c.sh vanilla30s 3
+
+# 2. autotune A/B (stock / 수동 512MB / autotune)
+./scripts/ab_autotune_1c.sh 2
+
+# 3. driver-level shed A/B
+./scripts/ab_shed_1c.sh 2
+
+# 4. collapse curve (논문 Figure)
+./scripts/sweep_collapse_curve.sh 2
+
+# 5. 버퍼 크기 최적점 정밀 스윕
+./scripts/sweep_static_rcvbuf.sh 2 15
+```
+
+스크립트는 control node(WSL2)에서 실행하며 sslab3/sslab4에 SSH로 명령을 보낸다.
+
+## 상태
+
+- [x] baseline 확정 (vanilla, 진짜 단일코어, 30s×3)
+- [x] 비용 분해 (perf, bpftrace)
+- [x] rcvbuf autotune 구현·검증
+- [x] driver-level RX shed 구현·검증
+- [x] bistability 원인 규명 (캐시 지역성)
+- [ ] 버퍼 최적점 정밀 확정 및 autotune 기본값 수정
+- [ ] shed 히스테리시스 / startup guard (상태 진입 제어)
+- [ ] transparent GRO (app opt-in 없이 GRO 이득 제공)
