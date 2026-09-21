@@ -1,0 +1,378 @@
+diff --git a/src/iperf_udp.c b/src/iperf_udp.c
+index c8835e6..54d837b 100644
+--- a/src/iperf_udp.c
++++ b/src/iperf_udp.c
+@@ -38,6 +38,11 @@
+ #include <inttypes.h>
+ #include <sys/time.h>
+ #include <sys/select.h>
++#ifdef __linux__
++#include <linux/udp.h>
++#include <sys/ioctl.h>
++#include <net/if.h>
++#endif
+ 
+ #include "iperf.h"
+ #include "iperf_api.h"
+@@ -47,6 +52,158 @@
+ #include "net.h"
+ #include "cjson.h"
+ 
++/* Helper function to get interface MTU */
++static int
++get_interface_mtu(const char *ifname)
++{
++#ifdef __linux__
++    struct ifreq ifr;
++    int sock;
++    int mtu = 1500; /* default MTU */
++
++    if (ifname == NULL)
++	return mtu;
++
++    sock = socket(AF_INET, SOCK_DGRAM, 0);
++    if (sock < 0)
++	return mtu;
++
++    strncpy(ifr.ifr_name, ifname, IFNAMSIZ - 1);
++    ifr.ifr_name[IFNAMSIZ - 1] = '\0';
++
++    if (ioctl(sock, SIOCGIFMTU, &ifr) == 0) {
++	mtu = ifr.ifr_mtu;
++    }
++
++    close(sock);
++    return mtu;
++#else
++    return 1500; /* default MTU */
++#endif
++}
++
++#ifndef UDP_GRO
++#define UDP_GRO 104
++#endif
++
++/* --- opt-in kernel UDP_GRO receive (TCP-like: one recvmsg drains a coalesced
++ * super-skb of many datagrams; gso_size cmsg gives the per-datagram size).
++ * Enabled via env IPERF3_UDP_GRO=1 (single-stream UDP test). --- */
++static int  iperf_udp_gro = -1;            /* -1 unknown, 0 off, 1 on */
++static char iperf_udp_gro_buf[262144];
++static int  iperf_udp_seg_size = 0;        /* TX GSO segment size (0 = GSO off) */
++
++/* RX GRO is ON by default in this build (complete GSO+GRO iperf). Set
++ * IPERF3_UDP_GRO=0 to force the legacy per-datagram recv path (for A/B). */
++static int
++udp_gro_on(void)
++{
++    if (iperf_udp_gro < 0) {
++        const char *e = getenv("IPERF3_UDP_GRO");
++        iperf_udp_gro = (e && e[0] == '0') ? 0 : 1;
++    }
++    return iperf_udp_gro;
++}
++
++/* Per-datagram accounting (header, seqno/loss, jitter, bytes) — mirrors the
++ * inline logic of the normal recv path, operating on an arbitrary buffer so it
++ * can be called once per coalesced segment. */
++static void
++iperf_udp_process_pkt(struct iperf_stream *sp, char *buf, int r)
++{
++    struct iperf_test *test = sp->test;
++    uint32_t sec, usec;
++    uint64_t pcount;
++    int first_packet = 0;
++    double transit = 0, d = 0;
++    struct iperf_time sent_time, arrival_time, temp_time;
++
++    if (sp->result->bytes_received == 0)
++        first_packet = 1;
++
++    sp->result->bytes_received += r;
++    sp->result->bytes_received_this_interval += r;
++
++    if (test->udp_counters_64bit) {
++        memcpy(&sec, buf, sizeof(sec));
++        memcpy(&usec, buf + 4, sizeof(usec));
++        memcpy(&pcount, buf + 8, sizeof(pcount));
++        sec = ntohl(sec);
++        usec = ntohl(usec);
++        pcount = be64toh(pcount);
++        sent_time.secs = sec;
++        sent_time.usecs = usec;
++    } else {
++        uint32_t pc;
++        memcpy(&sec, buf, sizeof(sec));
++        memcpy(&usec, buf + 4, sizeof(usec));
++        memcpy(&pc, buf + 8, sizeof(pc));
++        sec = ntohl(sec);
++        usec = ntohl(usec);
++        pcount = ntohl(pc);
++        sent_time.secs = sec;
++        sent_time.usecs = usec;
++    }
++
++    if (pcount >= sp->packet_count + 1) {
++        if (pcount > sp->packet_count + 1)
++            sp->cnt_error += (pcount - 1) - sp->packet_count;
++        sp->packet_count = pcount;
++    } else {
++        sp->outoforder_packets++;
++        if (sp->cnt_error > 0)
++            sp->cnt_error--;
++    }
++
++    iperf_time_now(&arrival_time);
++    iperf_time_diff(&arrival_time, &sent_time, &temp_time);
++    transit = iperf_time_in_secs(&temp_time);
++    if (first_packet)
++        sp->prev_transit = transit;
++    d = transit - sp->prev_transit;
++    if (d < 0)
++        d = -d;
++    sp->prev_transit = transit;
++    sp->jitter += (d - sp->jitter) / 16.0;
++}
++
++/* One recvmsg drains a whole coalesced super-skb; split by gso_size. */
++static int
++iperf_udp_recv_gro(struct iperf_stream *sp)
++{
++    struct iperf_test *test = sp->test;
++    struct msghdr msg;
++    struct iovec iov;
++    char ctrl[CMSG_SPACE(sizeof(int))];
++    struct cmsghdr *cm;
++    int gso = 0, off, seg, r;
++
++    iov.iov_base = iperf_udp_gro_buf;
++    iov.iov_len = sizeof(iperf_udp_gro_buf);
++    memset(&msg, 0, sizeof(msg));
++    msg.msg_iov = &iov;
++    msg.msg_iovlen = 1;
++    msg.msg_control = ctrl;
++    msg.msg_controllen = sizeof(ctrl);
++
++    r = recvmsg(sp->socket, &msg, 0);
++    if (r <= 0)
++        return r;
++
++    for (cm = CMSG_FIRSTHDR(&msg); cm != NULL; cm = CMSG_NXTHDR(&msg, cm))
++        if (cm->cmsg_level == IPPROTO_UDP && cm->cmsg_type == UDP_GRO)
++            memcpy(&gso, CMSG_DATA(cm), sizeof(gso));
++
++    if (test->state == TEST_RUNNING) {
++        seg = (gso > 0) ? gso : r;
++        for (off = 0; off < r; off += seg) {
++            int len = (r - off < seg) ? (r - off) : seg;
++            iperf_udp_process_pkt(sp, iperf_udp_gro_buf + off, len);
++        }
++    }
++    return r;
++}
++
+ /* iperf_udp_recv
+  *
+  * receives the data for UDP
+@@ -64,6 +221,10 @@ iperf_udp_recv(struct iperf_stream *sp)
+     struct iperf_test *test = sp->test;	
+     int sock_opt = 0;
+ 
++    /* opt-in: drain a coalesced super-skb of many datagrams in one call */
++    if (udp_gro_on())
++        return iperf_udp_recv_gro(sp);
++
+ #if defined(HAVE_MSG_TRUNC)
+     // UDP recv() with MSG_TRUNC reads only the size bytes, but return the length of the full packet
+     if (sp->test->settings->skip_rx_copy) {
+@@ -211,6 +372,7 @@ int
+ iperf_udp_send(struct iperf_stream *sp)
+ {
+     int r;
++    int extra_segs = 0;
+     int       size = sp->settings->blksize;
+     struct iperf_time before;
+ 
+@@ -246,10 +408,32 @@ iperf_udp_send(struct iperf_stream *sp)
+ 
+     }
+ 
++    /* If UDP GSO is active this send() is segmented into several wire datagrams.
++     * Stamp a header with its own consecutive sequence number at the start of
++     * each further segment, so every wire datagram is a complete iperf packet
++     * and the receiver's loss/seqno accounting stays correct (GRO or not). */
++    if (iperf_udp_seg_size > 0 && size > iperf_udp_seg_size) {
++	int off;
++	for (off = iperf_udp_seg_size; off < size; off += iperf_udp_seg_size) {
++	    uint32_t sec = htonl(before.secs), usec = htonl(before.usecs);
++	    ++sp->packet_count;
++	    ++extra_segs;
++	    memcpy(sp->buffer + off, &sec, sizeof(sec));
++	    memcpy(sp->buffer + off + 4, &usec, sizeof(usec));
++	    if (sp->test->udp_counters_64bit) {
++		uint64_t pcount = htobe64(sp->packet_count);
++		memcpy(sp->buffer + off + 8, &pcount, sizeof(pcount));
++	    } else {
++		uint32_t pcount = htonl((uint32_t)sp->packet_count);
++		memcpy(sp->buffer + off + 8, &pcount, sizeof(pcount));
++	    }
++	}
++    }
++
+     r = Nwrite(sp->socket, sp->buffer, size, Pudp);
+ 
+     if (r <= 0) {
+-        --sp->packet_count;     /* Don't count messages that no data was sent from them.
++        sp->packet_count -= (1 + extra_segs);  /* Don't count messages that no data was sent from them.
+                                  * Allows "resending" a massage with the same numbering */
+         if (r < 0) {
+             if (r == NET_SOFTERROR && sp->test->debug_level >= DEBUG_LEVEL_INFO)
+@@ -408,6 +592,19 @@ iperf_udp_accept(struct iperf_test *test)
+         return -1;
+     }
+ 
++    /* Enable kernel UDP GRO on the receive socket (opt-in via env). With it,
++     * one recvmsg returns a coalesced super-skb of many datagrams + a gso_size
++     * cmsg, avoiding per-datagram re-segmentation/copy on the RX path. */
++    if (udp_gro_on()) {
++        int one = 1;
++        if (setsockopt(s, IPPROTO_UDP, UDP_GRO, &one, sizeof(one)) < 0) {
++            if (test->debug)
++                printf("UDP_GRO not supported (errno: %s)\n", strerror(errno));
++        } else if (test->debug) {
++            printf("UDP_GRO enabled on receive socket\n");
++        }
++    }
++
+     /* Check and set socket buffer sizes */
+     rc = iperf_udp_buffercheck(test, s);
+     if (rc < 0)
+@@ -431,6 +628,64 @@ iperf_udp_accept(struct iperf_test *test)
+ 	}
+     }
+ 
++#ifdef UDP_SEGMENT
++    /* Enable UDP GSO (Generic Segmentation Offload) */
++    /* Calculate GSO size based on MTU: MTU - IP header - UDP header */
++    int mtu = 1500; /* default MTU */
++    int is_ipv6 = 0;
++    unsigned int gso_size;
++    
++    /* Get MTU from interface if bind_dev is specified */
++    if (test->bind_dev) {
++	mtu = get_interface_mtu(test->bind_dev);
++    } else {
++	/* Try to get MTU from socket (may not work for UDP) */
++	int sock_mtu = 0;
++	socklen_t len = sizeof(sock_mtu);
++	if (getsockopt(s, IPPROTO_IP, IP_MTU, &sock_mtu, &len) == 0 && sock_mtu > 0) {
++	    mtu = sock_mtu;
++	}
++    }
++    
++    /* Check if IPv6 */
++    {
++	struct sockaddr_storage sa;
++	socklen_t sa_len = sizeof(sa);
++	if (getsockname(s, (struct sockaddr *)&sa, &sa_len) == 0) {
++	    if (sa.ss_family == AF_INET6) {
++		is_ipv6 = 1;
++	    }
++	}
++    }
++    
++    /* Calculate GSO size: MTU - IP header - UDP header */
++    if (is_ipv6) {
++	/* IPv6: MTU - 40 (IPv6 header) - 8 (UDP header) */
++	gso_size = (mtu > 48) ? (mtu - 48) : 1452;
++    } else {
++	/* IPv4: MTU - 20 (IP header) - 8 (UDP header) */
++	gso_size = (mtu > 28) ? (mtu - 28) : 1472;
++    }
++    
++    /* Only enable GSO if block size is larger than GSO size */
++    if (test->settings->blksize > gso_size) {
++	if (test->debug) {
++	    printf("Setting UDP_SEGMENT to %u for GSO (MTU=%d, %s)\n", 
++		   gso_size, mtu, is_ipv6 ? "IPv6" : "IPv4");
++	}
++	if (setsockopt(s, IPPROTO_UDP, UDP_SEGMENT, &gso_size, sizeof(gso_size)) < 0) {
++	    if (test->debug) {
++		printf("UDP_SEGMENT not supported (errno: %s)\n", strerror(errno));
++	    }
++	} else {
++	    iperf_udp_seg_size = gso_size;
++	    if (test->debug) {
++		printf("UDP GSO enabled with segment size %u (MTU=%d)\n", gso_size, mtu);
++	    }
++	}
++    }
++#endif /* UDP_SEGMENT */
++
+ #if defined(HAVE_SO_MAX_PACING_RATE)
+     /* If socket pacing is specified, try it. */
+     if (test->settings->fqrate) {
+@@ -548,6 +803,64 @@ iperf_udp_connect(struct iperf_test *test)
+ 	}
+     }
+ 
++#ifdef UDP_SEGMENT
++    /* Enable UDP GSO (Generic Segmentation Offload) */
++    /* Calculate GSO size based on MTU: MTU - IP header - UDP header */
++    int mtu = 1500; /* default MTU */
++    int is_ipv6 = 0;
++    unsigned int gso_size;
++    
++    /* Get MTU from interface if bind_dev is specified */
++    if (test->bind_dev) {
++	mtu = get_interface_mtu(test->bind_dev);
++    } else {
++	/* Try to get MTU from socket (may not work for UDP) */
++	int sock_mtu = 0;
++	socklen_t len = sizeof(sock_mtu);
++	if (getsockopt(s, IPPROTO_IP, IP_MTU, &sock_mtu, &len) == 0 && sock_mtu > 0) {
++	    mtu = sock_mtu;
++	}
++    }
++    
++    /* Check if IPv6 */
++    {
++	struct sockaddr_storage sa;
++	socklen_t sa_len = sizeof(sa);
++	if (getsockname(s, (struct sockaddr *)&sa, &sa_len) == 0) {
++	    if (sa.ss_family == AF_INET6) {
++		is_ipv6 = 1;
++	    }
++	}
++    }
++    
++    /* Calculate GSO size: MTU - IP header - UDP header */
++    if (is_ipv6) {
++	/* IPv6: MTU - 40 (IPv6 header) - 8 (UDP header) */
++	gso_size = (mtu > 48) ? (mtu - 48) : 1452;
++    } else {
++	/* IPv4: MTU - 20 (IP header) - 8 (UDP header) */
++	gso_size = (mtu > 28) ? (mtu - 28) : 1472;
++    }
++    
++    /* Only enable GSO if block size is larger than GSO size */
++    if (test->settings->blksize > gso_size) {
++	if (test->debug) {
++	    printf("Setting UDP_SEGMENT to %u for GSO (MTU=%d, %s)\n", 
++		   gso_size, mtu, is_ipv6 ? "IPv6" : "IPv4");
++	}
++	if (setsockopt(s, IPPROTO_UDP, UDP_SEGMENT, &gso_size, sizeof(gso_size)) < 0) {
++	    if (test->debug) {
++		printf("UDP_SEGMENT not supported (errno: %s)\n", strerror(errno));
++	    }
++	} else {
++	    iperf_udp_seg_size = gso_size;
++	    if (test->debug) {
++		printf("UDP GSO enabled with segment size %u (MTU=%d)\n", gso_size, mtu);
++	    }
++	}
++    }
++#endif /* UDP_SEGMENT */
++
+ #if defined(HAVE_SO_MAX_PACING_RATE)
+     /* If socket pacing is available and not disabled, try it. */
+     if (test->settings->fqrate) {

@@ -1,9 +1,53 @@
---- /home/chanseo/lab/tools/iperf_udp.c.orig	2026-06-04 18:48:50.328396651 +0900
-+++ /home/chanseo/lab/tools/iperf_udp.c.sslab4	2026-06-04 17:33:10.025673829 +0900
-@@ -82,6 +82,145 @@
- #endif
- }
+diff --git a/src/iperf_udp.c b/src/iperf_udp.c
+index c8835e6..e2f32b1 100644
+--- a/src/iperf_udp.c
++++ b/src/iperf_udp.c
+@@ -38,6 +38,11 @@
+ #include <inttypes.h>
+ #include <sys/time.h>
+ #include <sys/select.h>
++#ifdef __linux__
++#include <linux/udp.h>
++#include <sys/ioctl.h>
++#include <net/if.h>
++#endif
  
+ #include "iperf.h"
+ #include "iperf_api.h"
+@@ -47,6 +52,175 @@
+ #include "net.h"
+ #include "cjson.h"
+ 
++/* Helper function to get interface MTU */
++static int
++get_interface_mtu(const char *ifname)
++{
++#ifdef __linux__
++    struct ifreq ifr;
++    int sock;
++    int mtu = 1500; /* default MTU */
++
++    if (ifname == NULL)
++	return mtu;
++
++    sock = socket(AF_INET, SOCK_DGRAM, 0);
++    if (sock < 0)
++	return mtu;
++
++    strncpy(ifr.ifr_name, ifname, IFNAMSIZ - 1);
++    ifr.ifr_name[IFNAMSIZ - 1] = '\0';
++
++    if (ioctl(sock, SIOCGIFMTU, &ifr) == 0) {
++	mtu = ifr.ifr_mtu;
++    }
++
++    close(sock);
++    return mtu;
++#else
++    return 1500; /* default MTU */
++#endif
++}
++
 +#ifndef UDP_GRO
 +#define UDP_GRO 104
 +#endif
@@ -146,7 +190,7 @@
  /* iperf_udp_recv
   *
   * receives the data for UDP
-@@ -99,6 +238,10 @@
+@@ -64,6 +238,10 @@ iperf_udp_recv(struct iperf_stream *sp)
      struct iperf_test *test = sp->test;	
      int sock_opt = 0;
  
@@ -157,7 +201,7 @@
  #if defined(HAVE_MSG_TRUNC)
      // UDP recv() with MSG_TRUNC reads only the size bytes, but return the length of the full packet
      if (sp->test->settings->skip_rx_copy) {
-@@ -246,6 +389,7 @@
+@@ -211,6 +389,7 @@ int
  iperf_udp_send(struct iperf_stream *sp)
  {
      int r;
@@ -165,7 +209,7 @@
      int       size = sp->settings->blksize;
      struct iperf_time before;
  
-@@ -281,10 +425,32 @@
+@@ -246,10 +425,32 @@ iperf_udp_send(struct iperf_stream *sp)
  
      }
  
@@ -199,7 +243,7 @@
                                   * Allows "resending" a massage with the same numbering */
          if (r < 0) {
              if (r == NET_SOFTERROR && sp->test->debug_level >= DEBUG_LEVEL_INFO)
-@@ -443,6 +609,19 @@
+@@ -408,6 +609,19 @@ iperf_udp_accept(struct iperf_test *test)
          return -1;
      }
  
@@ -219,19 +263,133 @@
      /* Check and set socket buffer sizes */
      rc = iperf_udp_buffercheck(test, s);
      if (rc < 0)
-@@ -516,6 +695,7 @@
- 		printf("UDP_SEGMENT not supported (errno: %s)\n", strerror(errno));
- 	    }
- 	} else {
+@@ -431,6 +645,64 @@ iperf_udp_accept(struct iperf_test *test)
+ 	}
+     }
+ 
++#ifdef UDP_SEGMENT
++    /* Enable UDP GSO (Generic Segmentation Offload) */
++    /* Calculate GSO size based on MTU: MTU - IP header - UDP header */
++    int mtu = 1500; /* default MTU */
++    int is_ipv6 = 0;
++    unsigned int gso_size;
++    
++    /* Get MTU from interface if bind_dev is specified */
++    if (test->bind_dev) {
++	mtu = get_interface_mtu(test->bind_dev);
++    } else {
++	/* Try to get MTU from socket (may not work for UDP) */
++	int sock_mtu = 0;
++	socklen_t len = sizeof(sock_mtu);
++	if (getsockopt(s, IPPROTO_IP, IP_MTU, &sock_mtu, &len) == 0 && sock_mtu > 0) {
++	    mtu = sock_mtu;
++	}
++    }
++    
++    /* Check if IPv6 */
++    {
++	struct sockaddr_storage sa;
++	socklen_t sa_len = sizeof(sa);
++	if (getsockname(s, (struct sockaddr *)&sa, &sa_len) == 0) {
++	    if (sa.ss_family == AF_INET6) {
++		is_ipv6 = 1;
++	    }
++	}
++    }
++    
++    /* Calculate GSO size: MTU - IP header - UDP header */
++    if (is_ipv6) {
++	/* IPv6: MTU - 40 (IPv6 header) - 8 (UDP header) */
++	gso_size = (mtu > 48) ? (mtu - 48) : 1452;
++    } else {
++	/* IPv4: MTU - 20 (IP header) - 8 (UDP header) */
++	gso_size = (mtu > 28) ? (mtu - 28) : 1472;
++    }
++    
++    /* Only enable GSO if block size is larger than GSO size */
++    if (test->settings->blksize > gso_size) {
++	if (test->debug) {
++	    printf("Setting UDP_SEGMENT to %u for GSO (MTU=%d, %s)\n", 
++		   gso_size, mtu, is_ipv6 ? "IPv6" : "IPv4");
++	}
++	if (setsockopt(s, IPPROTO_UDP, UDP_SEGMENT, &gso_size, sizeof(gso_size)) < 0) {
++	    if (test->debug) {
++		printf("UDP_SEGMENT not supported (errno: %s)\n", strerror(errno));
++	    }
++	} else {
 +	    iperf_udp_seg_size = gso_size;
- 	    if (test->debug) {
- 		printf("UDP GSO enabled with segment size %u (MTU=%d)\n", gso_size, mtu);
- 	    }
-@@ -690,6 +870,7 @@
- 		printf("UDP_SEGMENT not supported (errno: %s)\n", strerror(errno));
- 	    }
- 	} else {
++	    if (test->debug) {
++		printf("UDP GSO enabled with segment size %u (MTU=%d)\n", gso_size, mtu);
++	    }
++	}
++    }
++#endif /* UDP_SEGMENT */
++
+ #if defined(HAVE_SO_MAX_PACING_RATE)
+     /* If socket pacing is specified, try it. */
+     if (test->settings->fqrate) {
+@@ -548,6 +820,64 @@ iperf_udp_connect(struct iperf_test *test)
+ 	}
+     }
+ 
++#ifdef UDP_SEGMENT
++    /* Enable UDP GSO (Generic Segmentation Offload) */
++    /* Calculate GSO size based on MTU: MTU - IP header - UDP header */
++    int mtu = 1500; /* default MTU */
++    int is_ipv6 = 0;
++    unsigned int gso_size;
++    
++    /* Get MTU from interface if bind_dev is specified */
++    if (test->bind_dev) {
++	mtu = get_interface_mtu(test->bind_dev);
++    } else {
++	/* Try to get MTU from socket (may not work for UDP) */
++	int sock_mtu = 0;
++	socklen_t len = sizeof(sock_mtu);
++	if (getsockopt(s, IPPROTO_IP, IP_MTU, &sock_mtu, &len) == 0 && sock_mtu > 0) {
++	    mtu = sock_mtu;
++	}
++    }
++    
++    /* Check if IPv6 */
++    {
++	struct sockaddr_storage sa;
++	socklen_t sa_len = sizeof(sa);
++	if (getsockname(s, (struct sockaddr *)&sa, &sa_len) == 0) {
++	    if (sa.ss_family == AF_INET6) {
++		is_ipv6 = 1;
++	    }
++	}
++    }
++    
++    /* Calculate GSO size: MTU - IP header - UDP header */
++    if (is_ipv6) {
++	/* IPv6: MTU - 40 (IPv6 header) - 8 (UDP header) */
++	gso_size = (mtu > 48) ? (mtu - 48) : 1452;
++    } else {
++	/* IPv4: MTU - 20 (IP header) - 8 (UDP header) */
++	gso_size = (mtu > 28) ? (mtu - 28) : 1472;
++    }
++    
++    /* Only enable GSO if block size is larger than GSO size */
++    if (test->settings->blksize > gso_size) {
++	if (test->debug) {
++	    printf("Setting UDP_SEGMENT to %u for GSO (MTU=%d, %s)\n", 
++		   gso_size, mtu, is_ipv6 ? "IPv6" : "IPv4");
++	}
++	if (setsockopt(s, IPPROTO_UDP, UDP_SEGMENT, &gso_size, sizeof(gso_size)) < 0) {
++	    if (test->debug) {
++		printf("UDP_SEGMENT not supported (errno: %s)\n", strerror(errno));
++	    }
++	} else {
 +	    iperf_udp_seg_size = gso_size;
- 	    if (test->debug) {
- 		printf("UDP GSO enabled with segment size %u (MTU=%d)\n", gso_size, mtu);
- 	    }
++	    if (test->debug) {
++		printf("UDP GSO enabled with segment size %u (MTU=%d)\n", gso_size, mtu);
++	    }
++	}
++    }
++#endif /* UDP_SEGMENT */
++
+ #if defined(HAVE_SO_MAX_PACING_RATE)
+     /* If socket pacing is available and not disabled, try it. */
+     if (test->settings->fqrate) {
