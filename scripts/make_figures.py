@@ -223,4 +223,22 @@ if s:
          extra='set xtics ("off" 12, "25" 25, "50" 50, "100" 100, "200" 200, '
                '"400" 400, "800" 800, "1600" 1600)')
 
+# ---------------------------------------------------------------- fig09
+# config 레버(MAX_HEAD 64 + HARDENED_USERCOPY=n) 전후 + shed on/off
+d4 = newest('cfglever_*')
+s = {}
+for sh, tag in (('0', 'shed off'), ('1', 'shed on')):
+    pts = [(int(r[1]), float(r[2])) for r in rows(d4) if r[0] == sh]
+    if pts: s[f'udpopt4 ({tag})'] = agg(pts)
+# udpopt3 기준선 (직전 커널, shed 윈도 200us) — 같은 도구/ring 이라 비교 가능
+prev = {'shed off': [(48,47.8),(52,45.15),(56,41.8),(60,41.78)],
+        'shed on':  [(48,47.9),(52,51.82),(56,48.5),(60,48.75)]}
+for tag, pts in prev.items():
+    s[f'udpopt3 ({tag})'] = [(x, y, 0.0) for x, y in pts]
+if s:
+    write_dat(os.path.join(OUT, 'fig09.dat'), s)
+    plot('fig09_config_levers',
+         'Shrinking the mlx5 head copy and dropping the usercopy check, with and without shed',
+         'Offered rate (Gbit/s)', 'fig09.dat', list(s), os.path.basename(d4 or ''))
+
 print('\nfigures in', OUT)

@@ -1,0 +1,93 @@
+=== offered 40G ===
+  shed=0 b=40  #1  got=39.98   busy=76%  bytes/call=35030
+  shed=0 b=40  #2  got=39.99   busy=76%  bytes/call=35222
+  shed=0 b=40  #3  got=39.98   busy=77%  bytes/call=35160
+  shed=0 b=40  #4  got=39.98   busy=76%  bytes/call=35180
+  shed=0 b=40  #5  got=39.99   busy=77%  bytes/call=35122
+  shed=1 b=40  #1  got=40.00   busy=76%  bytes/call=35116
+  shed=1 b=40  #2  got=39.99   busy=76%  bytes/call=35134
+  shed=1 b=40  #3  got=39.99   busy=76%  bytes/call=35022
+  shed=1 b=40  #4  got=39.99   busy=77%  bytes/call=35238
+  shed=1 b=40  #5  got=39.99   busy=77%  bytes/call=35378
+=== offered 44G ===
+  shed=0 b=44  #1  got=43.98   busy=84%  bytes/call=35595
+  shed=0 b=44  #2  got=43.98   busy=84%  bytes/call=35640
+  shed=0 b=44  #3  got=43.98   busy=84%  bytes/call=35595
+  shed=0 b=44  #4  got=43.98   busy=84%  bytes/call=35578
+  shed=0 b=44  #5  got=43.98   busy=84%  bytes/call=35740
+  shed=1 b=44  #1  got=43.99   busy=84%  bytes/call=35726
+  shed=1 b=44  #2  got=43.99   busy=84%  bytes/call=35636
+  shed=1 b=44  #3  got=43.99   busy=84%  bytes/call=35600
+  shed=1 b=44  #4  got=43.98   busy=84%  bytes/call=35716
+  shed=1 b=44  #5  got=43.98   busy=84%  bytes/call=35698
+=== offered 48G ===
+  shed=0 b=48  #1  got=47.93   busy=91%  bytes/call=36026
+  shed=0 b=48  #2  got=47.96   busy=90%  bytes/call=36119
+  shed=0 b=48  #3  got=47.94   busy=90%  bytes/call=36137
+  shed=0 b=48  #4  got=47.92   busy=90%  bytes/call=36036
+  shed=0 b=48  #5  got=47.94   busy=90%  bytes/call=36114
+  shed=1 b=48  #1  got=47.96   busy=90%  bytes/call=36067
+  shed=1 b=48  #2  got=47.96   busy=90%  bytes/call=36143
+  shed=1 b=48  #3  got=47.95   busy=90%  bytes/call=36061
+  shed=1 b=48  #4  got=47.96   busy=90%  bytes/call=36119
+  shed=1 b=48  #5  got=47.95   busy=90%  bytes/call=36134
+=== offered 52G ===
+  shed=0 b=52  #1  got=49.73   busy=100% bytes/call=31260
+  shed=0 b=52  #2  got=49.85   busy=100% bytes/call=31238
+  shed=0 b=52  #3  got=49.71   busy=100% bytes/call=31239
+  shed=0 b=52  #4  got=49.84   busy=100% bytes/call=31288
+  shed=0 b=52  #5  got=49.61   busy=100% bytes/call=31254
+  shed=1 b=52  #1  got=51.61   busy=98%  bytes/call=32412
+  shed=1 b=52  #2  got=51.65   busy=98%  bytes/call=32552
+  shed=1 b=52  #3  got=51.46   busy=98%  bytes/call=32137
+  shed=1 b=52  #4  got=51.78   busy=97%  bytes/call=32923
+  shed=1 b=52  #5  got=51.58   busy=98%  bytes/call=32349
+=== offered 56G ===
+  shed=0 b=56  #1  got=46.41   busy=100% bytes/call=31019
+  shed=0 b=56  #2  got=46.33   busy=100% bytes/call=31032
+  shed=0 b=56  #3  got=46.29   busy=100% bytes/call=30933
+  shed=0 b=56  #4  got=46.28   busy=100% bytes/call=31029
+  shed=0 b=56  #5  got=46.43   busy=100% bytes/call=31007
+  shed=1 b=56  #1  got=50.09   busy=100% bytes/call=31521
+  shed=1 b=56  #2  got=49.91   busy=100% bytes/call=31416
+  shed=1 b=56  #3  got=50.02   busy=100% bytes/call=31498
+  shed=1 b=56  #4  got=49.99   busy=100% bytes/call=31625
+  shed=1 b=56  #5  got=50.10   busy=100% bytes/call=31637
+=== offered 60G ===
+  shed=0 b=60  #1  got=45.34   busy=100% bytes/call=33831
+  shed=0 b=60  #2  got=45.19   busy=100% bytes/call=33811
+  shed=0 b=60  #3  got=45.48   busy=100% bytes/call=33645
+  shed=0 b=60  #4  got=45.45   busy=100% bytes/call=33714
+  shed=0 b=60  #5  got=45.64   busy=100% bytes/call=33910
+  shed=1 b=60  #1  got=50.76   busy=100% bytes/call=34280
+  shed=1 b=60  #2  got=50.72   busy=100% bytes/call=34153
+  shed=1 b=60  #3  got=50.54   busy=100% bytes/call=34272
+  shed=1 b=60  #4  got=50.75   busy=100% bytes/call=34165
+  shed=1 b=60  #5  got=50.65   busy=100% bytes/call=34148
+=== offered 64G ===
+  shed=0 b=64  #1  got=47.45   busy=100% bytes/call=39878
+  shed=0 b=64  #2  got=47.52   busy=100% bytes/call=40208
+  shed=0 b=64  #3  got=47.34   busy=100% bytes/call=39922
+  shed=0 b=64  #4  got=47.18   busy=100% bytes/call=40076
+  shed=0 b=64  #5  got=47.42   busy=100% bytes/call=39953
+  shed=1 b=64  #1  got=53.64   busy=100% bytes/call=41460
+  shed=1 b=64  #2  got=53.13   busy=100% bytes/call=40501
+  shed=1 b=64  #3  got=53.03   busy=100% bytes/call=40245
+  shed=1 b=64  #4  got=53.12   busy=100% bytes/call=40332
+  shed=1 b=64  #5  got=53.57   busy=100% bytes/call=40947
+
+40  G shed=off  got= 39.98  busy= 76%  (n=5)
+40  G shed=on   got= 39.99  busy= 76%  (n=5)
+44  G shed=off  got= 43.98  busy= 84%  (n=5)
+44  G shed=on   got= 43.99  busy= 84%  (n=5)
+48  G shed=off  got= 47.94  busy= 90%  (n=5)
+48  G shed=on   got= 47.96  busy= 90%  (n=5)
+52  G shed=off  got= 49.75  busy=100%  (n=5)
+52  G shed=on   got= 51.62  busy= 98%  (n=5)
+56  G shed=off  got= 46.35  busy=100%  (n=5)
+56  G shed=on   got= 50.02  busy=100%  (n=5)
+60  G shed=off  got= 45.42  busy=100%  (n=5)
+60  G shed=on   got= 50.68  busy=100%  (n=5)
+64  G shed=off  got= 47.38  busy=100%  (n=5)
+64  G shed=on   got= 53.30  busy=100%  (n=5)
+clean
