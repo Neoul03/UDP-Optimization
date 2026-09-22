@@ -1,0 +1,20 @@
+  smooth48   #1  offered=48.00   got=47.90   busy=91%  bytes/call=36002
+  smooth48   #2  offered=48.00   got=47.92   busy=91%  bytes/call=35990
+  smooth48   #3  offered=48.00   got=47.91   busy=91%  bytes/call=36002
+  smooth48   #4  offered=48.00   got=47.92   busy=91%  bytes/call=36054
+  smooth48   #5  offered=48.00   got=47.92   busy=91%  bytes/call=36003
+  smooth56   #1  offered=56.00   got=45.78   busy=100% bytes/call=31017
+  smooth56   #2  offered=56.00   got=45.83   busy=100% bytes/call=30945
+  smooth56   #3  offered=56.00   got=46.04   busy=100% bytes/call=31126
+  smooth56   #4  offered=56.00   got=46.06   busy=100% bytes/call=31178
+  smooth56   #5  offered=56.00   got=45.99   busy=100% bytes/call=31134
+  burst      #1  offered=97.64   got=39.51   busy=100% bytes/call=53858
+  burst      #2  offered=97.96   got=39.29   busy=100% bytes/call=53864
+  burst      #3  offered=98.08   got=39.18   busy=100% bytes/call=53866
+  burst      #4  offered=98.06   got=39.20   busy=100% bytes/call=53882
+  burst      #5  offered=98.03   got=39.15   busy=100% bytes/call=53860
+
+smooth56   offered= 56.00  got= 45.94  busy=100%  bytes/call= 31080  (n=5)
+smooth48   offered= 48.00  got= 47.91  busy= 91%  bytes/call= 36010  (n=5)
+burst      offered= 97.95  got= 39.27  busy=100%  bytes/call= 53866  (n=5)
+clean

@@ -1,0 +1,18 @@
+  persock=512K  ws=6  MB #1  total=47.94   busy=100% bytes/call=49457
+  persock=512K  ws=6  MB #2  total=47.91   busy=100% bytes/call=51248
+  persock=512K  ws=6  MB #3  total=47.91   busy=100% bytes/call=47111
+  persock=1M    ws=10 MB #1  total=47.51   busy=100% bytes/call=48214
+  persock=1M    ws=10 MB #2  total=47.54   busy=100% bytes/call=46350
+  persock=1M    ws=10 MB #3  total=47.61   busy=100% bytes/call=49705
+  persock=2M    ws=18 MB #1  total=31.02   busy=100% bytes/call=50771
+  persock=2M    ws=18 MB #2  total=30.36   busy=100% bytes/call=43613
+  persock=2M    ws=18 MB #3  total=29.73   busy=100% bytes/call=43985
+  persock=4M    ws=34 MB #1  total=23.83   busy=100% bytes/call=49481
+  persock=4M    ws=34 MB #2  total=24.93   busy=100% bytes/call=48830
+  persock=4M    ws=34 MB #3  total=27.41   busy=100% bytes/call=45569
+
+워킹셋 10 MB  total= 47.55  busy=100%  bytes/call= 48090  (n=3)
+워킹셋 18 MB  total= 30.37  busy=100%  bytes/call= 46123  (n=3)
+워킹셋 34 MB  total= 25.39  busy=100%  bytes/call= 47960  (n=3)
+워킹셋 6  MB  total= 47.92  busy=100%  bytes/call= 49272  (n=3)
+clean

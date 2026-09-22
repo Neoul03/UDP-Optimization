@@ -1,0 +1,10 @@
+  many  flows=4  buf1M #1  total_got=47.96   busy=93%  bytes/call=45926
+  many  flows=4  bufdiv #1  total_got=48      busy=91%  bytes/call=53795
+  many  flows=4  buf1M #2  total_got=47.97   busy=90%  bytes/call=53668
+  many  flows=4  bufdiv #2  total_got=47.99   busy=91%  bytes/call=52452
+  many  flows=4  buf1M #3  total_got=47.99   busy=92%  bytes/call=47427
+  many  flows=4  bufdiv #3  total_got=47.96   busy=95%  bytes/call=46929
+
+bufdiv  total_got= 47.98  busy= 92%  bytes/call= 51059  (n=3)
+buf1M   total_got= 47.97  busy= 92%  bytes/call= 49007  (n=3)
+clean

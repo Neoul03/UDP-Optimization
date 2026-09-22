@@ -97,6 +97,11 @@ ethtool -C ens81f0np0 adaptive-rx off     # DIM 제거 (비교 arm 아닐 때)
    pacing) -> `udp_sink` 를 쓴다.
 
 ### 함정 (실제로 당한 것들)
+- **`CONFIG_MAX_SKB_FRAGS` 를 올리면 mlx5 NIC 이 안 올라온다.** 45 로 빌드하면
+  `MLX5E: Max SQ WQEBBs firmware capability: 16, needed 23` 으로 probe 실패하고
+  ens81f0np0 이 사라진다. `MAX_SKB_FRAGS` 가 TX WQE 크기 계산에 직접 들어가고
+  (`en/txrx.h:30`), 기본값 17 이 이미 펌웨어 한계 16 WQEBB 와 정확히 같다.
+  → **이 NIC 에서 올릴 수 없는 값이다. 재시도 금지.**
 - **리부팅하면 MTU 가 1500 으로 리셋된다.** 모든 스크립트가 시작 시 MTU 를 세팅하고
   양쪽에서 assert 할 것. (MTU 1500 으로 baseline 매트릭스 하나를 통째로 날렸다)
 - **`mpstat` 의 `%soft` 는 신뢰할 수 없다** — 동일 조건에서 4~94% 로 요동한다.
