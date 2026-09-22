@@ -1,0 +1,45 @@
+=== TCP 참조선 (N=5) ===
+  tcp #1 rx=39.4   busy=85% 
+  tcp #2 rx=39.6   busy=86% 
+  tcp #3 rx=38.9   busy=85% 
+  tcp #4 rx=40.8   busy=88% 
+  tcp #5 rx=39.7   busy=86% 
+=== UDP offered 40G (N=5) ===
+  b=40  #1 rx=36.6   busy=76% 
+  b=40  #2 rx=38.2   busy=73% 
+  b=40  #3 rx=36.6   busy=76% 
+  b=40  #4 rx=34.4   busy=77% 
+  b=40  #5 rx=36.6   busy=76% 
+=== UDP offered 44G (N=5) ===
+  b=44  #1 rx=38.9   busy=82% 
+  b=44  #2 rx=38.9   busy=82% 
+  b=44  #3 rx=33.1   busy=79% 
+  b=44  #4 rx=44.0   busy=86% 
+  b=44  #5 rx=38.9   busy=82% 
+=== UDP offered 48G (N=5) ===
+  b=48  #1 rx=35.3   busy=84% 
+  b=48  #2 rx=47.1   busy=93% 
+  b=48  #3 rx=44.9   busy=90% 
+  b=48  #4 rx=44.6   busy=90% 
+  b=48  #5 rx=47.5   busy=93% 
+=== UDP offered 52G (N=5) ===
+  b=52  #1 rx=48.0   busy=99% 
+  b=52  #2 rx=47.7   busy=97% 
+  b=52  #3 rx=48.4   busy=97% 
+  b=52  #4 rx=47.3   busy=97% 
+  b=52  #5 rx=49.3   busy=99% 
+=== UDP offered 56G (N=5) ===
+  b=56  #1 rx=47.5   busy=100%
+  b=56  #2 rx=46.0   busy=100%
+  b=56  #3 rx=47.1   busy=100%
+  b=56  #4 rx=47.8   busy=100%
+  b=56  #5 rx=46.7   busy=100%
+
+=========== 요약 (평균 기준) ===========
+tcp 0      n=5  mean=  39.7 sd= 0.70 cv= 1.8% min= 38.9 max= 40.8
+udp 40     n=5  mean=  36.5 sd= 1.35 cv= 3.7% min= 34.4 max= 38.2
+udp 44     n=5  mean=  38.8 sd= 3.86 cv=10.0% min= 33.1 max= 44.0
+udp 48     n=5  mean=  43.9 sd= 4.97 cv=11.3% min= 35.3 max= 47.5
+udp 52     n=5  mean=  48.1 sd= 0.76 cv= 1.6% min= 47.3 max= 49.3
+udp 56     n=5  mean=  47.0 sd= 0.70 cv= 1.5% min= 46.0 max= 47.8
+clean

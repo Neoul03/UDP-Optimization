@@ -1,0 +1,29 @@
+===== tcp (N=10) =====
+tcp   1 | rx=39.0   busy=84% 
+tcp   2 | rx=38.7   busy=83% 
+tcp   3 | rx=39.5   busy=84% 
+tcp   4 | rx=39.6   busy=85% 
+tcp   5 | rx=40.4   busy=87% 
+tcp   6 | rx=39.1   busy=84% 
+tcp   7 | rx=38.4   busy=84% 
+tcp   8 | rx=38.5   busy=83% 
+tcp   9 | rx=41.0   busy=89% 
+tcp  10 | rx=38.4   busy=82% 
+  tcp: mean=39.3 sd=0.83 (cv=2.1%) min=38.4 max=41.0 spread=2.6
+===== udp (N=10) =====
+udp   1 | rx=40.7   busy=85% 
+udp   2 | rx=42.3   busy=86% 
+udp   3 | rx=39.5   busy=84% 
+udp   4 | rx=46.0   busy=90% 
+udp   5 | rx=39.4   busy=84% 
+udp   6 | rx=39.8   busy=85% 
+udp   7 | rx=43.5   busy=85% 
+udp   8 | rx=40.5   busy=84% 
+udp   9 | rx=42.5   busy=85% 
+udp  10 | rx=42.5   busy=87% 
+  udp: mean=41.7 sd=1.99 (cv=4.8%) min=39.4 max=46.0 spread=6.6
+--- 정렬된 값 (이봉 여부 육안 확인) ---
+tcp : 38.4 38.4 38.5 38.7 39.0 39.1 39.5 39.6 40.4 41.0 
+udp : 39.4 39.5 39.8 40.5 40.7 42.3 42.5 42.5 43.5 46.0 
+clean
+clean
