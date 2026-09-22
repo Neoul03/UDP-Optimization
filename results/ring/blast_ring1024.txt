@@ -1,0 +1,16 @@
+ring=1024  256K  b=0   r1 | rx=32.3   loss=55%     busy=92%  tx=72.2  
+ring=1024  512K  b=0   r1 | rx=31.3   loss=64%     busy=100% tx=88.8  
+ring=1024  1M    b=0   r1 | rx=28.5   loss=68%     busy=100% tx=88.9  
+ring=1024  2M    b=0   r1 | rx=25.2   loss=71%     busy=100% tx=88.8  
+ring=1024  4M    b=0   r1 | rx=20.6   loss=77%     busy=100% tx=88.5  
+ring=1024  8M    b=0   r1 | rx=16.8   loss=81%     busy=100% tx=88.9  
+
+ring=1024  256K  b=46  r1 | rx=22.7   loss=51%     busy=70%  tx=46.0  
+ring=1024  512K  b=46  r1 | rx=34.2   loss=26%     busy=85%  tx=46.0  
+ring=1024  1M    b=46  r1 | rx=40.3   loss=12%     busy=89%  tx=46.0  
+ring=1024  2M    b=46  r1 | rx=38.0   loss=17%     busy=95%  tx=46.0  
+ring=1024  4M    b=46  r1 | rx=35.8   loss=22%     busy=96%  tx=46.0  
+ring=1024  8M    b=46  r1 | rx=33.4   loss=27%     busy=96%  tx=46.0  
+
+clean
+clean

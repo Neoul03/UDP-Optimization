@@ -1,0 +1,9 @@
+===== ring=256 rate=46G rep=1  (ring_drop=rx_out_of_buffer, sock_drop=UdpRcvbufErrors) =====
+ring=256   256K  | rx=28.9   loss=37%    busy=68%  | ring_drop=0          sock_drop=604877     phy=0       
+ring=256   512K  | rx=39.5   loss=14%    busy=71%  | ring_drop=0          sock_drop=224387     phy=0       
+ring=256   1M    | rx=44.3   loss=3.7%   busy=82%  | ring_drop=0          sock_drop=63101      phy=0       
+ring=256   2M    | rx=41.7   loss=9.4%   busy=81%  | ring_drop=0          sock_drop=151327     phy=0       
+ring=256   4M    | rx=44.5   loss=3.2%   busy=79%  | ring_drop=0          sock_drop=51535      phy=0       
+ring=256   8M    | rx=41.4   loss=10%    busy=89%  | ring_drop=0          sock_drop=163938     phy=0       
+
+clean
