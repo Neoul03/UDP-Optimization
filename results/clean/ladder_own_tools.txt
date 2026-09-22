@@ -1,0 +1,31 @@
+=== offered 40G ===
+  #1  offered=40.00  got=39.98  loss=0.05%  bytes/call=36975    calls=1351681
+  #2  offered=40.00  got=39.99  loss=0.02%  bytes/call=36939    calls=1353282
+  #3  offered=40.00  got=39.98  loss=0.05%  bytes/call=37002    calls=1350721
+=== offered 44G ===
+  #1  offered=44.00  got=43.99  loss=0.02%  bytes/call=37099    calls=1482159
+  #2  offered=44.00  got=43.99  loss=0.02%  bytes/call=37150    calls=1480133
+  #3  offered=44.00  got=43.99  loss=0.02%  bytes/call=36968    calls=1487420
+=== offered 48G ===
+  #1  offered=48.00  got=47.84  loss=0.33%  bytes/call=34867    calls=1714995
+  #2  offered=48.00  got=47.85  loss=0.31%  bytes/call=34878    calls=1714839
+  #3  offered=48.00  got=47.84  loss=0.33%  bytes/call=34815    calls=1717650
+=== offered 52G ===
+  #1  offered=52.00  got=45.07  loss=13.33% bytes/call=30900    calls=1823265
+  #2  offered=52.00  got=45.34  loss=12.81% bytes/call=31937    calls=1774661
+  #3  offered=52.00  got=45.29  loss=12.90% bytes/call=32150    calls=1760952
+=== offered 56G ===
+  #1  offered=56.00  got=41.91  loss=25.16% bytes/call=32012    calls=1636401
+  #2  offered=56.00  got=41.76  loss=25.43% bytes/call=31883    calls=1637151
+  #3  offered=56.00  got=41.28  loss=26.29% bytes/call=30592    calls=1686686
+=== offered 60G ===
+  #1  offered=60.00  got=41.92  loss=30.13% bytes/call=35609    calls=1471482
+  #2  offered=60.00  got=40.56  loss=32.40% bytes/call=33750    calls=1502228
+  #3  offered=60.00  got=39.85  loss=33.58% bytes/call=32650    calls=1525771
+
+40  G  offered= 40.0  got= 40.0  loss= 0.04%  bytes/call=  36972  (n=3)
+44  G  offered= 44.0  got= 44.0  loss= 0.02%  bytes/call=  37072  (n=3)
+48  G  offered= 48.0  got= 47.8  loss= 0.32%  bytes/call=  34853  (n=3)
+52  G  offered= 52.0  got= 45.2  loss=13.01%  bytes/call=  31662  (n=3)
+56  G  offered= 56.0  got= 41.6  loss=25.63%  bytes/call=  31496  (n=3)
+60  G  offered= 60.0  got= 40.8  loss=32.04%  bytes/call=  34003  (n=3)

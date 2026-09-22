@@ -1,0 +1,42 @@
+=== shed=0 offered=48G ===
+  #1  got=47.83  busy=93%  bytes/call=34988
+  #2  got=47.84  busy=93%  bytes/call=34935
+  #3  got=47.84  busy=93%  bytes/call=35276
+=== shed=0 offered=52G ===
+  #1  got=45.37  busy=100% bytes/call=32051
+  #2  got=45.40  busy=100% bytes/call=32035
+  #3  got=45.55  busy=100% bytes/call=31692
+=== shed=0 offered=56G ===
+  #1  got=41.55  busy=100% bytes/call=30381
+  #2  got=41.42  busy=100% bytes/call=30537
+  #3  got=41.54  busy=100% bytes/call=30609
+=== shed=0 offered=60G ===
+  #1  got=40.51  busy=100% bytes/call=33621
+  #2  got=40.48  busy=100% bytes/call=33382
+  #3  got=40.30  busy=100% bytes/call=33248
+=== shed=1 offered=48G ===
+  #1  got=47.92  busy=93%  bytes/call=34985
+  #2  got=47.91  busy=93%  bytes/call=35179
+  #3  got=47.92  busy=93%  bytes/call=34945
+=== shed=1 offered=52G ===
+  #1  got=51.81  busy=99%  bytes/call=31944
+  #2  got=51.81  busy=99%  bytes/call=31901
+  #3  got=51.81  busy=99%  bytes/call=31960
+=== shed=1 offered=56G ===
+  #1  got=48.11  busy=98%  bytes/call=31276
+  #2  got=48.32  busy=98%  bytes/call=31457
+  #3  got=48.30  busy=98%  bytes/call=31321
+=== shed=1 offered=60G ===
+  #1  got=47.79  busy=97%  bytes/call=33741
+  #2  got=48.02  busy=97%  bytes/call=34183
+  #3  got=48.06  busy=97%  bytes/call=34288
+
+shed=0 48  got= 47.8  busy= 93%  (n=3)
+shed=0 52  got= 45.4  busy=100%  (n=3)
+shed=0 56  got= 41.5  busy=100%  (n=3)
+shed=0 60  got= 40.4  busy=100%  (n=3)
+shed=1 48  got= 47.9  busy= 93%  (n=3)
+shed=1 52  got= 51.8  busy= 99%  (n=3)
+shed=1 56  got= 48.2  busy= 98%  (n=3)
+shed=1 60  got= 48.0  busy= 97%  (n=3)
+clean

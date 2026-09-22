@@ -22,8 +22,12 @@ static double now_s(void) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 6) {
-        fprintf(stderr, "usage: %s <dst_ip> <port> <dgram_size> <segs_per_send> <seconds>\n", argv[0]);
+    if (argc != 6 && argc != 7) {
+        fprintf(stderr, "usage: %s <dst_ip> <port> <dgram_size> <segs_per_send> <seconds> [rate_gbps]\n"
+                        "  rate_gbps: 0 or omitted = unlimited (blast).\n"
+                        "  Pacing is per-send and proportional to bytes, so unlike a timer-tick\n"
+                        "  pacer it introduces no quantisation jitter when the target rate is not\n"
+                        "  an integer multiple of the datagram size.\n", argv[0]);
         return 2;
     }
     const char *ip = argv[1];
@@ -31,6 +35,8 @@ int main(int argc, char **argv) {
     int dgram = atoi(argv[3]);
     int segs = atoi(argv[4]);
     double dur = atof(argv[5]);
+    double rate_gbps = (argc == 7) ? atof(argv[6]) : 0.0;
+    double bps = rate_gbps * 1e9 / 8.0;   /* target bytes per second */
 
     int s = socket(AF_INET, SOCK_DGRAM, 0);
     if (s < 0) { perror("socket"); return 1; }
@@ -63,6 +69,16 @@ int main(int argc, char **argv) {
 
     int reported = 0;
     while (now_s() < tend) {
+        /* Pace on the byte budget rather than on a timer tick: the send is
+         * released exactly when the wire would have drained everything sent
+         * so far at the target rate.  A dedicated core is assumed, so the
+         * wait is a spin - sleeping at these intervals is far too coarse.
+         */
+        if (bps > 0.0) {
+            double due = t0 + (double)bytes / bps;
+            while (now_s() < due)
+                ;
+        }
         ssize_t n = send(s, buf, sndlen, 0);
         if (n > 0) { sent++; bytes += n; }
         else if (!reported && errno != ENOBUFS && errno != EAGAIN) {
@@ -71,7 +87,7 @@ int main(int argc, char **argv) {
         }
     }
     double el = now_s() - t0;
-    printf("sent_calls=%llu bytes=%llu elapsed=%.2fs offered=%.2f Gbit/s (dgram=%d segs=%d)\n",
-           sent, bytes, el, bytes * 8.0 / el / 1e9, dgram, segs);
+    printf("sent_calls=%llu bytes=%llu elapsed=%.2fs offered=%.2f Gbit/s (dgram=%d segs=%d target=%.1f)\n",
+           sent, bytes, el, bytes * 8.0 / el / 1e9, dgram, segs, rate_gbps);
     return 0;
 }

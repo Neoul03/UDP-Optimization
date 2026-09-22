@@ -168,6 +168,14 @@ producer(NAPI)/consumer(recvmsg) 를 분리해 공유 캐시 레벨만 바꾼 �
 0009 는 두 기능 모두 default-off 라 knob 을 끄면 **동작상 upstream 과 동일**하다.
 따라서 receiver 에 vanilla 를 따로 빌드할 필요 없이 같은 부팅에서 baseline/실험군 A/B 가능.
 
+## 범위 결정 (사용자 지시, 2026-09-22)
+- **실제 프로토콜 벤치마크(QUIC/HTTP3, SRT/RIST, WebRTC, DNS 등)는 당분간 하지 않는다.**
+  어떤 프로토콜이 우리 path 를 타는지 판단만 해뒀고, 실행 큐에서 제외.
+  (참고: QUIC 은 평범한 UDP 소켓이라 우리 path 를 100% 탄다.
+   VXLAN/GTP/L2TP/WireGuard/ESP-in-UDP/SoftRoCE 는 `encap_rcv` 훅에서 빠져
+   `sk_rcvbuf` 를 안 쓴다. HW RoCEv2 는 커널에 들어오지도 않는다.)
+- 커널 UDP 수신 path 자체에 집중한다.
+
 ## 현재 과제
 1:1 static 에서 메커니즘을 확정한 뒤 multi-flow 로 확장한다.
 - **Phase 1 (진행 중)**: 캐시 핸드오프 메커니즘 정량화.

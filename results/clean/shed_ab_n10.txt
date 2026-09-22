@@ -1,0 +1,98 @@
+=== shed=0 offered=48G ===
+  #1  got=47.86  busy=93%  bytes/call=34791
+  #2  got=47.85  busy=93%  bytes/call=34888
+  #3  got=47.86  busy=93%  bytes/call=34972
+  #4  got=47.84  busy=93%  bytes/call=34787
+  #5  got=47.85  busy=93%  bytes/call=34896
+  #6  got=47.84  busy=93%  bytes/call=34879
+  #7  got=47.84  busy=93%  bytes/call=34872
+  #8  got=47.85  busy=93%  bytes/call=34895
+  #9  got=47.85  busy=93%  bytes/call=34813
+  #10 got=47.85  busy=93%  bytes/call=34855
+=== shed=0 offered=52G ===
+  #1  got=45.21  busy=100% bytes/call=30938
+  #2  got=45.10  busy=100% bytes/call=30860
+  #3  got=45.19  busy=100% bytes/call=30932
+  #4  got=45.18  busy=100% bytes/call=30904
+  #5  got=45.23  busy=100% bytes/call=30811
+  #6  got=45.02  busy=100% bytes/call=30774
+  #7  got=45.24  busy=100% bytes/call=30910
+  #8  got=45.22  busy=100% bytes/call=30923
+  #9  got=45.11  busy=100% bytes/call=30863
+  #10 got=45.15  busy=100% bytes/call=31665
+=== shed=0 offered=56G ===
+  #1  got=41.63  busy=100% bytes/call=30745
+  #2  got=41.62  busy=100% bytes/call=30790
+  #3  got=41.57  busy=100% bytes/call=30815
+  #4  got=41.76  busy=100% bytes/call=30840
+  #5  got=41.96  busy=100% bytes/call=31038
+  #6  got=41.60  busy=100% bytes/call=30509
+  #7  got=41.54  busy=100% bytes/call=30604
+  #8  got=41.81  busy=100% bytes/call=30851
+  #9  got=42.09  busy=100% bytes/call=31867
+  #10 got=42.69  busy=100% bytes/call=32650
+=== shed=0 offered=60G ===
+  #1  got=41.54  busy=100% bytes/call=35544
+  #2  got=41.84  busy=100% bytes/call=35681
+  #3  got=41.49  busy=100% bytes/call=35250
+  #4  got=42.10  busy=100% bytes/call=35964
+  #5  got=41.90  busy=100% bytes/call=35570
+  #6  got=41.45  busy=100% bytes/call=35378
+  #7  got=41.84  busy=100% bytes/call=35983
+  #8  got=41.92  busy=100% bytes/call=35764
+  #9  got=41.79  busy=100% bytes/call=35385
+  #10 got=42.05  busy=100% bytes/call=35699
+=== shed=1 offered=48G ===
+  #1  got=47.92  busy=93%  bytes/call=36090
+  #2  got=47.91  busy=93%  bytes/call=35630
+  #3  got=47.91  busy=93%  bytes/call=35745
+  #4  got=47.91  busy=93%  bytes/call=35780
+  #5  got=47.92  busy=93%  bytes/call=35658
+  #6  got=47.91  busy=93%  bytes/call=35460
+  #7  got=47.91  busy=93%  bytes/call=35645
+  #8  got=47.93  busy=93%  bytes/call=35902
+  #9  got=47.92  busy=93%  bytes/call=35371
+  #10 got=47.92  busy=93%  bytes/call=35783
+=== shed=1 offered=52G ===
+  #1  got=51.82  busy=99%  bytes/call=33110
+  #2  got=51.82  busy=98%  bytes/call=33209
+  #3  got=51.81  busy=98%  bytes/call=33050
+  #4  got=51.80  busy=98%  bytes/call=33180
+  #5  got=51.82  busy=99%  bytes/call=32748
+  #6  got=51.83  busy=98%  bytes/call=33271
+  #7  got=51.81  busy=98%  bytes/call=33005
+  #8  got=51.82  busy=98%  bytes/call=33193
+  #9  got=51.82  busy=99%  bytes/call=32612
+  #10 got=51.81  busy=99%  bytes/call=32081
+=== shed=1 offered=56G ===
+  #1  got=48.24  busy=98%  bytes/call=32085
+  #2  got=48.59  busy=98%  bytes/call=32541
+  #3  got=48.41  busy=98%  bytes/call=32520
+  #4  got=48.68  busy=98%  bytes/call=32786
+  #5  got=48.30  busy=98%  bytes/call=32485
+  #6  got=48.43  busy=98%  bytes/call=32387
+  #7  got=48.32  busy=98%  bytes/call=32581
+  #8  got=48.47  busy=98%  bytes/call=32498
+  #9  got=48.45  busy=98%  bytes/call=32635
+  #10 got=48.69  busy=98%  bytes/call=32771
+=== shed=1 offered=60G ===
+  #1  got=48.76  busy=97%  bytes/call=35808
+  #2  got=48.83  busy=97%  bytes/call=36264
+  #3  got=48.77  busy=97%  bytes/call=36026
+  #4  got=48.83  busy=97%  bytes/call=36023
+  #5  got=48.76  busy=97%  bytes/call=35935
+  #6  got=48.37  busy=97%  bytes/call=35359
+  #7  got=48.96  busy=97%  bytes/call=36137
+  #8  got=48.81  busy=97%  bytes/call=36194
+  #9  got=48.53  busy=97%  bytes/call=35629
+  #10 got=48.83  busy=97%  bytes/call=36082
+
+shed=0 48  got= 47.8  busy= 93%  (n=10)
+shed=0 52  got= 45.2  busy=100%  (n=10)
+shed=0 56  got= 41.8  busy=100%  (n=10)
+shed=0 60  got= 41.8  busy=100%  (n=10)
+shed=1 48  got= 47.9  busy= 93%  (n=10)
+shed=1 52  got= 51.8  busy= 98%  (n=10)
+shed=1 56  got= 48.5  busy= 98%  (n=10)
+shed=1 60  got= 48.7  busy= 97%  (n=10)
+clean
