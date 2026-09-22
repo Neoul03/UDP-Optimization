@@ -1,0 +1,233 @@
+--- a/include/net/netns/ipv4.h	2026-09-22 11:10:02.053386522 +0900
++++ b/include/net/netns/ipv4.h	2026-09-22 11:10:16.261095935 +0900
+@@ -244,6 +244,9 @@
+ 
+ 	int sysctl_udp_wmem_min;
+ 	int sysctl_udp_rmem_min;
++	u8 sysctl_udp_rmem_autotune;
++	int sysctl_udp_rmem_autotune_max;
++	u8 sysctl_udp_rx_shed;
+ 
+ 	u8 sysctl_fib_notify_on_flag_change;
+ 	u8 sysctl_tcp_syn_linear_timeouts;
+--- a/include/net/udp.h	2026-09-22 11:10:02.057386441 +0900
++++ b/include/net/udp.h	2026-09-22 11:10:29.048833931 +0900
+@@ -212,6 +212,23 @@
+ extern int sysctl_udp_rmem_min;
+ extern int sysctl_udp_wmem_min;
+ 
++/* Driver-level RX shedding.  When a UDP socket's receive buffer overflows,
++ * the UDP layer stamps a short shed window on the RX queue that feeds it, and
++ * the NIC driver drops that queue's packets before building skbs - so overload
++ * is shed at roughly zero CPU cost instead of after a full stack traversal.
++ *
++ * Off by default (net.ipv4.udp_rx_shed).  Known limitations, kept because the
++ * mechanism is still under evaluation: the window is per RX queue rather than
++ * per socket, so it is protocol-blind and will also drop TCP, ICMP and ARP
++ * frames landing on that queue while it is armed.
++ */
++#define UDP_RX_SHED_MAX_QUEUES	256
++struct udp_rx_shed_slot {
++	u64 until_ns;
++} ____cacheline_aligned_in_smp;
++extern struct udp_rx_shed_slot udp_rx_shed[UDP_RX_SHED_MAX_QUEUES];
++void udp_rx_shed_mark(const struct sock *sk);
++
+ struct sk_buff;
+ 
+ /*
+--- a/net/ipv4/sysctl_net_ipv4.c	2026-09-22 11:10:02.061386359 +0900
++++ b/net/ipv4/sysctl_net_ipv4.c	2026-09-22 11:11:47.239232042 +0900
+@@ -1516,6 +1516,32 @@
+ 		.extra1		= SYSCTL_ONE
+ 	},
+ 	{
++		.procname	= "udp_rmem_autotune",
++		.data		= &init_net.ipv4.sysctl_udp_rmem_autotune,
++		.maxlen		= sizeof(u8),
++		.mode		= 0644,
++		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++	{
++		.procname	= "udp_rmem_autotune_max",
++		.data		= &init_net.ipv4.sysctl_udp_rmem_autotune_max,
++		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_rmem_autotune_max),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++	},
++	{
++		.procname	= "udp_rx_shed",
++		.data		= &init_net.ipv4.sysctl_udp_rx_shed,
++		.maxlen		= sizeof(u8),
++		.mode		= 0644,
++		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++	{
+ 		.procname	= "udp_wmem_min",
+ 		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
+ 		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
+--- a/net/ipv4/udp.c	2026-09-22 11:10:02.069386195 +0900
++++ b/net/ipv4/udp.c	2026-09-22 11:11:35.731468782 +0900
+@@ -1696,6 +1696,45 @@
+ 	return 0;
+ }
+ 
++/* UDP receive buffer autotuning.
++ *
++ * TCP grows sk_rcvbuf from its own RTT clock (tcp_rcvbuf_grow); UDP has no
++ * such clock, so the only signal available to the producer is how full the
++ * queue already is.  When the producer finds the queue more than half full the
++ * consumer is losing to the arrival burst, so double sk_rcvbuf rather than
++ * drop at whatever static value rmem_default happened to be.
++ *
++ * Growth is bounded by net.ipv4.udp_rmem_autotune_max.  That bound is the
++ * interesting parameter, not the growth rule: a receive queue that outgrows
++ * the core's private cache costs more in copyout misses than it saves in
++ * absorbed bursts, so the ceiling belongs at a cache size, not a memory size.
++ *
++ * Off by default (net.ipv4.udp_rmem_autotune) so that the kernel matches
++ * upstream behaviour unless the knob is set.  Sockets that set SO_RCVBUF
++ * explicitly are always left alone.
++ */
++static unsigned int udp_rcvbuf_autotune(struct sock *sk, unsigned int rmem,
++					unsigned int rcvbuf)
++{
++	struct net *net = sock_net(sk);
++	unsigned int max;
++
++	if (rmem <= (rcvbuf >> 1))
++		return rcvbuf;
++	if (!READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune))
++		return rcvbuf;
++	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK)
++		return rcvbuf;
++
++	max = (unsigned int)READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune_max);
++	if (rcvbuf >= max)
++		return rcvbuf;
++
++	rcvbuf = min_t(unsigned int, rcvbuf << 1, max);
++	WRITE_ONCE(sk->sk_rcvbuf, (int)rcvbuf);
++	return rcvbuf;
++}
++
+ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct sk_buff_head *list = &sk->sk_receive_queue;
+@@ -1717,6 +1756,8 @@
+ 
+ 	rmem += atomic_read(&udp_prod_queue->rmem_alloc);
+ 
++	rcvbuf = udp_rcvbuf_autotune(sk, rmem, rcvbuf);
++
+ 	/* Immediately drop when the receive queue is full.
+ 	 * Cast to unsigned int performs the boundary check for INT_MAX.
+ 	 */
+@@ -2341,6 +2382,28 @@
+ 	udp_lib_rehash(sk, new_hash, new_hash4);
+ }
+ 
++/* Driver-level RX shed; see the comment in include/net/udp.h.
++ *
++ * The window is short and is renewed for as long as enqueue keeps failing, so
++ * it behaves as a self-clocking pulse rather than a latch: once the consumer
++ * catches up and enqueue succeeds again, no further marks are issued and the
++ * driver resumes on its own at the end of the current window.
++ */
++struct udp_rx_shed_slot udp_rx_shed[UDP_RX_SHED_MAX_QUEUES];
++EXPORT_SYMBOL_GPL(udp_rx_shed);
++
++#define UDP_RX_SHED_WINDOW_NS	(200 * NSEC_PER_USEC)
++
++void udp_rx_shed_mark(const struct sock *sk)
++{
++	int q = sk_rx_queue_get(sk);
++
++	if (q < 0 || q >= UDP_RX_SHED_MAX_QUEUES)
++		q = 0;
++	WRITE_ONCE(udp_rx_shed[q].until_ns,
++		   ktime_get_mono_fast_ns() + UDP_RX_SHED_WINDOW_NS);
++}
++
+ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ {
+ 	int rc;
+@@ -2363,6 +2426,8 @@
+ 			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
+ 					is_udplite);
+ 			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
++			if (READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rx_shed))
++				udp_rx_shed_mark(sk);
+ 		} else {
+ 			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
+ 				      is_udplite);
+@@ -3838,6 +3903,15 @@
+ 	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
+ 	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
+ 
++	/* Both mechanisms default off, so this kernel behaves exactly like
++	 * upstream until a knob is set.  The ceiling below is provisional:
++	 * the right value is a property of the cache hierarchy and is still
++	 * being measured, so it is deliberately not derived automatically yet.
++	 */
++	net->ipv4.sysctl_udp_rmem_autotune = 0;
++	net->ipv4.sysctl_udp_rmem_autotune_max = 1 << 20;
++	net->ipv4.sysctl_udp_rx_shed = 0;
++
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
+ #endif
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 11:10:02.073386113 +0900
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 11:13:24.621236638 +0900
+@@ -73,6 +73,26 @@
+ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+ 
++/* Drop at CQE level - before skb alloc, GRO and the stack - while the UDP
++ * layer has this queue marked as overflowing (see include/net/udp.h).  The
++ * consumed WQE is recycled on exactly the same path as a failed skb build,
++ * so ring bookkeeping is unchanged.
++ */
++static inline bool mlx5e_udp_rx_shed(struct mlx5e_rq *rq)
++{
++	u64 until;
++
++	if (rq->ix >= UDP_RX_SHED_MAX_QUEUES)
++		return false;
++	until = READ_ONCE(udp_rx_shed[rq->ix].until_ns);
++	if (likely(!until))
++		return false;
++	if (ktime_get_mono_fast_ns() < until)
++		return true;
++	WRITE_ONCE(udp_rx_shed[rq->ix].until_ns, 0);
++	return false;
++}
++
+ const struct mlx5e_rx_handlers mlx5e_rx_handlers_nic = {
+ 	.handle_rx_cqe       = mlx5e_handle_rx_cqe,
+ 	.handle_rx_cqe_mpwqe = mlx5e_handle_rx_cqe_mpwrq,
+@@ -1879,6 +1899,9 @@
+ 		goto wq_cyc_pop;
+ 	}
+ 
++	if (unlikely(mlx5e_udp_rx_shed(rq)))
++		goto wq_cyc_pop;
++
+ 	skb = INDIRECT_CALL_3(rq->wqe.skb_from_cqe,
+ 			      mlx5e_skb_from_cqe_linear,
+ 			      mlx5e_skb_from_cqe_nonlinear,
+@@ -2514,6 +2537,9 @@
+ 		goto mpwrq_cqe_out;
+ 	}
+ 
++	if (unlikely(mlx5e_udp_rx_shed(rq)))
++		goto mpwrq_cqe_out;
++
+ 	cqe_bcnt = mpwrq_get_cqe_byte_cnt(cqe);
+ 
+ 	skb = INDIRECT_CALL_3(rq->mpwqe.skb_from_cqe_mpwrq,
