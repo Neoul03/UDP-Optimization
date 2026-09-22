@@ -1,0 +1,26 @@
+=== default_6M  (tcp_rmem='4096 131072 6291456') ===
+  #1  rx=51.8   busy=98%
+  #2  rx=51.8   busy=99%
+  #3  rx=51.9   busy=99%
+  #4  rx=50.0   busy=95%
+  #5  rx=52.2   busy=100%
+  #6  rx=50.5   busy=96%
+  #7  rx=51.1   busy=96%
+  #8  rx=50.9   busy=96%
+  #9  rx=51.8   busy=100%
+  #10 rx=51.9   busy=100%
+=== capped_1M  (tcp_rmem='4096 1048576 1048576') ===
+  #1  rx=43.2   busy=84%
+  #2  rx=42.2   busy=82%
+  #3  rx=43.3   busy=85%
+  #4  rx=43.0   busy=84%
+  #5  rx=42.8   busy=84%
+  #6  rx=42.8   busy=83%
+  #7  rx=42.1   busy=81%
+  #8  rx=42.9   busy=84%
+  #9  rx=43.1   busy=84%
+  #10 rx=43.3   busy=85%
+
+capped_1M    mean= 42.9 sd=0.42 cv= 1.0%  busy= 84%  (n=10)
+default_6M   mean= 51.4 sd=0.72 cv= 1.4%  busy= 98%  (n=10)
+clean

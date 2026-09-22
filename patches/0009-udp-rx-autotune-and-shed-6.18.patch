@@ -183,8 +183,8 @@
  	net->ipv4.sysctl_udp_l3mdev_accept = 0;
  #endif
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 11:10:02.073386113 +0900
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 11:13:24.621236638 +0900
-@@ -73,6 +73,26 @@
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 15:58:45.755042465 +0900
+@@ -73,6 +73,34 @@
  static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
  static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
  
@@ -192,8 +192,15 @@
 + * layer has this queue marked as overflowing (see include/net/udp.h).  The
 + * consumed WQE is recycled on exactly the same path as a failed skb build,
 + * so ring bookkeeping is unchanged.
++ *
++ * The shed window is armed by one overflowing UDP socket but the queue it
++ * covers carries everything RSS steered there, so only frames the NIC has
++ * already parsed as UDP are dropped.  TCP, ICMP and ARP keep their path, as
++ * do IP fragments after the first (the NIC cannot see an L4 header in those,
++ * so they report CQE_L4_HDR_TYPE_NONE and are left alone).  Checking the CQE
++ * costs one field read that has already been fetched.
 + */
-+static inline bool mlx5e_udp_rx_shed(struct mlx5e_rq *rq)
++static inline bool mlx5e_udp_rx_shed(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
 +{
 +	u64 until;
 +
@@ -202,30 +209,31 @@
 +	until = READ_ONCE(udp_rx_shed[rq->ix].until_ns);
 +	if (likely(!until))
 +		return false;
-+	if (ktime_get_mono_fast_ns() < until)
-+		return true;
-+	WRITE_ONCE(udp_rx_shed[rq->ix].until_ns, 0);
-+	return false;
++	if (ktime_get_mono_fast_ns() >= until) {
++		WRITE_ONCE(udp_rx_shed[rq->ix].until_ns, 0);
++		return false;
++	}
++	return get_cqe_l4_hdr_type(cqe) == CQE_L4_HDR_TYPE_UDP;
 +}
 +
  const struct mlx5e_rx_handlers mlx5e_rx_handlers_nic = {
  	.handle_rx_cqe       = mlx5e_handle_rx_cqe,
  	.handle_rx_cqe_mpwqe = mlx5e_handle_rx_cqe_mpwrq,
-@@ -1879,6 +1899,9 @@
+@@ -1879,6 +1907,9 @@
  		goto wq_cyc_pop;
  	}
  
-+	if (unlikely(mlx5e_udp_rx_shed(rq)))
++	if (unlikely(mlx5e_udp_rx_shed(rq, cqe)))
 +		goto wq_cyc_pop;
 +
  	skb = INDIRECT_CALL_3(rq->wqe.skb_from_cqe,
  			      mlx5e_skb_from_cqe_linear,
  			      mlx5e_skb_from_cqe_nonlinear,
-@@ -2514,6 +2537,9 @@
+@@ -2514,6 +2545,9 @@
  		goto mpwrq_cqe_out;
  	}
  
-+	if (unlikely(mlx5e_udp_rx_shed(rq)))
++	if (unlikely(mlx5e_udp_rx_shed(rq, cqe)))
 +		goto mpwrq_cqe_out;
 +
  	cqe_bcnt = mpwrq_get_cqe_byte_cnt(cqe);

@@ -1,0 +1,23 @@
+=== A. TCP 단독 (기준선) ===
+  tcp_only       #1   TCP=51.9    UDP=-      
+  tcp_only       #2   TCP=51.7    UDP=-      
+  tcp_only       #3   TCP=52.2    UDP=-      
+  tcp_only       #4   TCP=52.4    UDP=-      
+  tcp_only       #5   TCP=51.7    UDP=-      
+=== B. TCP + UDP60G, shed OFF ===
+  both_shed0     #1   TCP=13.7    UDP=23.39  
+  both_shed0     #2   TCP=14.4    UDP=23.41  
+  both_shed0     #3   TCP=14.0    UDP=23.15  
+  both_shed0     #4   TCP=13.3    UDP=23.10  
+  both_shed0     #5   TCP=13.5    UDP=23.12  
+=== C. TCP + UDP60G, shed ON  (UDP 만 걸러야 함) ===
+  both_shed1     #1   TCP=23.8    UDP=26.35  
+  both_shed1     #2   TCP=19.0    UDP=24.61  
+  both_shed1     #3   TCP=21.5    UDP=24.64  
+  both_shed1     #4   TCP=23.5    UDP=25.94  
+  both_shed1     #5   TCP=22.6    UDP=25.18  
+
+both_shed0    TCP= 13.8  UDP= 23.2  (n=5)
+both_shed1    TCP= 22.1  UDP= 25.3  (n=5)
+tcp_only      TCP= 52.0  UDP=  0.0  (n=5)
+clean
