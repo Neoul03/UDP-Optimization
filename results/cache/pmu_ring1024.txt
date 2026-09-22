@@ -1,0 +1,19 @@
+===== ring=1024, offered 44G (천장 아래 = 무손실 = 처리량 상수) =====
+  ring=1024 256K  #1  got=44.00   IPC=1.12  L2miss= 20.3%  L3miss=  5.6%  L2refs=4228458854
+  ring=1024 256K  #2  got=43.99   IPC=1.12  L2miss= 20.4%  L3miss=  5.7%  L2refs=4224984378
+  ring=1024 256K  #3  got=43.99   IPC=1.12  L2miss= 20.6%  L3miss=  6.2%  L2refs=4248181002
+  ring=1024 1M    #1  got=43.99   IPC=1.11  L2miss= 20.7%  L3miss=  6.4%  L2refs=4253501624
+  ring=1024 1M    #2  got=43.98   IPC=1.11  L2miss= 20.9%  L3miss=  7.2%  L2refs=4250530183
+  ring=1024 1M    #3  got=43.98   IPC=1.10  L2miss= 21.2%  L3miss=  7.8%  L2refs=4260538912
+  ring=1024 4M    #1  got=33.48   IPC=0.98  L2miss= 28.8%  L3miss= 18.6%  L2refs=3211079048
+  ring=1024 4M    #2  got=32.99   IPC=0.97  L2miss= 28.6%  L3miss= 19.2%  L2refs=3084521462
+  ring=1024 4M    #3  got=32.68   IPC=0.97  L2miss= 30.7%  L3miss= 18.3%  L2refs=3196437487
+  ring=1024 16M   #1  got=25.89   IPC=0.92  L2miss= 32.9%  L3miss= 20.3%  L2refs=2769357302
+  ring=1024 16M   #2  got=25.79   IPC=0.92  L2miss= 32.7%  L3miss= 20.4%  L2refs=2770384216
+  ring=1024 16M   #3  got=25.98   IPC=0.92  L2miss= 33.0%  L3miss= 19.9%  L2refs=2783180160
+======= 요약 =======
+ring=1024  16M    got= 25.89  IPC=0.92  L2miss= 32.8%  L3miss= 20.2%
+ring=1024  1M     got= 43.98  IPC=1.11  L2miss= 20.9%  L3miss=  7.2%
+ring=1024  256K   got= 43.99  IPC=1.12  L2miss= 20.4%  L3miss=  5.8%
+ring=1024  4M     got= 33.05  IPC=0.98  L2miss= 29.4%  L3miss= 18.7%
+clean

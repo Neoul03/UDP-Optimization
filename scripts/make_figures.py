@@ -241,4 +241,49 @@ if s:
          'Shrinking the mlx5 head copy and dropping the usercopy check, with and without shed',
          'Offered rate (Gbit/s)', 'fig09.dat', list(s), os.path.basename(d4 or ''))
 
+# ---------------------------------------------------------------- fig10  ★ 메커니즘 확정
+# 워킹셋(ring descriptor + rcvbuf) x throughput, PMU L3 miss 동반.
+# ring 128 과 1024 의 점들이 하나의 곡선 위에 올라가면 워킹셋이 지배 변수라는 증거.
+# descriptor 추정: ring/1024 * 16MB (MPWQE 64 pages, MTU 9000)
+d = newest('cachecnt_*')            # ring 1024
+d2 = sorted(glob.glob(os.path.join(LOGS, 'cachecnt_*')))
+CAPMB = {'256K':0.25, '1M':1, '4M':4, '16M':16}
+pts, l3pts = [], []
+for dd in d2:
+    for r in rows(dd):
+        ring, cap = r[0], r[1]
+        if cap not in CAPMB: continue
+        desc = int(ring) / 1024.0 * 16.0
+        ws = desc + CAPMB[cap]
+        pts.append((round(ws, 2), float(r[2])))
+        h, m = float(r[7]), float(r[8])
+        l3pts.append((round(ws, 2), 100.0 * m / (h + m) if (h + m) > 0 else 0.0))
+if pts:
+    s2 = {'goodput (Gbit/s)': agg(pts)}
+    write_dat(os.path.join(OUT, 'fig10.dat'), s2)
+    write_dat(os.path.join(OUT, 'fig10b.dat'), {'L3 load-miss (%)': agg(l3pts)})
+    gp = os.path.join(OUT, 'fig10_working_set.gp')
+    png = os.path.join(OUT, 'fig10_working_set.png')
+    open(gp, 'w').write(f"""set terminal pngcairo size 1000,650 noenhanced font "Sans,11"
+set output "{png}"
+set title "Working set, not the individual knob, predicts the cliff (offered 44 Gbit/s)" font "Sans,13"
+set xlabel "Working set = Rx ring descriptor pages + sk_rcvbuf (MiB)"
+set ylabel "Goodput (Gbit/s)"
+set y2label "L3 load-miss (%)"
+set ytics nomirror
+set y2tics
+set grid
+set key outside right top
+set logscale x 2
+set xtics (2,4,8,16,32)
+set arrow from 18,graph 0 to 18,graph 1 nohead lc rgb "#cc0000" dt 2 lw 2
+set label "L3 = 18 MiB" at 18.4,graph 0.30 tc rgb "#cc0000" font "Sans,10"
+set label "source: cachecnt_* (ring 128 and 1024 pooled)" at screen 0.01,0.02 font "Sans,8" tc rgb "#666666"
+set bmargin 5
+plot "{os.path.join(OUT,'fig10.dat')}" index 0 using 1:2:3 with yerrorlines lw 2 pt 7 ps 1.3 axes x1y1 title "goodput", \
+     "{os.path.join(OUT,'fig10b.dat')}" index 0 using 1:2:3 with yerrorlines lw 2 pt 5 ps 1.2 axes x1y2 title "L3 load-miss"
+""")
+    subprocess.run(['gnuplot', gp], check=True)
+    print('wrote', png)
+
 print('\nfigures in', OUT)
