@@ -1,0 +1,10 @@
+=== app GRO on/off @ MTU1500, offered 25G (busy 만 유효) ===
+gro_on     r1 | rxbusy=70.2%  tx=25.0    [server: ?]
+gro_off    r1 | rxbusy=100.0% tx=25.0    [server: ?]
+gro_on     r2 | rxbusy=49.7%  tx=25.0    [server: ?]
+gro_off    r2 | rxbusy=100.0% tx=25.0    [server: ?]
+gro_on     r3 | rxbusy=76.1%  tx=25.0    [server: ?]
+gro_off    r3 | rxbusy=100.0% tx=15.1    [server: ?]
+
+MEAN busy: gro_on=65.3%  gro_off=100.0%  delta=+34.7%p
+clean

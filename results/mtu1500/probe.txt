@@ -1,0 +1,16 @@
+=== MTU 1500 probe (dur=15s, true single core both sides) ===
+--- A. capability, -b 0 (unlimited offer) ---
+gso_gro_b0       | tx=80.9   rx=NA     loss=NA%     rxbusy=100% soft=99% 
+gso_nogro_b0     | tx=80.8   rx=NA     loss=NA%     rxbusy=100% soft=99% 
+plain_b0         | tx=8.83   rx=8.83   loss=0%      rxbusy=31%  soft=18% 
+--- B. TCP baseline ---
+tcp              | tx=33.1   rx=33.1   loss=NA%     rxbusy=100% soft=53% 
+--- C. UDP rate ladder (GSO+GRO) ---
+udp_b10          | tx=10.0   rx=10.0   loss=0%      rxbusy=45%  soft=23% 
+udp_b15          | tx=15.0   rx=15.0   loss=0%      rxbusy=56%  soft=38% 
+udp_b20          | tx=20.0   rx=20.0   loss=0%      rxbusy=69%  soft=52% 
+udp_b25          | tx=25.0   rx=25.0   loss=0%      rxbusy=73%  soft=39% 
+udp_b30          | tx=30.0   rx=30.0   loss=0%      rxbusy=87%  soft=42% 
+udp_b35          | tx=35.0   rx=29.9   loss=15%     rxbusy=97%  soft=62% 
+clean
+clean
