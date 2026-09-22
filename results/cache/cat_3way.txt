@@ -1,0 +1,26 @@
+  3way   256K  #1  got=43.98
+  3way   256K  #2  got=43.98
+  3way   256K  #3  got=43.97
+  3way   1M    #1  got=43.76
+  3way   1M    #2  got=43.97
+  3way   1M    #3  got=43.95
+  3way   2M    #1  got=38.79
+  3way   2M    #2  got=36.97
+  3way   2M    #3  got=36.30
+  3way   4M    #1  got=28.89
+  3way   4M    #2  got=28.87
+  3way   4M    #3  got=29.33
+  3way   8M    #1  got=25.36
+  3way   8M    #2  got=25.29
+  3way   8M    #3  got=25.23
+  3way   16M   #1  got=16.24
+  3way   16M   #2  got=16.22
+  3way   16M   #3  got=16.21
+
+8M     got= 25.29  (n=3)
+1M     got= 43.89  (n=3)
+2M     got= 37.35  (n=3)
+256K   got= 43.98  (n=3)
+16M    got= 16.22  (n=3)
+4M     got= 29.03  (n=3)
+clean

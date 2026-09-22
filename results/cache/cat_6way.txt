@@ -1,0 +1,26 @@
+  6way   256K  #1  got=43.98
+  6way   256K  #2  got=43.95
+  6way   256K  #3  got=43.98
+  6way   1M    #1  got=43.98
+  6way   1M    #2  got=43.98
+  6way   1M    #3  got=43.98
+  6way   2M    #1  got=43.99
+  6way   2M    #2  got=43.98
+  6way   2M    #3  got=43.98
+  6way   4M    #1  got=41.08
+  6way   4M    #2  got=42.96
+  6way   4M    #3  got=41.87
+  6way   8M    #1  got=33.35
+  6way   8M    #2  got=31.64
+  6way   8M    #3  got=38.86
+  6way   16M   #1  got=18.16
+  6way   16M   #2  got=18.16
+  6way   16M   #3  got=18.14
+
+8M     got= 34.62  (n=3)
+1M     got= 43.98  (n=3)
+2M     got= 43.98  (n=3)
+256K   got= 43.97  (n=3)
+16M    got= 18.15  (n=3)
+4M     got= 41.97  (n=3)
+clean

@@ -286,4 +286,23 @@ plot "{os.path.join(OUT,'fig10.dat')}" index 0 using 1:2:3 with yerrorlines lw 2
     subprocess.run(['gnuplot', gp], check=True)
     print('wrote', png)
 
+# ---------------------------------------------------------------- fig11  ★ 인과 확정
+# Intel CAT 으로 L3 를 줄이면 절벽이 따라 내려오는가.
+# ring 128 고정(descriptor 2MB) -> 워킹셋 = 2MB + rcvbuf
+CAPMB2 = {'256K': 0.25, '1M': 1, '2M': 2, '4M': 4, '8M': 8, '16M': 16}
+s = {}
+for lbl, pat in (('L3 = 18 MiB (12 ways)', 'cat_12way_*'),
+                 ('L3 = 9 MiB (6 ways)', 'cat_6way_*'),
+                 ('L3 = 4.5 MiB (3 ways)', 'cat_3way_*')):
+    d = newest(pat)
+    pts = [(2 + CAPMB2[r[1]], float(r[2])) for r in rows(d) if r[1] in CAPMB2]
+    if pts:
+        s[lbl] = agg(pts)
+if s:
+    write_dat(os.path.join(OUT, 'fig11.dat'), s)
+    plot('fig11_cat_ways',
+         'Shrinking the LLC with Intel CAT moves the cliff down with it (offered 44 Gbit/s)',
+         'Working set = ring descriptor pages + sk_rcvbuf (MiB)', 'fig11.dat',
+         list(s), 'cat_{12,6,3}way_*', logx=True, extra='set xtics (2,4,8,16)')
+
 print('\nfigures in', OUT)

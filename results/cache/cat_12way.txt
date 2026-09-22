@@ -1,0 +1,26 @@
+  12way  256K  #1  got=43.99
+  12way  256K  #2  got=43.98
+  12way  256K  #3  got=43.98
+  12way  1M    #1  got=43.98
+  12way  1M    #2  got=43.98
+  12way  1M    #3  got=43.98
+  12way  2M    #1  got=43.98
+  12way  2M    #2  got=43.98
+  12way  2M    #3  got=43.98
+  12way  4M    #1  got=43.98
+  12way  4M    #2  got=43.98
+  12way  4M    #3  got=43.98
+  12way  8M    #1  got=42.45
+  12way  8M    #2  got=41.07
+  12way  8M    #3  got=39.82
+  12way  16M   #1  got=41.26
+  12way  16M   #2  got=28.57
+  12way  16M   #3  got=32.48
+
+8M     got= 41.11  (n=3)
+1M     got= 43.98  (n=3)
+2M     got= 43.98  (n=3)
+256K   got= 43.98  (n=3)
+16M    got= 34.10  (n=3)
+4M     got= 43.98  (n=3)
+clean
