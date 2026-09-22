@@ -1,12 +1,13 @@
 --- a/include/net/netns/ipv4.h	2026-09-22 11:10:02.053386522 +0900
-+++ b/include/net/netns/ipv4.h	2026-09-22 11:10:16.261095935 +0900
-@@ -244,6 +244,9 @@
++++ b/include/net/netns/ipv4.h	2026-09-22 18:01:54.102221721 +0900
+@@ -244,6 +244,10 @@
  
  	int sysctl_udp_wmem_min;
  	int sysctl_udp_rmem_min;
 +	u8 sysctl_udp_rmem_autotune;
 +	int sysctl_udp_rmem_autotune_max;
 +	u8 sysctl_udp_rx_shed;
++	unsigned int sysctl_udp_rx_shed_us;
  
  	u8 sysctl_fib_notify_on_flag_change;
  	u8 sysctl_tcp_syn_linear_timeouts;
@@ -37,8 +38,8 @@
  
  /*
 --- a/net/ipv4/sysctl_net_ipv4.c	2026-09-22 11:10:02.061386359 +0900
-+++ b/net/ipv4/sysctl_net_ipv4.c	2026-09-22 11:11:47.239232042 +0900
-@@ -1516,6 +1516,32 @@
++++ b/net/ipv4/sysctl_net_ipv4.c	2026-09-22 18:01:54.102221721 +0900
+@@ -1516,6 +1516,40 @@
  		.extra1		= SYSCTL_ONE
  	},
  	{
@@ -68,11 +69,19 @@
 +		.extra2		= SYSCTL_ONE,
 +	},
 +	{
++		.procname	= "udp_rx_shed_us",
++		.data		= &init_net.ipv4.sysctl_udp_rx_shed_us,
++		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_rx_shed_us),
++		.mode		= 0644,
++		.proc_handler	= proc_douintvec_minmax,
++		.extra1		= SYSCTL_ONE,
++	},
++	{
  		.procname	= "udp_wmem_min",
  		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
  		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
 --- a/net/ipv4/udp.c	2026-09-22 11:10:02.069386195 +0900
-+++ b/net/ipv4/udp.c	2026-09-22 11:11:35.731468782 +0900
++++ b/net/ipv4/udp.c	2026-09-22 19:09:29.022172011 +0900
 @@ -1696,6 +1696,45 @@
  	return 0;
  }
@@ -128,7 +137,7 @@
  	/* Immediately drop when the receive queue is full.
  	 * Cast to unsigned int performs the boundary check for INT_MAX.
  	 */
-@@ -2341,6 +2382,28 @@
+@@ -2341,6 +2382,27 @@
  	udp_lib_rehash(sk, new_hash, new_hash4);
  }
  
@@ -142,22 +151,21 @@
 +struct udp_rx_shed_slot udp_rx_shed[UDP_RX_SHED_MAX_QUEUES];
 +EXPORT_SYMBOL_GPL(udp_rx_shed);
 +
-+#define UDP_RX_SHED_WINDOW_NS	(200 * NSEC_PER_USEC)
-+
 +void udp_rx_shed_mark(const struct sock *sk)
 +{
++	unsigned int us = READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rx_shed_us);
 +	int q = sk_rx_queue_get(sk);
 +
 +	if (q < 0 || q >= UDP_RX_SHED_MAX_QUEUES)
 +		q = 0;
 +	WRITE_ONCE(udp_rx_shed[q].until_ns,
-+		   ktime_get_mono_fast_ns() + UDP_RX_SHED_WINDOW_NS);
++		   ktime_get_mono_fast_ns() + (u64)us * NSEC_PER_USEC);
 +}
 +
  static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  {
  	int rc;
-@@ -2363,6 +2426,8 @@
+@@ -2363,6 +2425,8 @@
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
  					is_udplite);
  			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
@@ -166,7 +174,7 @@
  		} else {
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
  				      is_udplite);
-@@ -3838,6 +3903,15 @@
+@@ -3838,6 +3902,21 @@
  	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
  	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
  
@@ -178,10 +186,31 @@
 +	net->ipv4.sysctl_udp_rmem_autotune = 0;
 +	net->ipv4.sysctl_udp_rmem_autotune_max = 1 << 20;
 +	net->ipv4.sysctl_udp_rx_shed = 0;
++	/* Measured: the penalty for a too-long window is an order of magnitude
++	 * worse than for a too-short one (-67% against -7% at 72 Gbit/s), and
++	 * under a falling load a 1600us window loses more than not shedding at
++	 * all. Default short and let the sysctl raise it.
++	 */
++	net->ipv4.sysctl_udp_rx_shed_us = 50;
 +
  #ifdef CONFIG_NET_L3_MASTER_DEV
  	net->ipv4.sysctl_udp_l3mdev_accept = 0;
  #endif
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h	2026-09-22 19:09:29.030171936 +0900
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h	2026-09-22 19:09:29.042171823 +0900
+@@ -80,7 +80,11 @@
+ #define MLX5_SKB_FRAG_SZ(len)	(SKB_DATA_ALIGN(len) +	\
+ 				 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+ 
+-#define MLX5E_RX_MAX_HEAD (256)
++/* Bytes copied into the skb linear area; the rest stays as page frags.
++ * 256 copies more header than any of our traffic needs and shows up as
++ * ~7 points of CPU at a fixed rate, so shrink it to one cache line pair.
++ */
++#define MLX5E_RX_MAX_HEAD (64)
+ #define MLX5E_SHAMPO_LOG_HEADER_ENTRY_SIZE (8)
+ #define MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE (9)
+ #define MLX5E_SHAMPO_WQ_HEADER_PER_PAGE (PAGE_SIZE >> MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE)
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 11:10:02.073386113 +0900
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 15:58:45.755042465 +0900
 @@ -73,6 +73,34 @@

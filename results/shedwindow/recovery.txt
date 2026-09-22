@@ -1,0 +1,38 @@
+=== window 0us ===
+  win=0us    #1   offered(72G x3s + 40G x5s)  got=43.10 GB  loss=17.12%
+  win=0us    #2   offered(72G x3s + 40G x5s)  got=42.76 GB  loss=17.77%
+  win=0us    #3   offered(72G x3s + 40G x5s)  got=42.91 GB  loss=17.48%
+  win=0us    #4   offered(72G x3s + 40G x5s)  got=43.20 GB  loss=16.92%
+  win=0us    #5   offered(72G x3s + 40G x5s)  got=42.98 GB  loss=17.34%
+=== window 50us ===
+  win=50us   #1   offered(72G x3s + 40G x5s)  got=45.72 GB  loss=12.08%
+  win=50us   #2   offered(72G x3s + 40G x5s)  got=45.87 GB  loss=11.79%
+  win=50us   #3   offered(72G x3s + 40G x5s)  got=45.74 GB  loss=12.04%
+  win=50us   #4   offered(72G x3s + 40G x5s)  got=45.91 GB  loss=11.70%
+  win=50us   #5   offered(72G x3s + 40G x5s)  got=45.84 GB  loss=11.84%
+=== window 200us ===
+  win=200us  #1   offered(72G x3s + 40G x5s)  got=44.74 GB  loss=13.96%
+  win=200us  #2   offered(72G x3s + 40G x5s)  got=44.84 GB  loss=13.76%
+  win=200us  #3   offered(72G x3s + 40G x5s)  got=44.74 GB  loss=13.95%
+  win=200us  #4   offered(72G x3s + 40G x5s)  got=44.78 GB  loss=13.88%
+  win=200us  #5   offered(72G x3s + 40G x5s)  got=44.97 GB  loss=13.52%
+=== window 800us ===
+  win=800us  #1   offered(72G x3s + 40G x5s)  got=35.95 GB  loss=30.87%
+  win=800us  #2   offered(72G x3s + 40G x5s)  got=36.16 GB  loss=30.46%
+  win=800us  #3   offered(72G x3s + 40G x5s)  got=35.98 GB  loss=30.80%
+  win=800us  #4   offered(72G x3s + 40G x5s)  got=36.09 GB  loss=30.59%
+  win=800us  #5   offered(72G x3s + 40G x5s)  got=35.94 GB  loss=30.88%
+=== window 1600us ===
+  win=1600us #1   offered(72G x3s + 40G x5s)  got=32.08 GB  loss=38.31%
+  win=1600us #2   offered(72G x3s + 40G x5s)  got=31.94 GB  loss=38.57%
+  win=1600us #3   offered(72G x3s + 40G x5s)  got=31.98 GB  loss=38.50%
+  win=1600us #4   offered(72G x3s + 40G x5s)  got=31.97 GB  loss=38.51%
+  win=1600us #5   offered(72G x3s + 40G x5s)  got=31.95 GB  loss=38.55%
+
+=== 요약: 윈도가 길수록 손실이 커지면 회복 지연 비용이 실재 ===
+win=1600us  총손실 38.49%  (n=5)
+win=200us   총손실 13.81%  (n=5)
+win=50us    총손실 11.89%  (n=5)
+win=800us   총손실 30.72%  (n=5)
+win=off     총손실 17.33%  (n=5)
+clean

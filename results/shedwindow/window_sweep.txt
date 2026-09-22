@@ -1,0 +1,152 @@
+===== offered 52G =====
+  win=0us   b=52  #1  got=46.01   busy=100% bytes/call=30896
+  win=0us   b=52  #2  got=45.72   busy=100% bytes/call=30770
+  win=0us   b=52  #3  got=45.66   busy=100% bytes/call=30928
+  win=0us   b=52  #4  got=45.84   busy=100% bytes/call=30874
+  win=0us   b=52  #5  got=46.00   busy=100% bytes/call=30954
+  win=25us  b=52  #1  got=47.98   busy=100% bytes/call=31460
+  win=25us  b=52  #2  got=47.93   busy=100% bytes/call=31430
+  win=25us  b=52  #3  got=47.91   busy=100% bytes/call=31515
+  win=25us  b=52  #4  got=47.90   busy=100% bytes/call=31369
+  win=25us  b=52  #5  got=48.01   busy=100% bytes/call=31403
+  win=50us  b=52  #1  got=48.49   busy=100% bytes/call=31330
+  win=50us  b=52  #2  got=48.31   busy=100% bytes/call=31385
+  win=50us  b=52  #3  got=48.54   busy=100% bytes/call=31706
+  win=50us  b=52  #4  got=48.31   busy=100% bytes/call=31445
+  win=50us  b=52  #5  got=48.54   busy=100% bytes/call=31512
+  win=100us b=52  #1  got=49.40   busy=100% bytes/call=31387
+  win=100us b=52  #2  got=49.45   busy=100% bytes/call=31308
+  win=100us b=52  #3  got=49.35   busy=100% bytes/call=31444
+  win=100us b=52  #4  got=49.33   busy=100% bytes/call=31097
+  win=100us b=52  #5  got=49.36   busy=100% bytes/call=31272
+  win=200us b=52  #1  got=51.82   busy=99%  bytes/call=31986
+  win=200us b=52  #2  got=51.81   busy=99%  bytes/call=31899
+  win=200us b=52  #3  got=51.82   busy=99%  bytes/call=32042
+  win=200us b=52  #4  got=51.81   busy=99%  bytes/call=31960
+  win=200us b=52  #5  got=51.82   busy=99%  bytes/call=31893
+  win=400us b=52  #1  got=51.73   busy=99%  bytes/call=31978
+  win=400us b=52  #2  got=51.68   busy=99%  bytes/call=31868
+  win=400us b=52  #3  got=51.68   busy=99%  bytes/call=31920
+  win=400us b=52  #4  got=51.72   busy=98%  bytes/call=32063
+  win=400us b=52  #5  got=51.72   busy=99%  bytes/call=31928
+  win=800us b=52  #1  got=51.53   busy=98%  bytes/call=31966
+  win=800us b=52  #2  got=51.49   busy=98%  bytes/call=31838
+  win=800us b=52  #3  got=51.56   busy=98%  bytes/call=32012
+  win=800us b=52  #4  got=51.54   busy=98%  bytes/call=31955
+  win=800us b=52  #5  got=51.54   busy=98%  bytes/call=31841
+  win=1600us b=52  #1  got=51.38   busy=98%  bytes/call=31832
+  win=1600us b=52  #2  got=51.36   busy=98%  bytes/call=32083
+  win=1600us b=52  #3  got=51.29   busy=98%  bytes/call=31932
+  win=1600us b=52  #4  got=51.26   busy=98%  bytes/call=31917
+  win=1600us b=52  #5  got=51.34   busy=98%  bytes/call=31942
+
+===== offered 60G =====
+  win=0us   b=60  #1  got=42.43   busy=100% bytes/call=35051
+  win=0us   b=60  #2  got=42.55   busy=100% bytes/call=35253
+  win=0us   b=60  #3  got=42.86   busy=100% bytes/call=35903
+  win=0us   b=60  #4  got=41.41   busy=100% bytes/call=33654
+  win=0us   b=60  #5  got=41.53   busy=100% bytes/call=33467
+  win=25us  b=60  #1  got=47.38   busy=100% bytes/call=34756
+  win=25us  b=60  #2  got=47.75   busy=100% bytes/call=35065
+  win=25us  b=60  #3  got=48.04   busy=100% bytes/call=36394
+  win=25us  b=60  #4  got=48.10   busy=100% bytes/call=36445
+  win=25us  b=60  #5  got=47.74   busy=100% bytes/call=34924
+  win=50us  b=60  #1  got=48.09   busy=100% bytes/call=34013
+  win=50us  b=60  #2  got=48.26   busy=100% bytes/call=34376
+  win=50us  b=60  #3  got=48.50   busy=100% bytes/call=34701
+  win=50us  b=60  #4  got=48.47   busy=100% bytes/call=34587
+  win=50us  b=60  #5  got=47.90   busy=100% bytes/call=33755
+  win=100us b=60  #1  got=48.73   busy=100% bytes/call=33923
+  win=100us b=60  #2  got=48.63   busy=100% bytes/call=33705
+  win=100us b=60  #3  got=48.71   busy=100% bytes/call=33858
+  win=100us b=60  #4  got=48.40   busy=100% bytes/call=33329
+  win=100us b=60  #5  got=48.55   busy=100% bytes/call=34067
+  win=200us b=60  #1  got=47.49   busy=97%  bytes/call=33226
+  win=200us b=60  #2  got=47.59   busy=97%  bytes/call=33553
+  win=200us b=60  #3  got=47.84   busy=97%  bytes/call=33936
+  win=200us b=60  #4  got=47.83   busy=97%  bytes/call=33904
+  win=200us b=60  #5  got=47.52   busy=97%  bytes/call=33421
+  win=400us b=60  #1  got=40.02   busy=83%  bytes/call=34033
+  win=400us b=60  #2  got=39.68   busy=83%  bytes/call=33248
+  win=400us b=60  #3  got=40.09   busy=83%  bytes/call=33895
+  win=400us b=60  #4  got=39.85   busy=82%  bytes/call=33600
+  win=400us b=60  #5  got=40.20   busy=83%  bytes/call=34116
+  win=800us b=60  #1  got=29.79   busy=65%  bytes/call=33365
+  win=800us b=60  #2  got=29.82   busy=65%  bytes/call=33449
+  win=800us b=60  #3  got=29.76   busy=64%  bytes/call=33236
+  win=800us b=60  #4  got=30.09   busy=65%  bytes/call=33763
+  win=800us b=60  #5  got=30.46   busy=66%  bytes/call=34231
+  win=1600us b=60  #1  got=20.16   busy=48%  bytes/call=33962
+  win=1600us b=60  #2  got=20.09   busy=48%  bytes/call=33682
+  win=1600us b=60  #3  got=20.58   busy=49%  bytes/call=34380
+  win=1600us b=60  #4  got=20.72   busy=48%  bytes/call=34697
+  win=1600us b=60  #5  got=20.46   busy=47%  bytes/call=34180
+
+===== offered 72G =====
+  win=0us   b=72  #1  got=48.06   busy=100% bytes/call=51010
+  win=0us   b=72  #2  got=48.30   busy=100% bytes/call=51882
+  win=0us   b=72  #3  got=48.05   busy=100% bytes/call=51412
+  win=0us   b=72  #4  got=47.84   busy=100% bytes/call=50978
+  win=0us   b=72  #5  got=47.84   busy=100% bytes/call=50982
+  win=25us  b=72  #1  got=54.40   busy=100% bytes/call=52244
+  win=25us  b=72  #2  got=54.35   busy=100% bytes/call=52257
+  win=25us  b=72  #3  got=54.23   busy=100% bytes/call=51669
+  win=25us  b=72  #4  got=54.31   busy=100% bytes/call=52332
+  win=25us  b=72  #5  got=54.83   busy=100% bytes/call=53488
+  win=50us  b=72  #1  got=55.69   busy=100% bytes/call=51832
+  win=50us  b=72  #2  got=55.52   busy=100% bytes/call=51625
+  win=50us  b=72  #3  got=55.82   busy=100% bytes/call=52266
+  win=50us  b=72  #4  got=56.04   busy=100% bytes/call=52742
+  win=50us  b=72  #5  got=56.31   busy=100% bytes/call=52957
+  win=100us b=72  #1  got=56.70   busy=100% bytes/call=52341
+  win=100us b=72  #2  got=56.66   busy=100% bytes/call=51618
+  win=100us b=72  #3  got=56.66   busy=100% bytes/call=51665
+  win=100us b=72  #4  got=56.45   busy=100% bytes/call=51344
+  win=100us b=72  #5  got=56.59   busy=100% bytes/call=51588
+  win=200us b=72  #1  got=52.96   busy=93%  bytes/call=51374
+  win=200us b=72  #2  got=53.07   busy=93%  bytes/call=51596
+  win=200us b=72  #3  got=53.02   busy=93%  bytes/call=51468
+  win=200us b=72  #4  got=52.89   busy=93%  bytes/call=51276
+  win=200us b=72  #5  got=52.45   busy=93%  bytes/call=50621
+  win=400us b=72  #1  got=42.06   busy=76%  bytes/call=51657
+  win=400us b=72  #2  got=42.06   busy=76%  bytes/call=51612
+  win=400us b=72  #3  got=41.76   busy=75%  bytes/call=51177
+  win=400us b=72  #4  got=41.40   busy=75%  bytes/call=51071
+  win=400us b=72  #5  got=42.03   busy=76%  bytes/call=51756
+  win=800us b=72  #1  got=29.60   busy=58%  bytes/call=51696
+  win=800us b=72  #2  got=29.71   busy=57%  bytes/call=51690
+  win=800us b=72  #3  got=29.65   busy=57%  bytes/call=51531
+  win=800us b=72  #4  got=29.69   busy=58%  bytes/call=51570
+  win=800us b=72  #5  got=29.70   busy=58%  bytes/call=51603
+  win=1600us b=72  #1  got=18.77   busy=39%  bytes/call=51659
+  win=1600us b=72  #2  got=18.58   busy=38%  bytes/call=51551
+  win=1600us b=72  #3  got=18.81   busy=39%  bytes/call=52328
+  win=1600us b=72  #4  got=19.05   busy=39%  bytes/call=52276
+  win=1600us b=72  #5  got=18.13   busy=39%  bytes/call=50879
+
+======= 요약 (부하별 최적 윈도) =======
+52  G  win=100us  got= 49.38  busy=100%  (n=5)
+52  G  win=1600us  got= 51.33  busy= 98%  (n=5)
+52  G  win=200us  got= 51.82  busy= 99%  (n=5)
+52  G  win=25us   got= 47.95  busy=100%  (n=5)
+52  G  win=400us  got= 51.71  busy= 99%  (n=5)
+52  G  win=50us   got= 48.44  busy=100%  (n=5)
+52  G  win=800us  got= 51.53  busy= 98%  (n=5)
+52  G  win=off    got= 45.85  busy=100%  (n=5)
+60  G  win=100us  got= 48.60  busy=100%  (n=5)
+60  G  win=1600us  got= 20.40  busy= 48%  (n=5)
+60  G  win=200us  got= 47.65  busy= 97%  (n=5)
+60  G  win=25us   got= 47.80  busy=100%  (n=5)
+60  G  win=400us  got= 39.97  busy= 83%  (n=5)
+60  G  win=50us   got= 48.24  busy=100%  (n=5)
+60  G  win=800us  got= 29.98  busy= 65%  (n=5)
+60  G  win=off    got= 42.16  busy=100%  (n=5)
+72  G  win=100us  got= 56.61  busy=100%  (n=5)
+72  G  win=1600us  got= 18.67  busy= 39%  (n=5)
+72  G  win=200us  got= 52.88  busy= 93%  (n=5)
+72  G  win=25us   got= 54.42  busy=100%  (n=5)
+72  G  win=400us  got= 41.86  busy= 76%  (n=5)
+72  G  win=50us   got= 55.88  busy=100%  (n=5)
+72  G  win=800us  got= 29.67  busy= 58%  (n=5)
+72  G  win=off    got= 48.02  busy=100%  (n=5)
+clean

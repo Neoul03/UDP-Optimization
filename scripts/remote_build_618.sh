@@ -32,6 +32,12 @@ cp /boot/config-6.6.9 .config
 ./scripts/config --set-str SYSTEM_REVOCATION_KEYS ""
 ./scripts/config --set-str LOCALVERSION "$LV"
 ./scripts/config --disable LOCALVERSION_AUTO
+# HARDENED_USERCOPY 의 per-frag 경계 검사(__check_object_size)가 copyout 핫패스에
+# 있다. 6.6.9 에서 고정 부하 기준 CPU -7.2%p 로 측정됐다. 보안 검사를 끄는 것이므로
+# 연구용 빌드에서만 쓴다.  NOHARDENED=0 으로 끌 수 있다.
+if [ "${NOHARDENED:-1}" = 1 ]; then
+  ./scripts/config --disable HARDENED_USERCOPY
+fi
 make olddefconfig >/dev/null
 
 echo "=== building $V$LV with -j$(nproc) ==="

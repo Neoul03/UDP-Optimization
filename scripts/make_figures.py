@@ -206,4 +206,21 @@ if s:
          'MTU 1500: the buffer curve is flat above 512KB (no inverted-U)',
          'sk_rcvbuf (KiB)', 'fig07.dat', list(s), os.path.basename(d or ''), logx=True)
 
+# ---------------------------------------------------------------- fig08
+# shed 윈도 길이 x throughput, 부하별.  컨트롤러 필요 여부를 가르는 그림.
+d = newest('shedwin_*')
+s = {}
+for rate in ('52', '60', '72'):
+    pts = [(int(r[0]) if r[0] != '0' else 12, float(r[2]))
+           for r in rows(d) if r[1] == rate and len(r) > 2]
+    if pts: s[f'offered {rate} Gbit/s'] = agg(pts)
+if s:
+    write_dat(os.path.join(OUT, 'fig08.dat'), s)
+    plot('fig08_shed_window',
+         'Shed window vs goodput, by offered rate (leftmost point = shed off)',
+         'Shed window (us)', 'fig08.dat', list(s), os.path.basename(d or ''),
+         logx=True,
+         extra='set xtics ("off" 12, "25" 25, "50" 50, "100" 100, "200" 200, '
+               '"400" 400, "800" 800, "1600" 1600)')
+
 print('\nfigures in', OUT)
