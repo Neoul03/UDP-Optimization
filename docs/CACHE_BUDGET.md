@@ -33,26 +33,31 @@ nothing, in every kernel up to 7.2.7.
 ## The implementation
 
 ```c
-budget_pages = (LLC_bytes * udp_rmem_cache_pct / 100) >> PAGE_SHIFT;
-grow only while sk_memory_allocated(sk) + (grant >> PAGE_SHIFT) < budget_pages;
+budget = LLC_bytes * udp_rmem_cache_pct / 100;
+grow only while udp_rcvbuf_granted + grant <= budget;
 ```
 
 Three choices worth stating.
 
-*No socket counting.* `sk_memory_allocated()` already aggregates across every
-UDP socket, which is exactly the quantity the measurements point at, so the
-bound needs no new global state and stays correct when sockets hold different
-amounts.
+*Bound granted capacity, with a global counter.* `udp_rcvbuf_granted` is an
+`atomic_long_t` holding what autotuning has handed out across every UDP socket,
+charged before the grant is made so concurrent growers see each other at once,
+with a per-socket record in `struct udp_sock` so it can be returned on close.
+The socket count never enters it, which matters because the measurements say
+the count is irrelevant and only the sum matters. See below for why the
+kernel's existing `sk_memory_allocated()` will not serve.
 
 *The cache size is read at runtime.* A `late_initcall` walks `cacheinfo` for
 the highest DATA or UNIFIED level; the enqueue path runs in softirq and cannot
 take the cpu hotplug lock, so the value is resolved once and only read
 afterwards. `mm/page_alloc.c` uses the same interface. On this receiver it
-reports 18432 KiB, matching what the CAT experiment measured independently.
+reports 18432 KiB, matching what the CAT experiment measured independently - so
+nothing is hardcoded, and a machine with a 39MB last-level cache gets a
+proportionally larger budget without being told.
 
 *The fraction is left to the operator.* The kernel cannot see how much of the
-cache is already committed: NIC rings are invisible from here — on mlx5 at a
-9000-byte MTU a 1024-entry ring pins 16MB — and on a busy machine other cores
+cache is already committed: NIC rings are invisible from here - on mlx5 at a
+9000-byte MTU a 1024-entry ring pins 16MB - and on a busy machine other cores
 compete for the same cache. Default 50%.
 
 ## Where it stands
@@ -93,18 +98,26 @@ before the grant is made so that concurrent growers see each other immediately,
 with a per-socket record in `struct udp_sock` so the grant can be returned on
 close. Three consecutive runs give 47.4, 47.37 and 46.85, so nothing leaks.
 
-## The motivating case, and a limit
+## The motivating case, and what is still uncovered
 
 `udp_sink` asks for 64MB with `SO_RCVBUF`, which is an ordinary thing for a
 high-rate receiver to do. Eight of them, with `rmem_max` out of the way, take
-about 1GB between them — 55× the L3 — and throughput falls from 47.46 to 13.68.
-Every socket made a legal, modest-sounding request, and one of them would have
-been completely safe.
+about 1GB between them - 55x the L3 - and throughput falls from 47.46 to 13.68.
+Every socket made a legal, modest-sounding request, and one of them alone would
+have been completely safe. That is the case a per-socket limit cannot express,
+and it is why the budget has to be global.
 
-That same case is beyond this patch's reach: `SO_RCVBUF` sets
-`SOCK_RCVBUF_LOCK`, and autotuning skips such sockets deliberately, so the
-budget never gets to refuse them. What it does do is count them —
-`sk_memory_allocated()` includes their queues — so a locked socket that eats
-the budget stops every other socket from growing. That is the intended
-compromise: the kernel does not override an explicit request, but it does stop
-letting everyone else compound the problem.
+**The budget does not cover it.** `SO_RCVBUF` sets `SOCK_RCVBUF_LOCK`, and
+autotuning skips such sockets deliberately, so no grant is ever charged for
+them and they are invisible to `udp_rcvbuf_granted`. An application that asks
+explicitly still gets what it asks for, bounded only by `rmem_max`, and it can
+still exhaust the cache on its own.
+
+This is a real gap and worth being plain about: the budget currently protects
+applications that let the kernel size their buffers from *each other*, not from
+an application that sizes its own. Closing it means either counting explicit
+`SO_RCVBUF` grants against the same budget - which means sometimes refusing a
+request the application made deliberately - or reporting the budget back to
+userspace so an application can size itself against it. The first breaks a
+long-standing expectation; the second needs an interface. Neither is decided
+here.
