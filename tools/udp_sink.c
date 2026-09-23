@@ -45,8 +45,16 @@ int main(int argc, char **argv) {
     int s = socket(AF_INET, SOCK_DGRAM, 0);
     if (s < 0) { perror("socket"); return 1; }
 
-    int rcvbuf = 64 * 1024 * 1024;
-    setsockopt(s, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
+    /* Asking for a buffer with SO_RCVBUF also sets SOCK_RCVBUF_LOCK, which
+     * tells the kernel the application knows what it wants and disables any
+     * autotuning for this socket.  Set UDP_SINK_NO_RCVBUF=1 to leave the
+     * socket on rmem_default so autotuning (and the cache budget that bounds
+     * it) can be exercised.
+     */
+    if (!getenv("UDP_SINK_NO_RCVBUF")) {
+        int rcvbuf = 64 * 1024 * 1024;
+        setsockopt(s, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
+    }
 
     struct sockaddr_in a = {0};
     a.sin_family = AF_INET;
@@ -61,7 +69,7 @@ int main(int argc, char **argv) {
             return 1;
         }
         fprintf(stderr, "[sink] batch mode (UDP_RECV_BATCH on)\n");
-    } else if (mode == 2 || mode == 3) {
+    } else if (mode == 2 || mode == 3 || mode == 4) {
         int one = 1;
         if (setsockopt(s, IPPROTO_UDP, UDP_GRO, &one, sizeof(one)) < 0) {
             perror("setsockopt UDP_GRO");
@@ -85,12 +93,45 @@ int main(int argc, char **argv) {
     int started = 0;
     /* plain mode reads up to 64KiB (one datagram); batch mode reads up to BUFSZ */
     size_t rlen = (mode == 1) ? BUFSZ : (1 << 16);
+    (void)0;
     /* mode 3: MSG_TRUNC + tiny buffer => kernel returns true length but skips
      * the bulk copy_to_user (copyout). Isolates the cost of the data copy. */
     int rflags = (mode == 3) ? MSG_TRUNC : 0;
     if (mode == 3) rlen = 64;
 
     double deadline = now_s() + dur + 5; /* hard stop guard */
+    if (mode == 4) {
+        /* Amortised clock: read it once per CHECK successful recvs instead of
+         * on every one.  The clock must still be read whenever recv times out,
+         * or an idle socket would spin for CHECK/(1/SO_RCVTIMEO) seconds before
+         * noticing the run is over.
+         */
+        const unsigned CHECK = 1024;
+        unsigned since = 0;
+        double t = now_s();
+        for (;;) {
+            ssize_t n = recv(s, buf, rlen, rflags);
+            int tick = 0;
+            if (n > 0) {
+                bytes += n; calls++; datagrams++;
+                if (!started) { t = now_s(); t0 = t; t1 = t; started = 1; }
+                if (++since >= CHECK) { since = 0; tick = 1; }
+            } else {
+                if (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK) { perror("recv"); break; }
+                tick = 1;               /* timeout: always re-check the clock */
+            }
+            if (tick) {
+                t = now_s();
+                /* Only a successful recv advances t1.  Letting a timeout move it
+                 * would fold the post-run idle into elapsed and under-report
+                 * goodput by exactly the idle fraction.
+                 */
+                if (started && n > 0) t1 = t;
+                if ((started && (t - t0) >= dur) || t > deadline) break;
+            }
+        }
+        if (t1 <= t0) t1 = now_s();
+    } else {
     for (;;) {
         ssize_t n = recv(s, buf, rlen, rflags);
         double t = now_s();
@@ -104,6 +145,7 @@ int main(int argc, char **argv) {
         if (started && (t - t0) >= dur) break;
         if (t > deadline) break;
         if (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK) { perror("recv"); break; }
+    }
     }
 
     double el = (t1 > t0) ? (t1 - t0) : 1e-9;

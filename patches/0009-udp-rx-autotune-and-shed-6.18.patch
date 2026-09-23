@@ -1,6 +1,6 @@
 --- a/include/net/netns/ipv4.h	2026-09-22 11:10:02.053386522 +0900
-+++ b/include/net/netns/ipv4.h	2026-09-22 18:01:54.102221721 +0900
-@@ -244,6 +244,10 @@
++++ b/include/net/netns/ipv4.h	2026-09-23 12:25:39.476087454 +0900
+@@ -244,6 +244,11 @@
  
  	int sysctl_udp_wmem_min;
  	int sysctl_udp_rmem_min;
@@ -8,6 +8,7 @@
 +	int sysctl_udp_rmem_autotune_max;
 +	u8 sysctl_udp_rx_shed;
 +	unsigned int sysctl_udp_rx_shed_us;
++	u8 sysctl_udp_rmem_cache_pct;
  
  	u8 sysctl_fib_notify_on_flag_change;
  	u8 sysctl_tcp_syn_linear_timeouts;
@@ -38,8 +39,8 @@
  
  /*
 --- a/net/ipv4/sysctl_net_ipv4.c	2026-09-22 11:10:02.061386359 +0900
-+++ b/net/ipv4/sysctl_net_ipv4.c	2026-09-22 18:01:54.102221721 +0900
-@@ -1516,6 +1516,40 @@
++++ b/net/ipv4/sysctl_net_ipv4.c	2026-09-23 12:25:39.476087454 +0900
+@@ -1516,6 +1516,49 @@
  		.extra1		= SYSCTL_ONE
  	},
  	{
@@ -69,6 +70,15 @@
 +		.extra2		= SYSCTL_ONE,
 +	},
 +	{
++		.procname	= "udp_rmem_cache_pct",
++		.data		= &init_net.ipv4.sysctl_udp_rmem_cache_pct,
++		.maxlen		= sizeof(u8),
++		.mode		= 0644,
++		.proc_handler	= proc_dou8vec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE_HUNDRED,
++	},
++	{
 +		.procname	= "udp_rx_shed_us",
 +		.data		= &init_net.ipv4.sysctl_udp_rx_shed_us,
 +		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_rx_shed_us),
@@ -81,11 +91,103 @@
  		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
  		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
 --- a/net/ipv4/udp.c	2026-09-22 11:10:02.069386195 +0900
-+++ b/net/ipv4/udp.c	2026-09-22 19:09:29.022172011 +0900
-@@ -1696,6 +1696,45 @@
++++ b/net/ipv4/udp.c	2026-09-23 14:10:08.978268626 +0900
+@@ -90,6 +90,7 @@
+ #include <linux/errno.h>
+ #include <linux/timer.h>
+ #include <linux/mm.h>
++#include <linux/cacheinfo.h>
+ #include <linux/inet.h>
+ #include <linux/netdevice.h>
+ #include <linux/slab.h>
+@@ -99,6 +100,7 @@
+ #include <linux/proc_fs.h>
+ #include <linux/seq_file.h>
+ #include <net/net_namespace.h>
++#include <net/proto_memory.h>
+ #include <net/icmp.h>
+ #include <net/inet_hashtables.h>
+ #include <net/ip.h>
+@@ -1696,6 +1698,124 @@
  	return 0;
  }
  
++/* Size of the last level cache, in bytes.  Resolved once after the device
++ * model is up, because walking cacheinfo needs the cpu hotplug lock and the
++ * enqueue path runs in softirq.  Zero when the platform does not report it.
++ */
++static unsigned int udp_llc_bytes __read_mostly;
++
++static int __init udp_cache_budget_init(void)
++{
++	unsigned int i, level = 0, size = 0;
++	struct cpu_cacheinfo *ci;
++
++	cpus_read_lock();
++	ci = get_cpu_cacheinfo(raw_smp_processor_id());
++	if (ci && ci->info_list) {
++		for (i = 0; i < ci->num_leaves; i++) {
++			struct cacheinfo *leaf = &ci->info_list[i];
++
++			if (leaf->type != CACHE_TYPE_DATA &&
++			    leaf->type != CACHE_TYPE_UNIFIED)
++				continue;
++			if (leaf->level >= level) {
++				level = leaf->level;
++				size = leaf->size;
++			}
++		}
++	}
++	cpus_read_unlock();
++
++	udp_llc_bytes = size;
++	if (size)
++		pr_info("UDP: receive budget sized from L%u cache (%u KiB)\n",
++			level, size >> 10);
++	return 0;
++}
++late_initcall(udp_cache_budget_init);
++
++/* Is UDP already holding more than the cache can usefully keep?
++ *
++ * What costs throughput is not one socket's buffer but the total the receive
++ * path is touching: the NIC's descriptor pages plus every socket's queued
++ * data.  Measured on a single core, goodput is flat while that total stays
++ * inside the last level cache and falls off sharply past it - and the cliff
++ * moves with the cache, not with the buffer: eight sockets at 2MB collapse at
++ * the same aggregate as one socket at 16MB, and masking L3 ways with CAT drags
++ * the knee down in proportion.
++ *
++ * So the bound has to be global.  sk_memory_allocated() already aggregates
++ * across every UDP socket, which is exactly the quantity that matters, so no
++ * new accounting is needed.
++ *
++ * The percentage is left to the operator because the kernel cannot see how
++ * much of the cache is already spoken for: the NIC's rings are invisible from
++ * here (on mlx5 at a 9000-byte MTU a 1024-entry ring pins 16MB), and on a busy
++ * machine other cores are competing for the same cache.  Lower it when either
++ * is true.
++ */
++static bool udp_rmem_over_cache_budget(const struct sock *sk, unsigned int grant)
++{
++	unsigned int pct = READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rmem_cache_pct);
++	long budget_pages;
++
++	if (!pct || !udp_llc_bytes)
++		return false;
++
++	budget_pages = ((long)udp_llc_bytes * pct / 100) >> PAGE_SHIFT;
++
++	/* Charge what this growth would add, not only what is queued right now.
++	 * sk_memory_allocated() reports memory already committed, so a doubling
++	 * does not show up in it until the larger queue has actually filled.
++	 * Eight sockets can therefore all read the aggregate as under budget,
++	 * all double, and only afterwards push it well past - measured at 19.6MB
++	 * against a 9MB target before this term was added.
++	 */
++	return sk_memory_allocated(sk) + (grant >> PAGE_SHIFT) >= budget_pages;
++}
++
 +/* UDP receive buffer autotuning.
 + *
 + * TCP grows sk_rcvbuf from its own RTT clock (tcp_rcvbuf_grow); UDP has no
@@ -94,10 +196,10 @@
 + * consumer is losing to the arrival burst, so double sk_rcvbuf rather than
 + * drop at whatever static value rmem_default happened to be.
 + *
-+ * Growth is bounded by net.ipv4.udp_rmem_autotune_max.  That bound is the
-+ * interesting parameter, not the growth rule: a receive queue that outgrows
-+ * the core's private cache costs more in copyout misses than it saves in
-+ * absorbed bursts, so the ceiling belongs at a cache size, not a memory size.
++ * Growth stops at whichever bound comes first: the per-socket ceiling
++ * net.ipv4.udp_rmem_autotune_max, or the global cache budget above.  The
++ * second is the one that matters - a per-socket limit cannot express "eight
++ * sockets at 4MB is too much" when 4MB is perfectly fine for one.
 + *
 + * Off by default (net.ipv4.udp_rmem_autotune) so that the kernel matches
 + * upstream behaviour unless the knob is set.  Sockets that set SO_RCVBUF
@@ -115,6 +217,9 @@
 +		return rcvbuf;
 +	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK)
 +		return rcvbuf;
++	/* Doubling adds another rcvbuf worth of capacity. */
++	if (udp_rmem_over_cache_budget(sk, rcvbuf))
++		return rcvbuf;
 +
 +	max = (unsigned int)READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune_max);
 +	if (rcvbuf >= max)
@@ -128,7 +233,7 @@
  int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
  {
  	struct sk_buff_head *list = &sk->sk_receive_queue;
-@@ -1717,6 +1756,8 @@
+@@ -1717,6 +1837,8 @@
  
  	rmem += atomic_read(&udp_prod_queue->rmem_alloc);
  
@@ -137,7 +242,7 @@
  	/* Immediately drop when the receive queue is full.
  	 * Cast to unsigned int performs the boundary check for INT_MAX.
  	 */
-@@ -2341,6 +2382,27 @@
+@@ -2341,6 +2463,27 @@
  	udp_lib_rehash(sk, new_hash, new_hash4);
  }
  
@@ -165,7 +270,7 @@
  static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  {
  	int rc;
-@@ -2363,6 +2425,8 @@
+@@ -2363,6 +2506,8 @@
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
  					is_udplite);
  			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
@@ -174,7 +279,7 @@
  		} else {
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
  				      is_udplite);
-@@ -3838,6 +3902,21 @@
+@@ -3838,6 +3983,26 @@
  	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
  	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
  
@@ -192,6 +297,11 @@
 +	 * all. Default short and let the sysctl raise it.
 +	 */
 +	net->ipv4.sysctl_udp_rx_shed_us = 50;
++	/* Half the last level cache, leaving room for the NIC rings the
++	 * kernel cannot see and for whatever else shares the cache.
++	 * Inert until udp_rmem_autotune is enabled.
++	 */
++	net->ipv4.sysctl_udp_rmem_cache_pct = 50;
 +
  #ifdef CONFIG_NET_L3_MASTER_DEV
  	net->ipv4.sysctl_udp_l3mdev_accept = 0;

@@ -1,0 +1,18 @@
+=== A. LLC 탐지 ===
+[    5.482364] UDP: UDP: receive budget sized from L3 cache (18432 KiB)
+
+=== B/C/D. 8 소켓, autotune 이 208K 에서 키워 올라간다 ===
+  at_off       #1  total=12.38   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  budget_on    #1  total=12.29   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  budget_off   #1  total=13.02   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  at_off       #2  total=12.69   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  budget_on    #2  total=11.51   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  budget_off   #2  total=12.5    busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  at_off       #3  total=14.37   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  budget_on    #3  total=11.94   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+  budget_off   #3  total=16.09   busy=100% rcvbuf=[rb134217728 ] udp_mem_pages=10
+
+at_off       total= 13.15  busy=100%  udp_mem_pages=      10  (n=3)
+budget_off   total= 13.87  busy=100%  udp_mem_pages=      10  (n=3)
+budget_on    total= 11.91  busy=100%  udp_mem_pages=      10  (n=3)
+clean

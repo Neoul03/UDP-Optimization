@@ -1,0 +1,25 @@
+=== [1] 동기 사례: 앱이 SO_RCVBUF 로 64MB 씩 요청 (8 소켓) ===
+  clamped_1M     #1  total=47.24   busy=100% rcvbuf=[rb2097152 rb212992 ] mem_pages=97
+  unclamped      #1  total=14.01   busy=100% rcvbuf=[rb134217728 rb212992 ] mem_pages=247224
+  clamped_1M     #2  total=47.61   busy=100% rcvbuf=[rb2097152 rb212992 ] mem_pages=210
+  unclamped      #2  total=13.93   busy=100% rcvbuf=[rb134217728 rb212992 ] mem_pages=255393
+  clamped_1M     #3  total=47.54   busy=100% rcvbuf=[rb2097152 rb212992 ] mem_pages=221
+  unclamped      #3  total=13.1    busy=100% rcvbuf=[rb134217728 rb212992 ] mem_pages=254213
+
+=== [2] 예산 검증: SO_RCVBUF 미사용, autotune 이 1M 에서 키움 ===
+  at_off         #1  total=47.83   busy=100% rcvbuf=[rb1048576 rb212992 ] mem_pages=77
+  budget_on      #1  total=32.07   busy=100% rcvbuf=[rb2097152 rb212992 rb4194304 ] mem_pages=4660
+  budget_off     #1  total=16.85   busy=100% rcvbuf=[rb212992 rb67108864 ] mem_pages=129398
+  at_off         #2  total=47.81   busy=100% rcvbuf=[rb1048576 rb212992 ] mem_pages=152
+  budget_on      #2  total=29.93   busy=100% rcvbuf=[rb2097152 rb212992 rb4194304 ] mem_pages=5080
+  budget_off     #2  total=19.96   busy=100% rcvbuf=[rb212992 rb67108864 ] mem_pages=129124
+  at_off         #3  total=47.86   busy=100% rcvbuf=[rb1048576 rb212992 ] mem_pages=247
+  budget_on      #3  total=31.72   busy=100% rcvbuf=[rb2097152 rb212992 rb4194304 ] mem_pages=5279
+  budget_off     #3  total=16.89   busy=100% rcvbuf=[rb212992 rb67108864 ] mem_pages=129279
+
+at_off         total= 47.83  busy=100%  mem_pages=     159  (n=3)
+budget_off     total= 17.90  busy=100%  mem_pages=  129267  (n=3)
+budget_on      total= 31.24  busy=100%  mem_pages=    5006  (n=3)
+clamped_1M     total= 47.46  busy=100%  mem_pages=     176  (n=3)
+unclamped      total= 13.68  busy=100%  mem_pages=  252277  (n=3)
+clean
