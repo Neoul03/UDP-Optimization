@@ -1,3 +1,17 @@
+--- a/include/linux/udp.h	2026-09-23 15:11:18.444028956 +0900
++++ b/include/linux/udp.h	2026-09-23 15:11:40.127896744 +0900
+@@ -110,6 +110,11 @@
+ 	/* Cache friendly copy of sk->sk_peek_off >= 0 */
+ 	bool		peeking_with_offset;
+ 
++	/* Bytes of sk_rcvbuf handed to this socket by autotuning, so the
++	 * global grant can be given back when the socket goes away.
++	 */
++	int		rcvbuf_granted;
++
+ 	/*
+ 	 * Accounting for the tunnel GRO fastpath.
+ 	 * Unprotected by compilers guard, as it uses space available in
 --- a/include/net/netns/ipv4.h	2026-09-22 11:10:02.053386522 +0900
 +++ b/include/net/netns/ipv4.h	2026-09-23 12:25:39.476087454 +0900
 @@ -244,6 +244,11 @@
@@ -91,7 +105,7 @@
  		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
  		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
 --- a/net/ipv4/udp.c	2026-09-22 11:10:02.069386195 +0900
-+++ b/net/ipv4/udp.c	2026-09-23 14:10:08.978268626 +0900
++++ b/net/ipv4/udp.c	2026-09-23 15:11:40.127896744 +0900
 @@ -90,6 +90,7 @@
  #include <linux/errno.h>
  #include <linux/timer.h>
@@ -108,7 +122,7 @@
  #include <net/icmp.h>
  #include <net/inet_hashtables.h>
  #include <net/ip.h>
-@@ -1696,6 +1698,124 @@
+@@ -1696,6 +1698,132 @@
  	return 0;
  }
  
@@ -168,24 +182,28 @@
 + * machine other cores are competing for the same cache.  Lower it when either
 + * is true.
 + */
++/* Bytes of receive buffer autotuning has handed out across every UDP socket.
++ *
++ * The first attempt bounded sk_memory_allocated() instead, and it does not
++ * work: that counts memory already queued, and while the consumer keeps up the
++ * queues sit nearly empty - 0.75MB held against 8MB of granted capacity in one
++ * measurement.  So the budget never bites until the queues have already grown
++ * deep, by which point the buffers behind them are several doublings too large.
++ * Occupancy follows capacity rather than the other way round, so capacity is
++ * what has to be bounded.
++ */
++static atomic_long_t udp_rcvbuf_granted;
++
 +static bool udp_rmem_over_cache_budget(const struct sock *sk, unsigned int grant)
 +{
 +	unsigned int pct = READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rmem_cache_pct);
-+	long budget_pages;
++	long budget;
 +
 +	if (!pct || !udp_llc_bytes)
 +		return false;
 +
-+	budget_pages = ((long)udp_llc_bytes * pct / 100) >> PAGE_SHIFT;
-+
-+	/* Charge what this growth would add, not only what is queued right now.
-+	 * sk_memory_allocated() reports memory already committed, so a doubling
-+	 * does not show up in it until the larger queue has actually filled.
-+	 * Eight sockets can therefore all read the aggregate as under budget,
-+	 * all double, and only afterwards push it well past - measured at 19.6MB
-+	 * against a 9MB target before this term was added.
-+	 */
-+	return sk_memory_allocated(sk) + (grant >> PAGE_SHIFT) >= budget_pages;
++	budget = (long)udp_llc_bytes * pct / 100;
++	return atomic_long_read(&udp_rcvbuf_granted) + (long)grant > budget;
 +}
 +
 +/* UDP receive buffer autotuning.
@@ -217,15 +235,19 @@
 +		return rcvbuf;
 +	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK)
 +		return rcvbuf;
-+	/* Doubling adds another rcvbuf worth of capacity. */
-+	if (udp_rmem_over_cache_budget(sk, rcvbuf))
-+		return rcvbuf;
-+
 +	max = (unsigned int)READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune_max);
 +	if (rcvbuf >= max)
 +		return rcvbuf;
 +
++	/* Doubling adds another rcvbuf worth of capacity; charge it up front so
++	 * that concurrent growers see each other's grants immediately.
++	 */
++	if (udp_rmem_over_cache_budget(sk, rcvbuf))
++		return rcvbuf;
++
 +	rcvbuf = min_t(unsigned int, rcvbuf << 1, max);
++	atomic_long_add(rcvbuf >> 1, &udp_rcvbuf_granted);
++	udp_sk(sk)->rcvbuf_granted += rcvbuf >> 1;
 +	WRITE_ONCE(sk->sk_rcvbuf, (int)rcvbuf);
 +	return rcvbuf;
 +}
@@ -233,7 +255,7 @@
  int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
  {
  	struct sk_buff_head *list = &sk->sk_receive_queue;
-@@ -1717,6 +1837,8 @@
+@@ -1717,6 +1845,8 @@
  
  	rmem += atomic_read(&udp_prod_queue->rmem_alloc);
  
@@ -242,7 +264,18 @@
  	/* Immediately drop when the receive queue is full.
  	 * Cast to unsigned int performs the boundary check for INT_MAX.
  	 */
-@@ -2341,6 +2463,27 @@
+@@ -1826,6 +1956,10 @@
+ 		kfree_skb(skb);
+ 	}
+ 	udp_rmem_release(sk, total, 0, true);
++	if (up->rcvbuf_granted) {
++		atomic_long_sub(up->rcvbuf_granted, &udp_rcvbuf_granted);
++		up->rcvbuf_granted = 0;
++	}
+ 	kfree(up->udp_prod_queue);
+ }
+ EXPORT_IPV6_MOD_GPL(udp_destruct_common);
+@@ -2341,6 +2475,27 @@
  	udp_lib_rehash(sk, new_hash, new_hash4);
  }
  
@@ -270,7 +303,7 @@
  static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  {
  	int rc;
-@@ -2363,6 +2506,8 @@
+@@ -2363,6 +2518,8 @@
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
  					is_udplite);
  			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
@@ -279,7 +312,7 @@
  		} else {
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
  				      is_udplite);
-@@ -3838,6 +3983,26 @@
+@@ -3838,6 +3995,26 @@
  	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
  	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
  

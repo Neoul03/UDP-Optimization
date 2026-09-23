@@ -57,25 +57,41 @@ compete for the same cache. Default 50%.
 
 ## Where it stands
 
-Eight sockets, 48 Gbps offered in total, one receiving core.
+Eight sockets, 48 Gbps offered in total, one receiving core, three runs each.
 
-| | total goodput | UDP memory |
+| | total goodput | UDP memory held |
 |---|---|---|
-| autotune off (1MB fixed) | **47.83** | 0.6 MB |
-| autotune + budget at 50% | 31.24 | 19.6 MB |
-| autotune, budget disabled | 17.90 | 505 MB |
+| autotune off, 1MB by hand | **47.83** | 0.36 MB |
+| **autotune + budget** | **47.21** | 0.48 MB |
+| autotune, budget disabled | 16.22 | 506 MB |
 
-The bound works: it holds the aggregate 26× lower than unbounded and is worth
-+75% against the falsification arm, which does collapse, so the gain is the
-budget's doing.
+The budget lands within 1.3% of the hand-tuned buffer while the falsification
+arm collapses, so the gain is the budget's doing. Per-socket buffers come out
+mixed — some at 1MB, some at 2MB, some at 4MB — which is the intended
+behaviour: whoever asks first gets the room, and the *sum* is what is bounded.
 
-It is not yet tight enough. The target was 9MB and the measured aggregate is
-19.6MB, which with the ring's 2MB puts the total past the 18MiB cliff — so a
-hand-set 1MB buffer still beats it. The cause is that
-`sk_memory_allocated()` reports memory already committed, so a doubling does
-not appear in it until the larger queue has filled; eight sockets can all read
-the aggregate as under budget, all double, and only then push it over.
-Charging the prospective grant is the current fix under measurement.
+### What has to be counted
+
+Getting this right took three attempts, and the difference was not the idea but
+the quantity.
+
+| version | bounded quantity | result |
+|---|---|---|
+| v6 | `sk_memory_allocated()` | 31.24 |
+| v7 | + charge the prospective grant | 30.52 |
+| **v8** | **granted capacity** | **47.21** |
+
+Bounding `sk_memory_allocated()` looks natural — the kernel already maintains
+it, so no new state is needed — but it counts memory *already queued*, and
+while the consumer keeps up the queues sit nearly empty: 0.36MB held against
+8MB of granted capacity. The budget therefore does not bite until the queues
+have grown deep, by which point the buffers behind them are several doublings
+too large. Occupancy follows capacity, not the other way round.
+
+So v8 keeps a global `atomic_long_t` of what autotuning has handed out, charged
+before the grant is made so that concurrent growers see each other immediately,
+with a per-socket record in `struct udp_sock` so the grant can be returned on
+close. Three consecutive runs give 47.4, 47.37 and 46.85, so nothing leaks.
 
 ## The motivating case, and a limit
 
