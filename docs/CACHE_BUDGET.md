@@ -98,7 +98,7 @@ before the grant is made so that concurrent growers see each other immediately,
 with a per-socket record in `struct udp_sock` so the grant can be returned on
 close. Three consecutive runs give 47.4, 47.37 and 46.85, so nothing leaks.
 
-## The motivating case, and what is still uncovered
+## The motivating case, and how it is covered
 
 `udp_sink` asks for 64MB with `SO_RCVBUF`, which is an ordinary thing for a
 high-rate receiver to do. Eight of them, with `rmem_max` out of the way, take
@@ -107,17 +107,28 @@ Every socket made a legal, modest-sounding request, and one of them alone would
 have been completely safe. That is the case a per-socket limit cannot express,
 and it is why the budget has to be global.
 
-**The budget does not cover it.** `SO_RCVBUF` sets `SOCK_RCVBUF_LOCK`, and
-autotuning skips such sockets deliberately, so no grant is ever charged for
-them and they are invisible to `udp_rcvbuf_granted`. An application that asks
-explicitly still gets what it asks for, bounded only by `rmem_max`, and it can
-still exhaust the cache on its own.
+Such a socket never grows through autotuning, so it would be invisible to a
+counter of what autotuning has handed out. It is therefore charged for whatever
+it holds, and re-charged if that changes. Note carefully what this does and
+does not do: **the request is still honoured in full.** Refusing a size an
+application asked for outright would break a long-standing expectation. What
+the charge buys is that everybody else stops compounding it - which is the
+whole difficulty, since 64MB is entirely safe until it is the eighth one.
 
-This is a real gap and worth being plain about: the budget currently protects
-applications that let the kernel size their buffers from *each other*, not from
-an application that sizes its own. Closing it means either counting explicit
-`SO_RCVBUF` grants against the same budget - which means sometimes refusing a
-request the application made deliberately - or reporting the budget back to
-userspace so an application can size itself against it. The first breaks a
-long-standing expectation; the second needs an interface. Neither is decided
-here.
+Measured with one socket asking explicitly and seven leaving it to the kernel,
+all eight taking 6 Gbps, at the same 50% budget in both kernels:
+
+| explicit socket | without the charge | with it |
+|---|---|---|
+| 8MB requested (16MB granted) | 32.15 | **47.41** |
+| 64MB requested (128MB granted) | 26.00 | **42.75** |
+
+The per-socket buffers show the mechanism directly: without the charge the
+other seven grow to 2 and 4MB on top of the greedy one; with it they stay at
+1MB, because the budget is already spent. Disabling the budget entirely gives
+16.10 and 17.08 in the two kernels, confirming nothing else differs between
+them.
+
+What remains is the greedy socket's own cost. 42.75 against 47.41 is the price
+of the 128MB buffer itself, which the kernel declines to override. The
+difference between that and 16 Gbps is everyone else not making it worse.

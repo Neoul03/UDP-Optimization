@@ -52,7 +52,8 @@ int main(int argc, char **argv) {
      * it) can be exercised.
      */
     if (!getenv("UDP_SINK_NO_RCVBUF")) {
-        int rcvbuf = 64 * 1024 * 1024;
+        const char *e = getenv("UDP_SINK_RCVBUF");
+        int rcvbuf = e ? atoi(e) : 64 * 1024 * 1024;
         setsockopt(s, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
     }
 

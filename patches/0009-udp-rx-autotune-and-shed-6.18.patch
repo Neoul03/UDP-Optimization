@@ -105,7 +105,7 @@
  		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
  		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
 --- a/net/ipv4/udp.c	2026-09-22 11:10:02.069386195 +0900
-+++ b/net/ipv4/udp.c	2026-09-23 15:11:40.127896744 +0900
++++ b/net/ipv4/udp.c	2026-09-23 16:43:10.266454307 +0900
 @@ -90,6 +90,7 @@
  #include <linux/errno.h>
  #include <linux/timer.h>
@@ -122,7 +122,7 @@
  #include <net/icmp.h>
  #include <net/inet_hashtables.h>
  #include <net/ip.h>
-@@ -1696,6 +1698,132 @@
+@@ -1696,6 +1698,152 @@
  	return 0;
  }
  
@@ -220,20 +220,40 @@
 + * sockets at 4MB is too much" when 4MB is perfectly fine for one.
 + *
 + * Off by default (net.ipv4.udp_rmem_autotune) so that the kernel matches
-+ * upstream behaviour unless the knob is set.  Sockets that set SO_RCVBUF
-+ * explicitly are always left alone.
++ * upstream behaviour unless the knob is set.  A socket that set SO_RCVBUF
++ * keeps exactly what it asked for, but is charged for it - see below.
 + */
 +static unsigned int udp_rcvbuf_autotune(struct sock *sk, unsigned int rmem,
 +					unsigned int rcvbuf)
 +{
 +	struct net *net = sock_net(sk);
++	struct udp_sock *up = udp_sk(sk);
 +	unsigned int max;
 +
-+	if (rmem <= (rcvbuf >> 1))
-+		return rcvbuf;
 +	if (!READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune))
 +		return rcvbuf;
-+	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK)
++
++	/* A socket that set SO_RCVBUF never grows here, so without this its
++	 * buffer would be invisible to the budget and the sockets that do
++	 * autotune would keep growing beside it.  Charge what it holds, and
++	 * re-charge if it changes.
++	 *
++	 * Note what this does and does not do: the request is still honoured in
++	 * full, because refusing a size the application asked for outright would
++	 * break a long-standing expectation.  What it buys is that everyone else
++	 * stops compounding the problem - which is the whole difficulty, since a
++	 * 64MB buffer is entirely safe until it is the eighth one.
++	 */
++	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK) {
++		if (up->rcvbuf_granted != (int)rcvbuf) {
++			atomic_long_add((long)rcvbuf - up->rcvbuf_granted,
++					&udp_rcvbuf_granted);
++			up->rcvbuf_granted = (int)rcvbuf;
++		}
++		return rcvbuf;
++	}
++
++	if (rmem <= (rcvbuf >> 1))
 +		return rcvbuf;
 +	max = (unsigned int)READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune_max);
 +	if (rcvbuf >= max)
@@ -247,7 +267,7 @@
 +
 +	rcvbuf = min_t(unsigned int, rcvbuf << 1, max);
 +	atomic_long_add(rcvbuf >> 1, &udp_rcvbuf_granted);
-+	udp_sk(sk)->rcvbuf_granted += rcvbuf >> 1;
++	up->rcvbuf_granted += rcvbuf >> 1;
 +	WRITE_ONCE(sk->sk_rcvbuf, (int)rcvbuf);
 +	return rcvbuf;
 +}
@@ -255,7 +275,7 @@
  int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
  {
  	struct sk_buff_head *list = &sk->sk_receive_queue;
-@@ -1717,6 +1845,8 @@
+@@ -1717,6 +1865,8 @@
  
  	rmem += atomic_read(&udp_prod_queue->rmem_alloc);
  
@@ -264,7 +284,7 @@
  	/* Immediately drop when the receive queue is full.
  	 * Cast to unsigned int performs the boundary check for INT_MAX.
  	 */
-@@ -1826,6 +1956,10 @@
+@@ -1826,6 +1976,10 @@
  		kfree_skb(skb);
  	}
  	udp_rmem_release(sk, total, 0, true);
@@ -275,7 +295,7 @@
  	kfree(up->udp_prod_queue);
  }
  EXPORT_IPV6_MOD_GPL(udp_destruct_common);
-@@ -2341,6 +2475,27 @@
+@@ -2341,6 +2495,27 @@
  	udp_lib_rehash(sk, new_hash, new_hash4);
  }
  
@@ -303,7 +323,7 @@
  static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  {
  	int rc;
-@@ -2363,6 +2518,8 @@
+@@ -2363,6 +2538,8 @@
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
  					is_udplite);
  			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
@@ -312,7 +332,7 @@
  		} else {
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
  				      is_udplite);
-@@ -3838,6 +3995,26 @@
+@@ -3838,6 +4015,26 @@
  	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
  	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
  

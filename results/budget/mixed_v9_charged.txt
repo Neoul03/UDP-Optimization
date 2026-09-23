@@ -1,0 +1,18 @@
+big8M_cnt_on     #1  total=47.93   rcvbuf=[rb1048576 rb16777216 rb212992 ]
+big8M_cnt_off    #1  total=18.85   rcvbuf=[rb16777216 rb212992 rb67108864 ]
+big64M_cnt_on    #1  total=47.9    rcvbuf=[rb1048576 rb134217728 rb212992 ]
+big64M_cnt_off   #1  total=17.45   rcvbuf=[rb134217728 rb212992 rb67108864 ]
+big8M_cnt_on     #2  total=47.8    rcvbuf=[rb1048576 rb16777216 rb212992 ]
+big8M_cnt_off    #2  total=17.02   rcvbuf=[rb16777216 rb212992 rb67108864 ]
+big64M_cnt_on    #2  total=32.48   rcvbuf=[rb1048576 rb134217728 rb212992 ]
+big64M_cnt_off   #2  total=14.65   rcvbuf=[rb134217728 rb212992 rb67108864 ]
+big8M_cnt_on     #3  total=46.5    rcvbuf=[rb1048576 rb16777216 rb212992 ]
+big8M_cnt_off    #3  total=15.36   rcvbuf=[rb16777216 rb212992 rb67108864 ]
+big64M_cnt_on    #3  total=47.86   rcvbuf=[rb1048576 rb134217728 rb212992 ]
+big64M_cnt_off   #3  total=19.58   rcvbuf=[rb134217728 rb212992 rb67108864 ]
+--- 요약 ---
+big64M_cnt_off   mean= 17.23 (n=3)
+big64M_cnt_on    mean= 42.75 (n=3)
+big8M_cnt_off    mean= 17.08 (n=3)
+big8M_cnt_on     mean= 47.41 (n=3)
+clean
