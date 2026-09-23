@@ -1,0 +1,34 @@
+1M   nohog  #1  got=47.92   ours=4128768 nb=172032 
+1M   nohog  #2  got=47.93   ours=4128768 nb=196608 
+1M   nohog  #3  got=47.92   ours=3883008 nb=98304 
+1M   hog    #1  got=47.87   ours=1327104 nb=10690560 
+1M   hog    #2  got=47.88   ours=1105920 nb=10592256 
+1M   hog    #3  got=47.88   ours=1253376 nb=10813440 
+4M   nohog  #1  got=47.88   ours=3735552 nb=958464 
+4M   nohog  #2  got=47.90   ours=4399104 nb=466944 
+4M   nohog  #3  got=47.90   ours=4128768 nb=442368 
+4M   hog    #1  got=37.52   ours=2039808 nb=9461760 
+4M   hog    #2  got=38.47   ours=1843200 nb=9658368 
+4M   hog    #3  got=39.08   ours=1892352 nb=9781248 
+8M   nohog  #1  got=44.09   ours=4767744 nb=688128 
+8M   nohog  #2  got=43.04   ours=4939776 nb=565248 
+8M   nohog  #3  got=43.39   ours=4988928 nb=196608 
+8M   hog    #1  got=25.55   ours=3170304 nb=9486336 
+8M   hog    #2  got=25.80   ours=2457600 nb=9338880 
+8M   hog    #3  got=25.66   ours=3514368 nb=9142272 
+16M  nohog  #1  got=32.95   ours=4349952 nb=49152 
+16M  nohog  #2  got=32.93   ours=5013504 nb=147456 
+16M  nohog  #3  got=32.94   ours=5234688 nb=245760 
+16M  hog    #1  got=21.37   ours=2531328 nb=9166848 
+16M  hog    #2  got=21.34   ours=3366912 nb=9388032 
+16M  hog    #3  got=21.38   ours=3489792 nb=9338880 
+--- 요약 ---
+16M hog      mean= 21.36 (n=3)
+16M nohog    mean= 32.94 (n=3)
+1M hog       mean= 47.88 (n=3)
+1M nohog     mean= 47.92 (n=3)
+4M hog       mean= 38.36 (n=3)
+4M nohog     mean= 47.89 (n=3)
+8M hog       mean= 25.67 (n=3)
+8M nohog     mean= 43.51 (n=3)
+clean

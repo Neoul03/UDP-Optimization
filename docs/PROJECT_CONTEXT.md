@@ -97,6 +97,14 @@ ethtool -C ens81f0np0 adaptive-rx off     # DIM 제거 (비교 arm 아닐 때)
    pacing) -> `udp_sink` 를 쓴다.
 
 ### 함정 (실제로 당한 것들)
+- **측정 전에 서버가 유휴인지 확인할 것.** 커널 빌드를 백그라운드로 띄워두고
+  같은 서버에서 측정해 47.9G 를 26.4G 로 쟀다. `ps -eo pcpu,comm --sort=-pcpu | head -3`
+  으로 확인하고, 빌드 직후라면 initrd 생성(`lz4`/`cpio`)까지 끝나길 기다릴 것.
+- **`udp_sink` 는 `SO_RCVBUF` 로 64MB 를 요청한다** (`tools/udp_sink.c`).
+  커널이 2배로 128MB 를 준다. 따라서 `rmem_default` 를 아무리 바꿔도
+  **`rmem_max` 가 크면 전부 128MB 가 된다.** 버퍼 스윕이 통째로 무의미해진다.
+  → 버퍼를 스윕하려면 **`UDP_SINK_NO_RCVBUF=1`** 을 쓰거나
+     `rmem_max = rmem_default` 로 같이 묶을 것. (세 번 당했다)
 - **`CONFIG_MAX_SKB_FRAGS` 를 올리면 mlx5 NIC 이 안 올라온다.** 45 로 빌드하면
   `MLX5E: Max SQ WQEBBs firmware capability: 16, needed 23` 으로 probe 실패하고
   ens81f0np0 이 사라진다. `MAX_SKB_FRAGS` 가 TX WQE 크기 계산에 직접 들어가고

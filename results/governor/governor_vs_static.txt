@@ -1,0 +1,14 @@
+noC       pct=50  hog=0 #1  total=40.86   rcvbuf=[rb2097152 rb212992 ]
+static50  pct=50  hog=1 #1  total=23.7    rcvbuf=[rb2097152 rb212992 ]
+gov       pct=21  hog=1 #1  total=26.27   rcvbuf=[rb1048576 rb2097152 rb212992 ]
+noC       pct=50  hog=0 #2  total=42.92   rcvbuf=[rb1048576 rb2097152 rb212992 rb4194304 ]
+static50  pct=50  hog=1 #2  total=24.55   rcvbuf=[rb2097152 rb212992 ]
+gov       pct=21  hog=1 #2  total=28.11   rcvbuf=[rb1048576 rb2097152 rb212992 ]
+noC       pct=50  hog=0 #3  total=47.29   rcvbuf=[rb1048576 rb2097152 rb212992 rb4194304 ]
+static50  pct=50  hog=1 #3  total=22.86   rcvbuf=[rb1048576 rb2097152 rb212992 rb4194304 ]
+gov       pct=21  hog=1 #3  total=29.54   rcvbuf=[rb1048576 rb2097152 rb212992 ]
+--- 요약 ---
+gov       mean= 27.97 (n=3)
+noC       mean= 43.69 (n=3)
+static50  mean= 23.70 (n=3)
+clean
