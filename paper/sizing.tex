@@ -1,0 +1,79 @@
+\section{Sizing the buffer: a negative result}
+\label{sec:sizing}
+
+Before arriving at a cap and a discard we built the thing the problem statement
+suggests: a controller that sizes each buffer to what its traffic needs. It
+works, in the sense that it reaches parity with the better fixed buffer on both
+workloads without being told which workload it is running. It is nonetheless not
+the right mechanism, and the reason is worth more than the mechanism would have
+been.
+
+\subsection{The construction}
+
+TCP's receive-side rule is $\rcvbuf = 2 \times (\text{bytes received in one
+RTT})$: the RTT delimits one turn of the consumer, and the factor of two leaves
+room for the next turn's arrivals while the current one is consumed. UDP has no
+RTT, which is the usual reason given for the absence of UDP autotuning.
+
+The RTT's role, though, is only to delimit a period over which demand can be
+measured, and the receive queue supplies one: the interval from its rising above
+half full to its falling below an eighth. Over that interval the queue's peak is
+what arrived while the consumer worked through what it already had---which, when
+the NIC is batching, is one moderation window's delivery. Sizing to twice it
+reproduces TCP's rule with a clock UDP can read, and lands on
+$\rxframes \times \texttt{pkt}$ without consulting the driver.
+
+Two properties fall out. A socket whose consumer cannot keep up never sees its
+queue empty, so it never closes an interval, never produces a target, and never
+grows---the case where more buffer cannot help excludes itself, with no separate
+test. And a cycle must be closed by \emph{both} halves: detecting only the drain
+is insufficient, because the enqueue path runs on every arrival and a socket
+whose queue is already empty would close a cycle on each packet, with a peak of
+one packet, overwriting a correct target with nothing.
+
+\subsection{Why it is not the answer}
+
+Table~\ref{tab:nostatic} places it against the alternatives. It matches the
+better fixed buffer on both workloads. It does not beat a fixed 1\,MB buffer
+combined with the discard of \S\ref{sec:shed}, which matches it below the
+receiving core's saturation point and exceeds it by 4--6\% above
+(Figure~\ref{fig:shedmarg}).
+
+The reason is the measurement that motivated the sizer in the first place. Past
+the point where arrivals outpace the consumer, the queue is full whatever its
+capacity, and the extra capacity only lengthens the time data waits before
+copy-out---by which time, per \S\ref{sec:workingset}, it has been evicted.
+Sizing up is the wrong response to overload, and an adaptive sizer is a machine
+for sizing up.
+
+There is a second, sharper way to see this. The demand figure is the queue's
+peak occupancy, and occupancy is bounded by \rcvbuf. A larger buffer therefore
+permits a deeper peak, which raises the estimate, which grows the buffer again;
+the loop is stopped by the allowance rather than by need, and we measured it
+reaching 9.4\,MB on a socket that performed better at 1. TCP does not have this
+problem because \texttt{tcp\_rcv\_space\_adjust()} counts bytes \emph{copied to
+the application}, which buffer size cannot inflate. Counting bytes released to
+the consumer over the same interval would be the faithful translation and would
+remove the inflation.
+
+We did not pursue it, because by then the conclusion no longer depended on the
+estimator. Even a perfectly calibrated sizer converges on ``as much buffer as
+this socket can use'', and the measurement says the quantity worth minimising
+is how much data sits between the producer and the consumer. The right target is
+small, and a mechanism whose whole purpose is to find how large it may safely be
+is aimed the wrong way.
+
+\subsection{What the exercise established}
+
+Two things, both of which the final design rests on.
+
+That \emph{discarding cannot substitute for a cap.} Eight sockets at 8\,MB reach
+22.7\,Gbps, and 29.4 with discarding enabled---an improvement, and still half of
+the 55.8 the same eight reach at 1\,MB, still losing 47\% of what was offered.
+Removing work does not remove capacity. Whatever else is done, something has to
+bound what the buffers sum to.
+
+And that \emph{a cap is all the sizing that is needed.} Between the cap and the
+discard, the remaining freedom---where within the bound a given socket sits---is
+worth at most the 0.2\,Gbps by which the sizer leads the fixed buffer below the
+ceiling, and costs 4--6\% above it.

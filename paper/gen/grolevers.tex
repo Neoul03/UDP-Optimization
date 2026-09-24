@@ -1,0 +1,46 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+offered (Gb/s) & 24 & 32 & 40 & 48 & 56 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{application sets UDP\_GRO}} \\
+\quad fixed 1\,MB & 24.0 & 32.0 & 40.0 & 48.0 & 36.7 \\
+\quad + shed & 24.0 & 32.0 & 40.0 & 47.9 & 54.2 \\
+\quad \sys & 24.0 & 32.0 & 40.0 & 47.9 & 55.3 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{it does not; the stack re-segments}} \\
+\quad fixed 1\,MB & 24.0 & 32.0 & 40.0 & 32.9 & 30.0 \\
+\quad + shed & 24.0 & 32.0 & 40.0 & 46.4 & 47.5 \\
+\quad \sys & 24.0 & 32.0 & 40.0 & 45.9 & 46.9 \\
+\bottomrule
+\end{tabular}
+\caption{Goodput with moderation on. Re-segmentation raises the
+per-packet cost and lowers the ceiling, which changes which lever pays.}
+\label{tab:groleverson}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+offered (Gb/s) & 24 & 32 & 40 & 48 & 56 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{application sets UDP\_GRO}} \\
+\quad fixed 1\,MB & 24.0 & 32.0 & 40.0 & 47.9 & 48.0 \\
+\quad + shed & 24.0 & 32.0 & 40.0 & 48.0 & 52.6 \\
+\quad \sys & 24.0 & 32.0 & 40.0 & 45.2 & 45.7 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{it does not; the stack re-segments}} \\
+\quad fixed 1\,MB & 24.0 & 32.0 & 40.0 & 43.2 & 35.4 \\
+\quad + shed & 24.0 & 32.0 & 40.0 & 46.3 & 44.0 \\
+\quad \sys & 24.0 & 32.0 & 40.0 & 40.4 & 34.6 \\
+\bottomrule
+\end{tabular}
+\caption{Goodput with moderation off. Re-segmentation raises the
+per-packet cost and lowers the ceiling, which changes which lever pays.}
+\label{tab:groleversoff}
+\end{table}
+

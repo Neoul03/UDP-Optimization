@@ -1,0 +1,34 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{W1: one socket} & \multicolumn{2}{c}{W2: eight sockets} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+configuration & Gb/s & loss & Gb/s & loss \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{moderation on, the driver default}} \\
+\quad fixed 1\,MB & 35.4 & 36.9 & 55.7 & 0.6 \\
+\quad fixed 1\,MB + shed & 54.2 & 3.1 & 55.8 & 0.3 \\
+\quad fixed 8\,MB & 55.6 & 0.8 & 22.9 & 59.1 \\
+\quad fixed 8\,MB + shed & 55.5 & 1.0 & 29.5 & 47.3 \\
+\quad \sys & 55.4 & 1.0 & 55.6 & 0.7 \\
+\quad \sys + shed & 55.6 & 0.7 & 55.8 & 0.4 \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{moderation off}} \\
+\quad fixed 1\,MB & 48.2 & 14.0 & 50.3 & 10.1 \\
+\quad fixed 1\,MB + shed & 52.7 & 5.9 & 52.3 & 6.6 \\
+\quad fixed 8\,MB & 40.3 & 28.1 & 19.8 & 64.7 \\
+\quad fixed 8\,MB + shed & 46.0 & 17.9 & 25.3 & 54.7 \\
+\quad \sys & 45.4 & 19.0 & 46.2 & 17.5 \\
+\quad \sys + shed & 48.9 & 12.8 & 51.5 & 8.0 \\
+\bottomrule
+\end{tabular}
+\caption{Both workloads on one kernel and one setting, $n=10$.
+Loss is what the sender offered and the receiver did not deliver;
+goodput alone does not distinguish carrying a load from discarding
+much of it. Each fixed buffer loses one workload badly. A small one
+with driver-side discard carries both under either moderation
+setting; a large one with the same discard still does not.}
+\label{tab:nostatic}
+\end{table}

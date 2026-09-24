@@ -1,0 +1,24 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+offered (Gb/s) & 48 & 56 & 64 & 72 & 80 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{moderation on (the default)}} \\
+\quad \sys & 47.9 & 55.0 & 58.4 & 54.2 & 54.9 \\
+\quad \sys + shed & 47.9 & 55.5 & 58.8 & 58.1 & 58.6 \\
+\quad fixed 1\,MB & 33.3 & 34.0 & 34.4 & 36.0 & 38.7 \\
+\quad fixed 1\,MB + shed & 47.5 & 54.7 & 62.7 & 61.4 & 60.9 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{moderation off}} \\
+\quad \sys & 46.4 & 46.1 & 47.2 & 53.7 & 49.9 \\
+\quad \sys + shed & 46.9 & 49.0 & 52.2 & 57.5 & 57.9 \\
+\quad fixed 1\,MB & 47.9 & 48.1 & 49.5 & 55.1 & 52.4 \\
+\quad fixed 1\,MB + shed & 48.0 & 52.7 & 55.8 & 61.5 & 61.7 \\
+\bottomrule
+\end{tabular}
+\caption{Goodput past the ceiling, $n=5$ per point. Sizing carries the
+load up to the ceiling; only shedding changes anything beyond it.}
+\label{tab:shedmarg}
+\end{table}
