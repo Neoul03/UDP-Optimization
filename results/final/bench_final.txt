@@ -1,0 +1,118 @@
+===== A. 단일 흐름: 레버를 하나씩 쌓는다 =====
+  A0_stock       b=40  #1  got=39.97   busy=76%
+  A0_stock       b=48  #1  got=47.94   busy=90%
+  A0_stock       b=56  #1  got=53.29   busy=100%
+  A0_stock       b=40  #2  got=39.98   busy=76%
+  A0_stock       b=48  #2  got=47.93   busy=91%
+  A0_stock       b=56  #2  got=52.27   busy=100%
+  A0_stock       b=40  #3  got=39.97   busy=77%
+  A0_stock       b=48  #3  got=47.92   busy=92%
+  A0_stock       b=56  #3  got=51.23   busy=100%
+  A0_stock       b=40  #4  got=39.99   busy=78%
+  A0_stock       b=48  #4  got=47.93   busy=92%
+  A0_stock       b=56  #4  got=50.84   busy=100%
+  A0_stock       b=40  #5  got=39.97   busy=78%
+  A0_stock       b=48  #5  got=47.91   busy=92%
+  A0_stock       b=56  #5  got=50.23   busy=100%
+  A1_rmem1M      b=40  #1  got=39.98   busy=78%
+  A1_rmem1M      b=48  #1  got=47.84   busy=94%
+  A1_rmem1M      b=56  #1  got=41.31   busy=100%
+  A1_rmem1M      b=40  #2  got=39.99   busy=79%
+  A1_rmem1M      b=48  #2  got=47.81   busy=94%
+  A1_rmem1M      b=56  #2  got=41.28   busy=100%
+  A1_rmem1M      b=40  #3  got=39.98   busy=80%
+  A1_rmem1M      b=48  #3  got=47.84   busy=94%
+  A1_rmem1M      b=56  #3  got=41.15   busy=100%
+  A1_rmem1M      b=40  #4  got=39.99   busy=80%
+  A1_rmem1M      b=48  #4  got=47.83   busy=94%
+  A1_rmem1M      b=56  #4  got=41.03   busy=100%
+  A1_rmem1M      b=40  #5  got=39.98   busy=79%
+  A1_rmem1M      b=48  #5  got=47.83   busy=94%
+  A1_rmem1M      b=56  #5  got=40.88   busy=100%
+  A2_ring128     b=40  #1  got=39.98   busy=76%
+  A2_ring128     b=48  #1  got=47.97   busy=90%
+  A2_ring128     b=56  #1  got=48.91   busy=100%
+  A2_ring128     b=40  #2  got=39.98   busy=77%
+  A2_ring128     b=48  #2  got=47.96   busy=90%
+  A2_ring128     b=56  #2  got=49.11   busy=100%
+  A2_ring128     b=40  #3  got=39.99   busy=77%
+  A2_ring128     b=48  #3  got=47.95   busy=90%
+  A2_ring128     b=56  #3  got=49.15   busy=100%
+  A2_ring128     b=40  #4  got=39.98   busy=77%
+  A2_ring128     b=48  #4  got=47.97   busy=90%
+  A2_ring128     b=56  #4  got=49.22   busy=100%
+  A2_ring128     b=40  #5  got=39.98   busy=77%
+  A2_ring128     b=48  #5  got=47.96   busy=90%
+  A2_ring128     b=56  #5  got=49.22   busy=100%
+  A3_shed        b=40  #1  got=39.99   busy=77%
+  A3_shed        b=48  #1  got=47.97   busy=90%
+  A3_shed        b=56  #1  got=54.11   busy=100%
+  A3_shed        b=40  #2  got=39.98   busy=77%
+  A3_shed        b=48  #2  got=47.98   busy=90%
+  A3_shed        b=56  #2  got=54.01   busy=100%
+  A3_shed        b=40  #3  got=39.99   busy=77%
+  A3_shed        b=48  #3  got=47.98   busy=90%
+  A3_shed        b=56  #3  got=54.12   busy=100%
+  A3_shed        b=40  #4  got=39.99   busy=77%
+  A3_shed        b=48  #4  got=47.97   busy=90%
+  A3_shed        b=56  #4  got=54.03   busy=100%
+  A3_shed        b=40  #5  got=39.99   busy=77%
+  A3_shed        b=48  #5  got=47.97   busy=90%
+  A3_shed        b=56  #5  got=54.19   busy=100%
+
+===== B. 8 소켓 48G: 전역 예산 =====
+  B0_stock208K   b=48  #1  got=47.87   busy=100%
+  B0_stock208K   b=48  #2  got=47.87   busy=100%
+  B0_stock208K   b=48  #3  got=47.91   busy=100%
+  B0_stock208K   b=48  #4  got=47.91   busy=100%
+  B0_stock208K   b=48  #5  got=47.86   busy=100%
+  B1_at_nobudget b=48  #1  got=16.93   busy=100%
+  B1_at_nobudget b=48  #2  got=17.65   busy=100%
+  B1_at_nobudget b=48  #3  got=14.92   busy=100%
+  B1_at_nobudget b=48  #4  got=14.31   busy=100%
+  B1_at_nobudget b=48  #5  got=18.85   busy=100%
+  B2_at_budget   b=48  #1  got=47.55   busy=100%
+  B2_at_budget   b=48  #2  got=47.47   busy=100%
+  B2_at_budget   b=48  #3  got=47.18   busy=100%
+  B2_at_budget   b=48  #4  got=47.45   busy=100%
+  B2_at_budget   b=48  #5  got=47.28   busy=100%
+
+===== C. 과부하 72G: shed =====
+  C0_noshed      b=72  #1  got=55.56   busy=100%
+  C0_noshed      b=72  #2  got=55.92   busy=100%
+  C0_noshed      b=72  #3  got=55.83   busy=100%
+  C0_noshed      b=72  #4  got=55.69   busy=100%
+  C0_noshed      b=72  #5  got=55.60   busy=100%
+  C1_shed        b=72  #1  got=61.81   busy=99%
+  C1_shed        b=72  #2  got=61.72   busy=100%
+  C1_shed        b=72  #3  got=61.87   busy=99%
+  C1_shed        b=72  #4  got=61.96   busy=99%
+  C1_shed        b=72  #5  got=61.77   busy=100%
+
+===== D. TCP 기준선 (기본 tcp_rmem) =====
+  D_tcp               #1  got=58.0    busy=99%
+  D_tcp               #2  got=58.3    busy=100%
+  D_tcp               #3  got=47.7    busy=85%
+  D_tcp               #4  got=57.5    busy=99%
+  D_tcp               #5  got=50.2    busy=88%
+
+=========== 요약 ===========
+A0_stock       40G   got= 39.98  busy= 77%  (n=5)
+A0_stock       48G   got= 47.93  busy= 91%  (n=5)
+A0_stock       56G   got= 51.57  busy=100%  (n=5)
+A1_rmem1M      40G   got= 39.98  busy= 79%  (n=5)
+A1_rmem1M      48G   got= 47.83  busy= 94%  (n=5)
+A1_rmem1M      56G   got= 41.13  busy=100%  (n=5)
+A2_ring128     40G   got= 39.98  busy= 77%  (n=5)
+A2_ring128     48G   got= 47.96  busy= 90%  (n=5)
+A2_ring128     56G   got= 49.12  busy=100%  (n=5)
+A3_shed        40G   got= 39.99  busy= 77%  (n=5)
+A3_shed        48G   got= 47.97  busy= 90%  (n=5)
+A3_shed        56G   got= 54.09  busy=100%  (n=5)
+B0_stock208K   48G   got= 47.88  busy=100%  (n=5)
+B1_at_nobudget 48G   got= 16.53  busy=100%  (n=5)
+B2_at_budget   48G   got= 47.39  busy=100%  (n=5)
+C0_noshed      72G   got= 55.72  busy=100%  (n=5)
+C1_shed        72G   got= 61.83  busy= 99%  (n=5)
+D_tcp          -     got= 54.34  busy= 94%  (n=5)
+clean

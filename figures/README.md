@@ -33,6 +33,12 @@ shape below the ceiling does not.
 | `fig05_tool_comparison` | offered rate | The same receiver under both generators — iperf3 loses 6% at 44 Gbit/s where udp_blast loses 0.02% |
 | **`fig06_cache_sharing`** | sk_rcvbuf | **The mechanism.** Growing the buffer costs 60% when producer and consumer share an L2, 39% when they share only L3, and 6% when they share nothing |
 | `fig07_mtu1500_rcvbuf` | sk_rcvbuf | At MTU 1500 the curve is flat above 512KB — the buffer optimum only exists when the receiver is overrun-bound |
+| `fig08_shed_window` | shed window | The optimum moves with load but only slightly, while being 8x too long costs 67% — why the window is fixed short rather than adapted |
+| `fig09_config_levers` | offered rate | Shrinking the mlx5 head copy and dropping the usercopy check, before and after |
+| **`fig10_working_set`** | working set | **The cliff sits at the L3 size, with L3 miss rising in mirror image** |
+| **`fig11_cat_ways`** | working set | **Masking L3 ways with CAT drags the knee down in proportion — correlation becomes cause** |
+| `fig12_multiflow_working_set` | working set | One socket and eight collapse at the same aggregate |
+| **`fig13_final_single`** | offered rate | **The summary run: every lever is worth nothing below the ceiling and up to +31% past it** |
 
 ## Parameters actually swept
 
