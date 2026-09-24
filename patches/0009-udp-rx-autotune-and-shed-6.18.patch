@@ -1,19 +1,30 @@
---- a/include/linux/udp.h	2026-09-23 15:11:18.444028956 +0900
-+++ b/include/linux/udp.h	2026-09-23 15:11:40.127896744 +0900
-@@ -110,6 +110,11 @@
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -110,6 +110,22 @@
  	/* Cache friendly copy of sk->sk_peek_off >= 0 */
  	bool		peeking_with_offset;
  
 +	/* Bytes of sk_rcvbuf handed to this socket by autotuning, so the
-+	 * global grant can be given back when the socket goes away.
++	 * global grant can be given back when the socket goes away.  Atomic
++	 * because the autotuner runs before __udp_enqueue_schedule_skb() takes
++	 * the receive queue lock, and one socket is fed by as many softirqs as
++	 * there are receive queues its senders hash to.
 +	 */
-+	int		rcvbuf_granted;
++	atomic_t	rcvbuf_granted;
++
++	/* Highest occupancy seen since the queue was last found empty, and
++	 * twice the figure the last completed such cycle reached, which is
++	 * what the buffer has to hold.  See udp_rcvbuf_autotune().
++	 */
++	atomic_t	rcvbuf_peak;
++	atomic_t	rcvbuf_target;
++	atomic_t	rcvbuf_filled;
 +
  	/*
  	 * Accounting for the tunnel GRO fastpath.
  	 * Unprotected by compilers guard, as it uses space available in
---- a/include/net/netns/ipv4.h	2026-09-22 11:10:02.053386522 +0900
-+++ b/include/net/netns/ipv4.h	2026-09-23 12:25:39.476087454 +0900
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
 @@ -244,6 +244,11 @@
  
  	int sysctl_udp_wmem_min;
@@ -26,8 +37,8 @@
  
  	u8 sysctl_fib_notify_on_flag_change;
  	u8 sysctl_tcp_syn_linear_timeouts;
---- a/include/net/udp.h	2026-09-22 11:10:02.057386441 +0900
-+++ b/include/net/udp.h	2026-09-22 11:10:29.048833931 +0900
+--- a/include/net/udp.h
++++ b/include/net/udp.h
 @@ -212,6 +212,23 @@
  extern int sysctl_udp_rmem_min;
  extern int sysctl_udp_wmem_min;
@@ -47,13 +58,13 @@
 +	u64 until_ns;
 +} ____cacheline_aligned_in_smp;
 +extern struct udp_rx_shed_slot udp_rx_shed[UDP_RX_SHED_MAX_QUEUES];
-+void udp_rx_shed_mark(const struct sock *sk);
++void udp_rx_shed_mark(const struct sock *sk, const struct sk_buff *skb);
 +
  struct sk_buff;
  
  /*
---- a/net/ipv4/sysctl_net_ipv4.c	2026-09-22 11:10:02.061386359 +0900
-+++ b/net/ipv4/sysctl_net_ipv4.c	2026-09-23 12:25:39.476087454 +0900
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
 @@ -1516,6 +1516,49 @@
  		.extra1		= SYSCTL_ONE
  	},
@@ -104,8 +115,8 @@
  		.procname	= "udp_wmem_min",
  		.data		= &init_net.ipv4.sysctl_udp_wmem_min,
  		.maxlen		= sizeof(init_net.ipv4.sysctl_udp_wmem_min),
---- a/net/ipv4/udp.c	2026-09-22 11:10:02.069386195 +0900
-+++ b/net/ipv4/udp.c	2026-09-23 16:43:10.266454307 +0900
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
 @@ -90,6 +90,7 @@
  #include <linux/errno.h>
  #include <linux/timer.h>
@@ -122,7 +133,7 @@
  #include <net/icmp.h>
  #include <net/inet_hashtables.h>
  #include <net/ip.h>
-@@ -1696,6 +1698,152 @@
+@@ -1696,6 +1698,435 @@
  	return 0;
  }
  
@@ -194,6 +205,14 @@
 + */
 +static atomic_long_t udp_rcvbuf_granted;
 +
++/* One step of additive increase.  Small enough that a socket overshooting its
++ * demand by one step wastes little cache, large enough that reaching several
++ * megabytes takes a few hundred steps rather than tens of thousands - and
++ * steps are spent no faster than the queue drains, so a socket taking bursts
++ * every 20us at 56 Gbit/s covers 1MB to 8MB in a couple of milliseconds.
++ */
++#define UDP_RCVBUF_AI_STEP	(64 * 1024)
++
 +static bool udp_rmem_over_cache_budget(const struct sock *sk, unsigned int grant)
 +{
 +	unsigned int pct = READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rmem_cache_pct);
@@ -206,13 +225,125 @@
 +	return atomic_long_read(&udp_rcvbuf_granted) + (long)grant > budget;
 +}
 +
-+/* UDP receive buffer autotuning.
++/* Commit one autotuning step, moving sk_rcvbuf from @old to @new and both
++ * counters with it.
 + *
-+ * TCP grows sk_rcvbuf from its own RTT clock (tcp_rcvbuf_grow); UDP has no
++ * This runs without any socket lock: udp_rcvbuf_autotune() is called from
++ * __udp_enqueue_schedule_skb() before it takes the receive queue lock, and a
++ * single socket is fed by as many softirqs as there are receive queues its
++ * senders hash to - which is every multi-sender UDP socket on a multi-queue
++ * NIC.  So the transition has to be claimed rather than assumed: whoever wins
++ * the exchange on sk_rcvbuf is the one that moves the counters, and everyone
++ * else takes the value the winner left and returns.
++ *
++ * Read-modify-write on a plain int would lose updates two ways.  Two growers
++ * would each double from the same old value, so the buffer ends up at twice
++ * what the budget allowed; and the per-socket total would fall behind the
++ * global one, which matters at close, because udp_destruct_common() gives back
++ * the per-socket figure.  Every lost update would leave the global counter
++ * permanently high, and enough of them spend the budget for good - after which
++ * no socket on the machine can grow again until reboot.
++ */
++static bool udp_rcvbuf_commit(struct sock *sk, struct udp_sock *up,
++			      unsigned int old, unsigned int new)
++{
++	if (cmpxchg(&sk->sk_rcvbuf, (int)old, (int)new) != (int)old)
++		return false;
++
++	atomic_long_add((long)new - (long)old, &udp_rcvbuf_granted);
++	atomic_add((int)new - (int)old, &up->rcvbuf_granted);
++	return true;
++}
++
++/* Reclaim from sockets that stopped receiving.
++ *
++ * The shrink path in udp_rcvbuf_autotune() only runs when a packet arrives, so
++ * it returns the allowance of a socket that slowed down but not of one that
++ * went quiet - and a socket that went quiet is the one holding capacity it
++ * certainly is not using.  Nothing else in UDP runs periodically, so there is
++ * no existing place to notice it.
++ *
++ * Measured, with three sockets grown to 4MB and then silenced, a fourth
++ * arriving at 56 Gbit/s was held at its starting 1MB and delivered 33.4
++ * against the 55.5 it managed once those three were closed.  The allowance was
++ * spent on sockets receiving nothing.
++ *
++ * Sweeping the hash is not cheap, so it is armed only by a socket being
++ * refused, which is the only evidence that the allowance is actually
++ * contended, and then no more than once per UDP_BUDGET_SWEEP_DELAY.  An
++ * uncontended machine never runs this at all.
++ */
++#define UDP_BUDGET_SWEEP_DELAY	(HZ / 4)
++
++static void udp_budget_sweep(struct work_struct *work);
++static DECLARE_DELAYED_WORK(udp_budget_work, udp_budget_sweep);
++
++static void udp_budget_pressure(void)
++{
++	/* Racing callers may both queue; the workqueue collapses that to one
++	 * pending run, which is the behaviour wanted.
++	 */
++	schedule_delayed_work(&udp_budget_work, UDP_BUDGET_SWEEP_DELAY);
++}
++
++static void udp_budget_sweep(struct work_struct *work)
++{
++	unsigned int slot, reclaimed = 0;
++
++	for (slot = 0; slot <= udp_table.mask; slot++) {
++		struct udp_hslot *hslot = &udp_table.hash[slot];
++		struct sock *sk;
++
++		if (hlist_empty(&hslot->head))
++			continue;
++
++		/* The lock keeps sockets from being unhashed underneath, which
++		 * is what makes it safe to touch sk_rcvbuf here.  Held only for
++		 * one bucket at a time; the enqueue path does not take it.
++		 */
++		spin_lock_bh(&hslot->lock);
++		sk_for_each(sk, &hslot->head) {
++			struct udp_sock *up = udp_sk(sk);
++			unsigned int rcvbuf, give;
++			int granted;
++
++			granted = atomic_read(&up->rcvbuf_granted);
++			if (granted <= 0)
++				continue;
++			if (sk->sk_userlocks & SOCK_RCVBUF_LOCK)
++				continue;
++
++			rcvbuf = READ_ONCE(sk->sk_rcvbuf);
++
++			/* Same emptiness test the arrival path uses, so a
++			 * socket is not shrunk here on evidence it would not
++			 * have shrunk on itself.
++			 */
++			if (atomic_read(&sk->sk_rmem_alloc) >= (rcvbuf >> 3))
++				continue;
++
++			give = min_t(unsigned int, rcvbuf >> 1,
++				     (unsigned int)granted);
++			if (give && udp_rcvbuf_commit(sk, up, rcvbuf,
++						      rcvbuf - give))
++				reclaimed += give;
++		}
++		spin_unlock_bh(&hslot->lock);
++	}
++
++	if (reclaimed)
++		pr_debug("UDP: reclaimed %u KiB of idle receive budget\n",
++			 reclaimed >> 10);
++}
++
++/* UDP receive buffer autotuning, in both directions.
++ *
++ * TCP sizes sk_rcvbuf from its own RTT clock (tcp_rcvbuf_grow); UDP has no
 + * such clock, so the only signal available to the producer is how full the
 + * queue already is.  When the producer finds the queue more than half full the
 + * consumer is losing to the arrival burst, so double sk_rcvbuf rather than
-+ * drop at whatever static value rmem_default happened to be.
++ * drop at whatever static value rmem_default happened to be; when it finds the
++ * queue below an eighth the buffer is oversized and half of it goes back.
 + *
 + * Growth stops at whichever bound comes first: the per-socket ceiling
 + * net.ipv4.udp_rmem_autotune_max, or the global cache budget above.  The
@@ -228,7 +359,7 @@
 +{
 +	struct net *net = sock_net(sk);
 +	struct udp_sock *up = udp_sk(sk);
-+	unsigned int max;
++	unsigned int max, grown, target, floor;
 +
 +	if (!READ_ONCE(net->ipv4.sysctl_udp_rmem_autotune))
 +		return rcvbuf;
@@ -244,13 +375,134 @@
 +	 * stops compounding the problem - which is the whole difficulty, since a
 +	 * 64MB buffer is entirely safe until it is the eighth one.
 +	 */
++	/* Charge the buffer the socket already has, once.
++	 *
++	 * The budget bounds what UDP is holding, and the buffer a socket
++	 * starts with is part of that no less than what autotuning adds
++	 * later.  Counting only the additions leaves the baseline invisible,
++	 * and the baseline is not small when there are many sockets: eight at
++	 * a 1MB default are 8MB spoken for before a single grant is made,
++	 * which is most of a budget set at half of an 18MB cache.
++	 *
++	 * Measured with the additions alone counted: eight sockets reached
++	 * 17.8MB between them against a 9MB budget, and delivered 37.63
++	 * where a fixed 1MB buffer delivers 55.70.
++	 *
++	 * The exchange charges exactly one caller, and from then on the field
++	 * is non-zero, so this cannot fire twice.
++	 */
++	if (atomic_cmpxchg(&up->rcvbuf_granted, 0, (int)rcvbuf) == 0)
++		atomic_long_add(rcvbuf, &udp_rcvbuf_granted);
++
++	/* Follow the high-water mark of this cycle.  Read-modify-write without
++	 * a lock can lose a raised mark to a concurrent one, which costs only
++	 * that this cycle's demand comes out slightly low; the next cycle
++	 * corrects it, and a cmpxchg loop on the hot path is not worth that.
++	 */
++	if ((int)rmem > atomic_read(&up->rcvbuf_peak))
++		atomic_set(&up->rcvbuf_peak, (int)rmem);
++
 +	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK) {
-+		if (up->rcvbuf_granted != (int)rcvbuf) {
-+			atomic_long_add((long)rcvbuf - up->rcvbuf_granted,
-+					&udp_rcvbuf_granted);
-+			up->rcvbuf_granted = (int)rcvbuf;
-+		}
++		int old = atomic_xchg(&up->rcvbuf_granted, (int)rcvbuf);
++
++		/* The exchange settles which caller saw the change: one of them
++		 * reads the stale value and pays the difference, the rest read
++		 * what it wrote and owe nothing.
++		 */
++		if (old != (int)rcvbuf)
++			atomic_long_add((long)rcvbuf - old, &udp_rcvbuf_granted);
 +		return rcvbuf;
++	}
++
++	/* Give back what is no longer being used.
++	 *
++	 * Growing alone is not enough, because the budget is a shared allowance
++	 * and nothing returns it.  Measured: a socket that grew to 8MB under 48
++	 * Gbit/s kept all 8MB when its load fell to 4, and a socket arriving
++	 * afterwards could only reach 2MB before the allowance ran out - the one
++	 * holding it needed 1MB and the one that needed room could not have it.
++	 * Left alone, every socket ratchets to its own high-water mark and the
++	 * budget is spent for good.
++	 *
++	 * TCP sizes the buffer from its RTT clock and can therefore shrink as
++	 * well as grow.  UDP has no such clock, so reuse the occupancy signal
++	 * that drives growth, with a wide dead band: grow above a half, shrink
++	 * below an eighth.  Four times' hysteresis keeps a socket sitting near
++	 * either threshold from flapping.
++	 *
++	 * Only what autotuning granted can be taken back, never the buffer the
++	 * socket started with.
++	 */
++	/* Half of the cycle: the queue got far enough up to be worth measuring.
++	 * The other half is the drain below.  Both are needed, because this
++	 * runs on every arrival rather than once per cycle: an empty queue
++	 * taking one packet at a time would otherwise close a "cycle" on each
++	 * of them, whose peak is that single packet, and the demand figure
++	 * would be overwritten with nothing microseconds after it was right.
++	 *
++	 * Measured before this test: a socket taking 128-frame bursts at 56
++	 * Gbit/s never grew at all, sitting at its initial 1MB for the whole
++	 * run and delivering what a fixed 1MB buffer delivers.
++	 */
++	if (rmem > (rcvbuf >> 1))
++		atomic_set(&up->rcvbuf_filled, 1);
++
++	if (rmem < (rcvbuf >> 3)) {
++		int granted = atomic_read(&up->rcvbuf_granted);
++		unsigned int give;
++
++		/* A filled queue has now emptied, so one turn of the consumer
++		 * is over and the peak it reached is one cycle's worth of
++		 * arrivals - which is what the buffer has to hold.  Take twice
++		 * it, the factor tcp_rcv_space_adjust() takes over one RTT.
++		 */
++		if (atomic_xchg(&up->rcvbuf_filled, 0)) {
++			int peak = atomic_xchg(&up->rcvbuf_peak, 0);
++
++			if (peak > 0)
++				atomic_set(&up->rcvbuf_target, peak * 2);
++		}
++
++		if (granted <= 0)
++			return rcvbuf;
++
++		/* Never below the demand just measured.  An empty queue is not
++		 * evidence that the buffer is oversized - a socket taking
++		 * bursts empties between them every time, and is exactly the
++		 * socket that needs the room when the next one lands.  Without
++		 * this the two halves work against each other: giving back half
++		 * on every drain outruns adding a step on every burst, so the
++		 * buffer never accumulates and a bursty socket is pinned at its
++		 * starting size.
++		 *
++		 * Measured on a single socket at 56 Gbit/s with moderation
++		 * delivering 128-frame bursts: 36.70 without this test against
++		 * 55.45 for the doubling it replaced, which is what a fixed 1MB
++		 * buffer gets - it had not grown at all.
++		 */
++		target = (unsigned int)atomic_read(&up->rcvbuf_target);
++
++		/* Now that the whole buffer is charged rather than only what
++		 * autotuning added, "what was granted" no longer marks the
++		 * floor, so take the larger of the measured demand and the
++		 * default the administrator set.  A socket that never asked for
++		 * anything should not end up with less than a socket that does
++		 * not autotune at all.
++		 */
++		floor = (unsigned int)READ_ONCE(sysctl_rmem_default);
++		if (target > floor)
++			floor = target;
++		if (rcvbuf <= floor)
++			return rcvbuf;
++
++		give = min_t(unsigned int, rcvbuf - floor,
++			     min_t(unsigned int, rcvbuf >> 1,
++				   (unsigned int)granted));
++		if (!give)
++			return rcvbuf;
++		if (!udp_rcvbuf_commit(sk, up, rcvbuf, rcvbuf - give))
++			return READ_ONCE(sk->sk_rcvbuf);
++		return rcvbuf - give;
 +	}
 +
 +	if (rmem <= (rcvbuf >> 1))
@@ -259,23 +511,65 @@
 +	if (rcvbuf >= max)
 +		return rcvbuf;
 +
-+	/* Doubling adds another rcvbuf worth of capacity; charge it up front so
-+	 * that concurrent growers see each other's grants immediately.
++	/* Grow towards the measured demand, and no further.
++	 *
++	 * A full queue says the arrival rate beat the consumer, but not why,
++	 * and the two cases want opposite things.  A socket taking bursts
++	 * wants the room: its consumer does keep up on average and only needs
++	 * somewhere to put a burst while it works through the last one.  A
++	 * socket whose consumer simply cannot keep up wants no such thing -
++	 * the queue is full at every size, so more of it buys nothing and
++	 * costs the cache, because data then sits longer before it is copied
++	 * out and is evicted before the consumer reaches it.
++	 *
++	 * Occupancy cannot separate them; both answer "full" when asked.  The
++	 * demand figure can, because only a cycle that ended in an empty queue
++	 * produces one.  A socket that never drains never sets a target and so
++	 * never grows, which is what is wanted and needs no separate test.
++	 *
++	 * Measured at 56 Gbit/s on one core with a single socket, where
++	 * moderation delivers no large bursts and the core is already at 100%:
++	 * a fixed 1MB buffer carries 48.89 and a fixed 8MB one 40.57, and
++	 * autotuning that grows on occupancy alone ends up at the second
++	 * figure.
 +	 */
-+	if (udp_rmem_over_cache_budget(sk, rcvbuf))
++	target = (unsigned int)atomic_read(&up->rcvbuf_target);
++	if (!target || rcvbuf >= target)
 +		return rcvbuf;
++	if (target < max)
++		max = target;
 +
-+	rcvbuf = min_t(unsigned int, rcvbuf << 1, max);
-+	atomic_long_add(rcvbuf >> 1, &udp_rcvbuf_granted);
-+	up->rcvbuf_granted += rcvbuf >> 1;
-+	WRITE_ONCE(sk->sk_rcvbuf, (int)rcvbuf);
-+	return rcvbuf;
++	/* Charge the step up front so that concurrent growers see each other's
++	 * grants immediately.  Being refused is also the only signal that the
++	 * allowance is spent, so it is where reclaim gets armed - see
++	 * udp_budget_pressure().
++	 */
++	if (udp_rmem_over_cache_budget(sk, UDP_RCVBUF_AI_STEP)) {
++		udp_budget_pressure();
++		return rcvbuf;
++	}
++
++	/* Add a step rather than doubling.  Where the allowance is contended
++	 * the two differ in more than speed: under a shared limit whose only
++	 * feedback is being refused, additive increase with multiplicative
++	 * decrease converges on an even split, while doubling converges on an
++	 * efficient but arbitrary one - whoever asked first keeps the room.
++	 * That is not hypothetical here, it is what the ratchet measurement
++	 * showed: one socket holding 8MB it no longer needed while the next to
++	 * arrive could reach only 2MB.
++	 */
++	grown = min_t(unsigned int, rcvbuf + UDP_RCVBUF_AI_STEP, max);
++	if (grown <= rcvbuf)
++		return rcvbuf;
++	if (!udp_rcvbuf_commit(sk, up, rcvbuf, grown))
++		return READ_ONCE(sk->sk_rcvbuf);
++	return grown;
 +}
 +
  int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
  {
  	struct sk_buff_head *list = &sk->sk_receive_queue;
-@@ -1717,6 +1865,8 @@
+@@ -1717,6 +2148,8 @@
  
  	rmem += atomic_read(&udp_prod_queue->rmem_alloc);
  
@@ -284,18 +578,25 @@
  	/* Immediately drop when the receive queue is full.
  	 * Cast to unsigned int performs the boundary check for INT_MAX.
  	 */
-@@ -1826,6 +1976,10 @@
+@@ -1819,6 +2252,7 @@
+ 	struct udp_sock *up = udp_sk(sk);
+ 	unsigned int total = 0;
+ 	struct sk_buff *skb;
++	int granted;
+ 
+ 	skb_queue_splice_tail_init(&sk->sk_receive_queue, &up->reader_queue);
+ 	while ((skb = __skb_dequeue(&up->reader_queue)) != NULL) {
+@@ -1826,6 +2260,9 @@
  		kfree_skb(skb);
  	}
  	udp_rmem_release(sk, total, 0, true);
-+	if (up->rcvbuf_granted) {
-+		atomic_long_sub(up->rcvbuf_granted, &udp_rcvbuf_granted);
-+		up->rcvbuf_granted = 0;
-+	}
++	granted = atomic_xchg(&up->rcvbuf_granted, 0);
++	if (granted)
++		atomic_long_sub(granted, &udp_rcvbuf_granted);
  	kfree(up->udp_prod_queue);
  }
  EXPORT_IPV6_MOD_GPL(udp_destruct_common);
-@@ -2341,6 +2495,27 @@
+@@ -2341,6 +2778,46 @@
  	udp_lib_rehash(sk, new_hash, new_hash4);
  }
  
@@ -309,13 +610,32 @@
 +struct udp_rx_shed_slot udp_rx_shed[UDP_RX_SHED_MAX_QUEUES];
 +EXPORT_SYMBOL_GPL(udp_rx_shed);
 +
-+void udp_rx_shed_mark(const struct sock *sk)
++void udp_rx_shed_mark(const struct sock *sk, const struct sk_buff *skb)
 +{
 +	unsigned int us = READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rx_shed_us);
-+	int q = sk_rx_queue_get(sk);
++	u16 q;
 +
-+	if (q < 0 || q >= UDP_RX_SHED_MAX_QUEUES)
-+		q = 0;
++	/* Take the queue from the packet, not from the socket.
++	 *
++	 * sk_rx_queue_get() reports the queue recorded on the socket, which is
++	 * only maintained for connected sockets.  An unconnected socket being
++	 * fed by many senders - the case UDP exists for - has no single queue,
++	 * and reads back -1, which the old fallback turned into queue 0.  Every
++	 * such socket on the machine would then throttle queue 0 no matter
++	 * which queue was actually drowning.
++	 *
++	 * The packet that could not be queued came from the queue that is
++	 * ahead of its consumer, and that is the one to hold back.  If the
++	 * driver did not record it there is nothing to aim at, so do nothing
++	 * rather than guess.
++	 */
++	if (!skb_rx_queue_recorded(skb))
++		return;
++
++	q = skb_get_rx_queue(skb);
++	if (q >= UDP_RX_SHED_MAX_QUEUES)
++		return;
++
 +	WRITE_ONCE(udp_rx_shed[q].until_ns,
 +		   ktime_get_mono_fast_ns() + (u64)us * NSEC_PER_USEC);
 +}
@@ -323,16 +643,16 @@
  static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  {
  	int rc;
-@@ -2363,6 +2538,8 @@
+@@ -2363,6 +2840,8 @@
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
  					is_udplite);
  			drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
 +			if (READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_rx_shed))
-+				udp_rx_shed_mark(sk);
++				udp_rx_shed_mark(sk, skb);
  		} else {
  			UDP_INC_STATS(sock_net(sk), UDP_MIB_MEMERRORS,
  				      is_udplite);
-@@ -3838,6 +4015,26 @@
+@@ -3838,6 +4317,26 @@
  	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
  	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
  
@@ -359,8 +679,8 @@
  #ifdef CONFIG_NET_L3_MASTER_DEV
  	net->ipv4.sysctl_udp_l3mdev_accept = 0;
  #endif
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h	2026-09-22 19:09:29.030171936 +0900
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h	2026-09-22 19:09:29.042171823 +0900
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
 @@ -80,7 +80,11 @@
  #define MLX5_SKB_FRAG_SZ(len)	(SKB_DATA_ALIGN(len) +	\
  				 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
@@ -374,8 +694,8 @@
  #define MLX5E_SHAMPO_LOG_HEADER_ENTRY_SIZE (8)
  #define MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE (9)
  #define MLX5E_SHAMPO_WQ_HEADER_PER_PAGE (PAGE_SIZE >> MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE)
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 11:10:02.073386113 +0900
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c	2026-09-22 15:58:45.755042465 +0900
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 @@ -73,6 +73,34 @@
  static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
  static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
