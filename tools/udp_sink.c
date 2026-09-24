@@ -133,15 +133,30 @@ int main(int argc, char **argv) {
         }
         if (t1 <= t0) t1 = now_s();
     } else {
+    /* UDP_SINK_INTERVAL=<sec>: emit cumulative bytes on stderr every interval.
+     * A run that changes offered rate part-way through cannot be split up from
+     * the single cumulative figure printed at the end, and the kernel counters
+     * cannot stand in for it - rx_bytes is what arrived on the wire including
+     * what was then dropped, and InDatagrams counts GRO super-skbs rather than
+     * datagrams.  Only the receiving application knows delivered bytes.
+     */
+    const char *iv_s = getenv("UDP_SINK_INTERVAL");
+    double iv = iv_s ? atof(iv_s) : 0.0;
+    double next_rep = 0.0;
     for (;;) {
         ssize_t n = recv(s, buf, rlen, rflags);
         double t = now_s();
         if (n > 0) {
-            if (!started) { t0 = t; started = 1; }
+            if (!started) { t0 = t; started = 1; next_rep = t + iv; }
             t1 = t;
             bytes += n;
             calls++;
             datagrams += mode == 1 ? 0 : 1; /* batch: unknown split, count bytes only */
+        }
+        if (iv > 0.0 && started && t >= next_rep) {
+            fprintf(stderr, "[iv] t=%.3f bytes=%llu\n", t - t0, bytes);
+            fflush(stderr);
+            next_rep += iv;
         }
         if (started && (t - t0) >= dur) break;
         if (t > deadline) break;
