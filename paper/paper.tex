@@ -54,170 +54,107 @@ buffer alone delivers 35.5 and 22.7.
 
 \section{Introduction}
 
-Linux sizes a TCP receive buffer automatically and a UDP receive buffer not at
-all. A UDP socket gets \texttt{net.core.rmem\_default} and keeps it until the
-application overrides it with \texttt{SO\_RCVBUF}. This has been true for as
-long as the socket API has existed, and for most of that time it did not matter:
-at the rates UDP was used for, almost any buffer was enough.
+There are two transport protocols. TCP delivers a reliable ordered byte stream
+and pays for it in acknowledgements, retransmission state, and a congestion
+controller. UDP does none of that; it adds a port pair and a checksum and hands
+the datagram up.
 
-It matters now. UDP carries QUIC, and through QUIC a large and growing share of
-web traffic; it carries media transport, telemetry, and RPC. On a 100\,GbE link
-a single receiving core is the binding resource, and we find the buffer decides
-whether that core delivers 32\,Gbps or 55.
+The expectation that follows is the one everyone holds: where an application does
+not need what TCP provides---because the medium is lossless, or because the
+application recovers on its own---UDP should be the faster of the two, since it
+does strictly less work per byte.
 
-The obvious response is to tell the operator to raise \rmemmax. Our central
-claim is that this advice cannot be followed, because the correct value depends
-on two quantities the operator cannot observe and that move in opposite
-directions.
+On one receiving core of a 100\,GbE testbed, that is not what happens. A single
+TCP connection delivers 56.6\,Gbps with nobody having configured anything. A
+single UDP flow on the same core and the same NIC cannot be driven past
+\textbf{38.7} however hard it is offered; at 56\,Gbps offered it delivers 35.4
+and discards 37\%. The protocol that does less is a third slower, and the gap is
+not a tuning oversight on our part---38.7 is the best any offered rate produced.
 
-The first is the NIC's interrupt moderation. A modern driver batches completions
-before raising an interrupt, and the socket buffer must hold what one batch
-delivers while the consumer works through the previous one. On our hardware the
-driver's adaptive moderation settles on a frame count of 128, which at a 9000-byte
-MTU is roughly 1.15\,MB arriving between wake-ups. A 1\,MB buffer---a value an
-operator might well choose---overflows on every window. The application cannot
-see this number, and the driver changes it at run time in response to load.
+The gap is not in the datagram path, which remains the shorter of the two. It is
+in what was built around TCP and not around UDP. TCP's receive side has sized
+its own buffer since 2004: \texttt{tcp\_rcv\_space\_adjust()} measures what the
+application consumed over one round trip and sets \rcvbuf to about twice it. UDP
+has no equivalent in any kernel version, current included. A UDP socket receives
+\texttt{net.core.rmem\_default} and keeps it, and the admission test reads that
+value and compares.
 
-The second is the cache. We show (\S\ref{sec:workingset}) that the UDP receive
-path's throughput cliff is set by the total the path touches---the NIC's
-descriptor pages plus the sum of every socket's buffered data---against the
-last-level cache, and we establish this causally by moving the cache with Intel
-CAT and watching the cliff move with it. Enlarging one socket's buffer is
-therefore not free to the others, and the quantity that must be bounded is a
-global sum that no socket can observe.
+For most of UDP's life this did not matter, because UDP carried small exchanges
+and loss-tolerant traffic, neither of which is sensitive to the receive buffer.
+It matters now: UDP carries QUIC and through it a large share of web traffic, it
+carries media transport and telemetry and replication, and these are bulk
+transfers at line rate. It will matter more. 100\,GbE is the baseline in the
+machines we measure, 400 is deployed, and 800 and 1.6\,Tbps are specified; the
+quantity that binds at those rates is per-core receive cost, which is the one
+that has not improved.
 
-These two pull apart. A single socket taking a full moderation window needs
-megabytes. Eight sockets each taking a fraction of one need far less, and eight
-copies of the single-socket answer exceed the cache by a factor of three. We
-measure both workloads on the same kernel and the same setting
-(\S\ref{sec:nostatic}): the buffer that serves one delivers 23.2\,Gbps on the
-other, and vice versa 32.1.
+\paragraph{Why it cannot simply be tuned.} The obvious remedy is to tell the
+operator to raise \rmemmax. Our first finding is that this instruction cannot be
+followed, because the correct value depends on two quantities that pull in
+opposite directions and that nobody can see at once.
 
-\paragraph{The obvious answer, and why it is not the answer.} If the right
-buffer depends on quantities that change, size it adaptively. TCP already knows
-how: \texttt{tcp\_rcv\_space\_adjust()} sets the buffer to twice the bytes
-received in one RTT, the RTT delimiting one turn of the consumer. UDP has no
-RTT, and that absence is usually taken to rule the technique out, but the RTT's
-role can be filled by a quantity UDP does have---the interval between the
-receive queue filling and draining again---and the demand measured over that
-interval is what one moderation window delivered.
+The buffer must hold what one interrupt-moderation window delivers---and the
+frame count that decides this is chosen by the driver at run time and never
+surfaced to the socket layer. It must also fit, together with the NIC's
+descriptor pages and every other socket's queued data, inside the last-level
+cache---a total that no single socket can observe. On our testbed a 1\,MB buffer
+is too small for the first and eight 8\,MB buffers are three times too large for
+the second, and each is the right answer for the workload the other one fails.
 
-We built it, and report it (\S\ref{sec:sizing}) because the outcome is
-informative. It reaches parity with the better fixed buffer on both workloads.
-It is also not better than a fixed 1\,MB buffer combined with a short discard
-window in the driver, and it is 4--6\% worse once the receiving core saturates.
-The reason is the same measurement that motivated it: past the point where
-arrivals exceed the consumer, the queue is full at any capacity, and the larger
-capacity only means more data resident and evicted before copy-out. Sizing up is
-the wrong response to overload, and an adaptive sizer is a machine for sizing up.
+\paragraph{Why the obvious mechanism is also wrong.} If a static value cannot
+work, size it dynamically. We built that: TCP's rule, with the interval between
+the receive queue filling and draining again supplying the clock the RTT
+supplies for TCP. It works, and we report it (\S\ref{sec:sizing}) because where
+it fails is informative.
 
-\paragraph{What is left, and what it is for.} Two things survive, and they are
-simpler than a controller.
+It fails because the two requirements are not two regimes. Past the point where
+arrivals outpace the consumer, the queue is full at any capacity, and the extra
+capacity only means more data resident and evicted before the consumer reaches
+it---we measure the hand-off between producer and consumer to be worth up to
+2.5$\times$, and it is what a large buffer spends. Sizing up is the wrong
+response to overload, and an adaptive sizer is a machine for sizing up. A
+\emph{fixed} 1\,MB buffer with a short discard window in the driver carries both
+workloads, trails the sizer by 2.6\% at the one operating point where the sizer
+leads, and is ahead by 7\% with moderation disabled and 4--6\% past the ceiling.
 
-The first is a \emph{cap}. Discarding cannot rescue a buffer that is already too
-large: eight sockets at 8\,MB reach 22.7\,Gbps, and 29.4 with discarding
-enabled, against 55.8 for the same eight at 1\,MB. Removing work does not remove
-capacity, and it is capacity that thrashes the cache. Something must therefore
-bound what buffers may sum to, and the bound has to be global, because 8\,MB is
-entirely safe for one socket and ruinous as the eighth. We derive it from the
-cache size the kernel reads at boot.
+\paragraph{\sys.} What survives is two mechanisms and no controller. A global
+allowance, derived from the cache the kernel reads at boot, bounds what receive
+buffers may sum to. A driver-side discard stops building socket buffers the
+consumer will not reach, keyed on the completion descriptor's L4 type so that a
+shared queue does not starve TCP.
 
-The second is the \emph{discard} itself, placed in the driver so that a packet
-the consumer will not reach never costs an \texttt{skb}, and selected by the
-completion descriptor's L4 type so that a shared queue does not starve TCP.
+With both, the same single UDP flow reaches \textbf{62.7}\,Gbps---11\% above the
+TCP connection it was supposed to beat all along---and eight UDP sockets reach
+55.8 against eight TCP connections' 44.3. The expectation the introduction began
+with is recoverable; it just was not true of the code as it stands.
+
+The two are not interchangeable, and the measurement that shows why is the one
+the design rests on. Discarding rescues a buffer that is too small for a burst:
+1\,MB goes from 35.4 to 54.2\,Gbps. It does not rescue a buffer that is too
+large for the cache: eight 8\,MB sockets go from 22.9 to 29.5 and stop, still
+losing 47\% of what was offered. Removing work does not remove capacity, and
+capacity is what thrashes. One failure admits a cheap repair after the fact; the
+other has to be prevented before the buffer exists.
 
 \paragraph{Contributions.}
 \begin{itemize}
 \itemsep0em
-\item We identify and measure the coupling between interrupt moderation, ring
-size, and socket buffer, and show that the three constraints they induce cannot
-be satisfied by the parties that set them (\S\ref{sec:three}).
-\item We show the UDP receive cliff is a last-level-cache working-set effect,
-established causally with cache partitioning and confirmed with hardware
-counters (\S\ref{sec:workingset}).
-\item We show no static buffer size serves two ordinary workloads on the same
-machine, with a 1.72$\times$ worst-case gap (\S\ref{sec:nostatic}).
-\item We show the right response to a buffer that cannot hold a burst is not a
-larger buffer: a fixed 1\,MB buffer with a driver-side discard window serves
-both workloads, and an adaptive sizer built on TCP's rule does not improve on
-it (\S\ref{sec:sizing}).
-\item We present \sys: a global allowance derived from the cache that caps what
-buffers may sum to, and a driver-side discard that stops work the consumer will
-not reach. Together they deliver 54.3 and 55.8\,Gbps where the better fixed
-buffer alone delivers 35.5 and 22.7 (\S\ref{sec:design}, \S\ref{sec:eval}).
+\item We show why the UDP receive buffer cannot be set by anyone who is allowed
+to set it: three quantities, each chosen by a party with no view of the other
+two, bound by three coupled constraints, all measured (\S\ref{sec:three}).
+\item We show the receive cliff is a last-level-cache working-set effect,
+established causally with cache partitioning, and that what a large buffer costs
+is the producer-to-consumer hand-off rather than the memory
+(\S\ref{sec:workingset}).
+\item We show that the natural mechanism---adaptive sizing---is not the right
+one, and why the same measurement that motivates it also rules it out
+(\S\ref{sec:sizing}).
+\item We present \sys, evaluate it on 100\,GbE, and report where it is weaker:
+54.2 and 55.8\,Gbps on two workloads whose best fixed buffers manage 35.4 and
+22.9 (\S\ref{sec:design}, \S\ref{sec:eval}).
 \end{itemize}
 
-\section{Background}
-\label{sec:background}
-
-\subsection{The UDP receive path}
-
-A packet arriving at a modern NIC is written by DMA into a page the driver
-posted on a receive ring, and a completion entry is placed on a completion
-queue. The driver does not take an interrupt per packet; it asks the NIC to
-wait until either a time or a count threshold is met (\texttt{rx-usecs} and
-\rxframes). On the interrupt, NAPI polls the completion queue, builds socket
-buffers, and pushes them up the stack, where GRO may coalesce consecutive
-packets of one flow into a single large \texttt{skb} before delivery.
-
-For UDP, delivery means \texttt{\_\_udp\_enqueue\_schedule\_skb()}, which admits
-the packet if the socket's accounted memory plus this packet does not exceed
-\rcvbuf, and drops it otherwise. The consumer, in \texttt{recvmsg}, copies data
-out and releases the accounting. There is no flow control: a UDP sender is not
-told that the receiver's queue is full, and the only response available to the
-receiver is to drop.
-
-Recent kernels have removed much of the per-packet cost on this path---6.18
-replaces the producer-side \texttt{busylock} with a per-node lockless list, so
-producers batch into the receive queue under one lock acquisition---but the
-sizing of \rcvbuf itself has not changed. It is read as
-\texttt{READ\_ONCE(sk->sk\_rcvbuf)} and is whatever was configured.
-
-\paragraph{What recent kernels changed, and did not.} Linux 6.18 rewrote the
-producer side of this path. Where earlier kernels serialised producers on a
-per-socket spinlock, 6.18 has each producer append to a per-NUMA-node lockless
-list and lets whichever producer finds the list empty splice the whole batch
-into the receive queue under one lock acquisition. This removes a real
-bottleneck, and it is worth being clear that our results are on top of it: the
-sizing question is orthogonal to the locking question, and remained after the
-locking was fixed.
-
-What did not change is the sizing itself. In 6.18, as in every kernel before it,
-the admission test reads \texttt{READ\_ONCE(sk->sk\_rcvbuf)} and compares. There
-is no path that adjusts that value in response to anything.
-
-\subsection{Why TCP's autotuning does not transfer}
-
-TCP sizes its receive buffer from a measurement: \texttt{tcp\_rcv\_space\_adjust()}
-records the bytes copied to the application over one RTT and sets \rcvbuf to
-about twice that, so the buffer tracks the bandwidth--delay product. The
-technique needs a clock that marks one turn of the consumer, and TCP has one
-because every segment is acknowledged.
-
-UDP has no acknowledgements, and the natural conclusion---drawn, as far as we
-can tell, by everyone who has looked---is that the technique does not apply. The
-kernel has no UDP receive-buffer autotuning in any version, including the
-current one.
-
-We argue in \S\ref{sec:design} that the conclusion is too strong. What the RTT
-supplies is not a round trip but a \emph{period over which demand can be
-measured}, and the receive queue itself provides one.
-
-\subsection{The cache is the binding resource}
-
-At 100\,GbE with 9000-byte frames, one core moving 50\,Gbps touches roughly
-6\,GB/s of packet data, which it must write (DMA, or a copy) and read (copy-out)
-once each. Whether those touches hit cache or memory decides the achievable
-rate. The receive path's working set is not obvious: it includes the descriptor
-pages the NIC is writing into, which on our NIC's multi-packet WQE format is
-16\,MB for a 1024-entry ring at a 9000-byte MTU, plus whatever sits queued in
-sockets awaiting a consumer.
-
-Recent work on DDIO shows that the portion of the cache a NIC can use is
-smaller than nominal and is subject to conflict misses that make the effective
-capacity lower still. Our findings are consistent with that and independent of
-it: we observe the cliff at the socket's own last-level cache size and move it
-by partitioning.
+\input{background.tex}
 
 \section{Three quantities, three parties}
 \label{sec:three}
@@ -410,7 +347,6 @@ and ruinous as the eighth. Any mechanism that sizes buffers must therefore have
 a global term.
 
 \section{Two workloads, one machine}
-\label{sec:nostatic}
 
 We now show the two constraints pull apart on ordinary workloads. Both run on
 the same kernel with the same settings and the driver's moderation at its
@@ -443,7 +379,7 @@ pathological setting---each is the right answer for the other workload---and an
 operator who has tuned for one will be running the other within the hour.
 
 Two further rows decide the shape of the rest of the paper. Adding the discard
-of \S\ref{sec:shed} to the 1\,MB buffer carries both workloads---54.2 and 55.8,
+of \S\ref{sec:d-burst} to the 1\,MB buffer carries both workloads---54.2 and 55.8,
 at 3.1\% and 0.3\% loss---and does so under either moderation setting. Adding
 the same discard to the 8\,MB buffer does not rescue W2: 22.9 becomes 29.5 and
 stops, still losing 47\% of what was offered.
@@ -462,9 +398,7 @@ a handful of moderate ones are both routine.
 \input{sizing.tex}
 
 \section{Implementation}
-\label{sec:impl}
 
-\label{sec:implbody}
 \sys is implemented in Linux 6.18. The allowance is 90 lines in
 \texttt{net/ipv4/udp.c} plus two atomic fields in \texttt{struct udp\_sock}; the
 discard is 40 lines in the mlx5 receive path plus a per-queue timestamp array.
@@ -580,9 +514,10 @@ it, because offload is what keeps one flow's packets adjacent on the wire.}
 Everything above allocates buffer, and allocation has a ceiling: once the
 receiving core is saturated, no distribution of buffer changes how much work
 there is. Figure~\ref{fig:shedmarg} extends the offered rate past that point
-with and without the driver-level shedding of \S\ref{sec:shed}.
+with and without the driver-level shedding of \S\ref{sec:d-burst}.
 
-Two things are visible, and the second is uncomfortable. Sizing carries the load
+Table~\ref{tab:shedmarg} gives the ladder. Two things are visible, and the
+second is uncomfortable. Sizing carries the load
 up to the ceiling---at 48 and 56\,Gbps, \sys and \sys with shedding are within
 0.5\,Gbps of each other, so the discard window is doing nothing---and past it
 only shedding changes anything: at 72 and 80\,Gbps \sys alone turns over to 54.2
@@ -620,6 +555,7 @@ lever with any effect in that regime.}
 \input{gen/shedmarg.tex}
 
 \subsection{Protocol isolation under a shared queue}
+\label{sec:evalproto}
 
 A socket buffer is per socket; the bottleneck under study is per queue. When TCP
 and UDP share a receive queue, no amount of UDP buffer tuning gives TCP its
@@ -646,6 +582,7 @@ rises accordingly, lowering the ceiling. The mechanisms are indifferent to this:
 \sys reads only the queue, and shedding reads only the completion descriptor.
 The \emph{operating points} are not.
 
+Table~\ref{tab:groleverson} and Table~\ref{tab:groleversoff} give the ladders.
 Measured at 56\,Gbps with moderation at its default, a fixed 1\,MB buffer
 delivers 36.7 with coalescing requested and 30.0 without; adding discard gives
 54.2 and 47.5, and \sys gives 55.3. Re-segmentation costs about 7\,Gbps of
@@ -734,7 +671,7 @@ position on a different cache organisation. The descriptor-page footprint is
 NIC-specific: our figure of 16\,MB for a 1024-entry ring follows from the
 multi-packet WQE format and would differ elsewhere.
 
-\paragraph{The driver hook.} The shedding of \S\ref{sec:shed} requires a change
+\paragraph{The driver hook.} The shedding of \S\ref{sec:d-burst} requires a change
 in each driver, which is a real deployment cost. The buffer sizing does not, and
 covers the regime below the core's ceiling; the two divide cleanly, and an
 operator who cannot patch a driver still gets the primary result.

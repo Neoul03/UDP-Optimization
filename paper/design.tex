@@ -1,59 +1,103 @@
 \section{Design}
 \label{sec:design}
 
-\sys is two mechanisms and no controller: a global allowance that caps what
-receive buffers may sum to, derived from the cache the kernel reads at boot, and
-a driver-side discard that stops building socket buffers the consumer will not
-reach. \S\ref{sec:sizing} reports the adaptive sizer we built first, and why it
-is not part of the system.
+\sys is two mechanisms and no controller. This section takes the five problems
+of \S\ref{sec:problems} in order (Table~\ref{tab:map}) and says what addresses
+each, including the one we tried first and discarded.
 
-\subsection{A cap derived from the cache}
-\label{sec:allowance}
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}llp{3.1cm}@{}}
+\toprule
+ & problem & addressed by \\
+\midrule
+P1 & burst of unknown size & \S\ref{sec:d-burst}: discard, not growth \\
+P2 & the sum is global & \S\ref{sec:d-cap}: cache-derived cap \\
+P3 & larger is worse past the ceiling & \S\ref{sec:d-burst}, and why we do not size \\
+P4 & work spent before the drop & \S\ref{sec:d-place}: discard in the driver \\
+P5 & per socket vs per queue & \S\ref{sec:d-select}: select by L4 type \\
+\bottomrule
+\end{tabular}
+\caption{Each problem and the part of the design that answers it.}
+\label{tab:map}
+\end{table}
+
+\subsection{P1 and P3: absorb the burst by not doing the work}
+\label{sec:d-burst}
+
+P1 asks for a buffer large enough to hold one moderation window. P3 says a
+larger buffer is harmful past the point where the consumer falls behind. Taken
+together they rule out the obvious answer, because the two are not separate
+regimes: the same socket crosses from one to the other as its offered rate
+rises, and a mechanism that grows the buffer for P1 is still growing it when P3
+applies.
+
+\sys therefore does not grow the buffer. When the socket queue is full, the
+driver stops delivering UDP completions for a short window, discarding them
+before an \texttt{skb} exists. The burst is absorbed by shrinking it rather than
+by making room for it, and the buffer stays small enough that what is queued is
+still resident when the consumer arrives.
+
+\paragraph{The window is fixed at 50\,\textmu s.} We swept it from 25 to
+1600\,\textmu s and found the response asymmetric: too short costs 7\%, too long
+costs 67\%, and 1600\,\textmu s is worse under a load transition than no window
+at all. An adaptive controller is possible; the oracle's advantage over a fixed
+50\,\textmu s is 1.6\%, which is less than the cost of searching for it.
+
+\paragraph{Why not size the buffer.} We built the adaptive sizer the problem
+statement suggests---TCP's rule with the interval between the receive queue
+filling and emptying standing in for the RTT---and report it in
+\S\ref{sec:sizing}. It works, and it is not better than this. The reason is P3:
+the estimate it converges on is ``as much buffer as this socket can use'', and
+the measurement says the quantity worth minimising is how much data sits between
+producer and consumer.
+
+\subsection{P2: a cap derived from the cache}
+\label{sec:d-cap}
 
 \sys reads the last-level cache size from the kernel's cache topology at boot
-and takes a configurable fraction of it, one half by default, as the allowance.
-A socket's whole buffer is charged against the total once, on the first packet
-it receives, and returned when it is destroyed.
+and takes a configurable fraction of it, one half by default, as an allowance. A
+socket's whole buffer is charged against the total once, on the first packet it
+receives, and returned when the socket is destroyed.
 
-\paragraph{What the implemented cap does, and does not.} It refuses any
+\paragraph{A bound, not a target.} The allowance does not look for a good size.
+It prevents individually reasonable sizes from summing to a bad one, which is
+exactly what P2 says a per-socket limit cannot do. Within the allowance, what
+the application or the operator asked for stands.
+
+This is a weaker mechanism than a controller, and deliberately so.
+\S\ref{sec:workingset} establishes a claim about the sum and says nothing about
+where within the bound a given socket should sit. A cap is the mechanism that
+claim licenses.
+
+\paragraph{What the implemented cap does and does not do.} It refuses any
 \emph{increase} that would take the total past the allowance. It does not
 currently refuse the buffer a socket starts with: a machine configured with an
 8\,MB \texttt{rmem\_default} and eight sockets is charged 64\,MB and permitted
-it. The measurement in Table~\ref{tab:nostatic} that shows discarding failing to
-rescue eight 8\,MB buffers is therefore evidence that such a cap is \emph{needed},
-not that ours enforces it, and we are explicit about the distinction. Clamping
-the default---as opposed to an explicit \texttt{SO\_RCVBUF}, which we argue
-below should be honoured---is the obvious extension and the one we would make
-next; it requires deciding what a socket gets when the allowance is already
-spent, which is a policy question we have not measured our way to an answer on.
-
-\paragraph{A cap, not a target.} The allowance does not look for a good size. It
-prevents a set of individually reasonable sizes from summing to a bad one, which
-is the failure a per-socket limit cannot express: 8\,MB is entirely safe for one
-socket and ruinous as the eighth. Within the allowance, what the application or
-operator asked for stands.
-
-This is a weaker mechanism than the sizer we replaced it with, and that is the
-point. \S\ref{sec:workingset} says the threshold is a property of the sum, not
-of any socket, and says nothing about where within the bound a given socket
-should sit. A cap is the mechanism that claim licenses.
-
-\paragraph{What is charged.} The whole buffer, not the part above some default.
-Counting only what exceeds a baseline leaves the baseline invisible, and the
-baseline is not small when there are many sockets: eight at a 1\,MB default are
-8\,MB of a 9\,MB allowance before anything else happens. We learned this the
-expensive way---an earlier version charged only what it had itself handed out,
-and eight sockets reached 17.8\,MB against a 9\,MB allowance.
+it. The measurement in Table~\ref{tab:nostatic} showing that discarding fails to
+rescue eight 8\,MB buffers is therefore evidence that such a cap is
+\emph{needed}, not that ours enforces it. Clamping the default---as against an
+explicit \texttt{SO\_RCVBUF}, which we argue below should be honoured---is the
+obvious extension; it requires deciding what a socket gets when the allowance is
+already spent, and we have not measured our way to an answer.
 
 \paragraph{Capacity, not occupancy.} The allowance bounds granted capacity
 rather than queued bytes. Bounding queued bytes is the natural first attempt and
 does not work: while the consumer keeps up the queues sit nearly empty---0.36\,MB
 held against 8\,MB of capacity in one measurement---so the bound does not bite
-until the queues have already grown deep, by which point the buffers behind them
-are far too large. Occupancy follows capacity, not the reverse.
+until the queues have grown deep, by which point the buffers behind them are far
+too large. Occupancy follows capacity, not the reverse.
+
+\paragraph{All of it is charged.} The whole buffer, not the part above some
+default. Counting only the excess leaves the baseline invisible, and the
+baseline is not small when there are many sockets: eight at a 1\,MB default are
+8\,MB of a 9\,MB allowance before anything else happens. An earlier version
+charged only what it had itself handed out, and eight sockets reached 17.8\,MB
+against a 9\,MB allowance.
 
 \paragraph{Sockets that set \texttt{SO\_RCVBUF}.} An application that names a
-size still receives it. Overriding an explicit request would break a long
+size still receives it; overriding an explicit request would break a long
 standing expectation, and in isolation the request is rarely the problem. \sys
 charges such a socket for what it holds so that everyone else stops compounding
 it: 64\,MB is entirely safe until it is the eighth one.
@@ -64,44 +108,35 @@ kernel's own topology, so it follows the hardware. What the kernel cannot see
 from the socket layer is how much of that cache is already committed. The
 dominant unseen term is the NIC's descriptor pages, 16\,MB for a 1024-entry ring
 on our hardware, which the driver allocates and never surfaces in a form the
-socket layer can query; a second is other tenants on the same ways. A fully
-automatic version is possible---the driver knows both the ring size and the
-descriptor format---but it would put the mechanism behind a per-driver change,
-and one number per machine is a considerably better interface than one number
-per socket.
+socket layer can query. A fully automatic version is possible---the driver knows
+the ring size and the descriptor format---but it would put the mechanism behind
+a per-driver change, and one number per machine is a considerably better
+interface than one number per socket.
 
-\subsection{Discarding at the driver}
-\label{sec:shed}
+\subsection{P4: discard where the work has not yet been done}
+\label{sec:d-place}
 
-A cap keeps buffers from summing past the cache. It does nothing about a burst
-larger than one socket's buffer, which is the other half of the problem, and
-neither does any buffer once the receiving core is saturated: past that point
-the queue is full at every size.
+Placement is the whole of P4. A drop at the socket happens after the packet has
+cost descriptor processing, an \texttt{skb} allocation, GRO, and a route lookup;
+a drop at the completion queue costs a comparison. \sys marks the receive queue
+on which a socket drop occurred, and for the window the driver discards matching
+completions in \texttt{mlx5e\_handle\_rx\_cqe()} before any of that work
+happens.
 
-What is available there is not to do the work. A packet that will be dropped at
-the socket has by then cost descriptor processing, an \texttt{skb} allocation,
-GRO, and a route lookup. \sys marks the receive queue on which a socket drop
-occurred, and for a short window---50\,\textmu s by default---the driver
-discards UDP completions before building an \texttt{skb}, identifying them from
-the completion descriptor's L4 type.
+\paragraph{Take the queue from the packet, not the socket.} The queue to hold
+back is the one that delivered the packet which could not be queued. Reading it
+from the socket instead, via \texttt{sk\_rx\_queue\_get()}, is wrong in a way
+that appears only with more than one queue: that field is maintained for
+connected sockets, and an unconnected socket---the many-senders case UDP exists
+for---reads back $-1$, which a fallback turns into queue zero. Every such socket
+then throttles queue zero regardless of which queue was drowning.
 
-\paragraph{The window is fixed.} We swept it from 25\,\textmu s to 1600 and
-found the response markedly asymmetric: too short costs 7\%, too long costs
-67\%, and a window of 1600\,\textmu s is worse under a load transition than no
-window at all. An adaptive controller is available but unnecessary---the
-oracle's advantage over a fixed 50\,\textmu s is 1.6\%, less than the cost of
-searching for it.
+\subsection{P5: discard selectively}
+\label{sec:d-select}
 
-\paragraph{Take the queue from the packet.} The queue to hold back is the one
-that delivered the packet that could not be queued. Reading it from the socket
-instead, via \texttt{sk\_rx\_queue\_get()}, is wrong in a way that only appears
-with more than one queue: that field is maintained for connected sockets, and an
-unconnected socket---the many-senders case UDP exists for---reads back $-1$,
-which a fallback turns into queue zero. Every such socket then throttles queue
-zero no matter which queue was drowning.
-
-\paragraph{Selectivity is the point.} Buffers are per socket; the resource under
-contention here is a queue. When TCP and UDP share one, no amount of UDP buffer
-tuning gives TCP its share, because what TCP is short of is not buffer. A
-discard keyed on the L4 type can make room for one protocol by not doing work
-for another, which allocation structurally cannot.
+The completion descriptor carries the L4 header type, so the discard can be
+restricted to UDP. This is what allocation structurally cannot do. Buffers are
+per socket while the queue is shared, so when TCP and UDP contend for one queue,
+no setting of the UDP socket's buffer gives TCP more of it; what TCP is short of
+is service, not space. Declining to build \texttt{skb}s for one protocol leaves
+the core free for the other, and \S\ref{sec:evalproto} measures the result.

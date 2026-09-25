@@ -34,8 +34,8 @@ one packet, overwriting a correct target with nothing.
 \subsection{Why it is not the answer}
 
 Table~\ref{tab:nostatic} places it against the alternatives. It matches the
-better fixed buffer on both workloads. It does not beat a fixed 1\,MB buffer
-combined with the discard of \S\ref{sec:shed}, which matches it below the
+better fixed buffer on both workloads, at 55.4 and 55.6\,Gbps. It does not beat a fixed 1\,MB buffer
+combined with the discard of \S\ref{sec:d-burst}, which matches it below the
 receiving core's saturation point and exceeds it by 4--6\% above
 (Figure~\ref{fig:shedmarg}).
 
@@ -68,12 +68,13 @@ is aimed the wrong way.
 Two things, both of which the final design rests on.
 
 That \emph{discarding cannot substitute for a cap.} Eight sockets at 8\,MB reach
-22.7\,Gbps, and 29.4 with discarding enabled---an improvement, and still half of
+22.9\,Gbps, and 29.5 with discarding enabled---an improvement, and still half of
 the 55.8 the same eight reach at 1\,MB, still losing 47\% of what was offered.
 Removing work does not remove capacity. Whatever else is done, something has to
 bound what the buffers sum to.
 
 And that \emph{a cap is all the sizing that is needed.} Between the cap and the
 discard, the remaining freedom---where within the bound a given socket sits---is
-worth at most the 0.2\,Gbps by which the sizer leads the fixed buffer below the
-ceiling, and costs 4--6\% above it.
+worth at most the 2.6\% by which the sizer leads the fixed buffer at the one
+operating point where it leads, and costs 7\% with moderation disabled and
+4--6\% past the ceiling.

@@ -1,0 +1,144 @@
+\section{Background}
+\label{sec:background}
+
+\subsection{Two transport protocols, and an expectation}
+
+For all practical purposes the Internet has two transport protocols. TCP
+provides a reliable ordered byte stream, and pays for it: every segment is
+acknowledged, the sender maintains state to retransmit what is not, and a
+congestion controller decides when to send. UDP provides none of that. It adds
+a port pair and a checksum to a datagram and hands it up.
+
+The expectation that follows is natural and, until recently, was correct: where
+the application does not need what TCP provides---because the medium is
+lossless, or because the application does its own recovery---UDP should be
+faster, since it does strictly less work per byte.
+
+At 100\,GbE that expectation inverts. Table~\ref{tab:opening} gives the
+comparison on one receiving core of our testbed, ten runs each. A single TCP
+connection delivers 56.6\,Gbps with nobody having configured anything. A single
+UDP flow, on the same core and the same NIC, cannot be driven past 38.7 at any
+offered rate we tried, and at 56\,Gbps offered it delivers 35.4 while discarding
+37\% of what arrived.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+ & one flow & eight flows \\
+\midrule
+TCP, nothing configured & \textbf{56.6} & 44.3 \\
+UDP, \texttt{rmem\_default} = 1\,MB & 38.7 & 55.7 \\
+UDP, \texttt{rmem\_default} = 8\,MB & 55.6 & 22.9 \\
+\midrule
+UDP with \sys & \textbf{62.7} & \textbf{55.8} \\
+\bottomrule
+\end{tabular}
+\caption{Goodput in Gbps on one receiving core, $n=10$; the UDP figures are the
+best any offered rate produced. TCP obtains its number by sizing its own receive
+buffer. UDP has no mechanism that does so, and neither fixed value serves both
+columns.}
+\label{tab:opening}
+\end{table}
+
+The protocol that does less is a third slower, doing nothing the other one does.
+It is worth being precise about what this is not. It is not a tuning oversight:
+38.7 is the best figure any offered rate produced, not a point we failed to
+optimise. And it is not uniform---the eight-flow column reverses, for reasons
+\S\ref{sec:problems} makes exact---which is itself part of the problem, since it
+means no single setting is right.
+
+\subsection{What UDP did not receive}
+
+The gap is not in the datagram path's instruction count, which remains the
+shorter of the two. It is in everything that was added around TCP and not
+around UDP.
+
+TCP's receive side sizes its own buffer. \texttt{tcp\_rcv\_space\_adjust()}
+measures the bytes delivered to the application over one round trip and sets
+\texttt{sk\_rcvbuf} to about twice that, so the buffer tracks the
+bandwidth--delay product as it changes. This was added in 2004 and has been
+refined since; no operator on our testbed did anything to obtain the 56.6 above.
+
+UDP has no equivalent, in any kernel version including the current one. A UDP
+socket receives \texttt{net.core.rmem\_default} and keeps it. The admission test
+in \texttt{\_\_udp\_enqueue\_schedule\_skb()} reads
+\texttt{READ\_ONCE(sk->sk\_rcvbuf)} and compares; nothing anywhere adjusts that
+value in response to anything.
+
+This is not an oversight so much as a consequence of where attention went. UDP
+was, for most of its life, the protocol for small request--response exchanges
+and for applications willing to lose data. Neither case is sensitive to the
+receive buffer. What changed is that UDP now carries QUIC, and through QUIC a
+large and growing share of web traffic; it carries media transport, telemetry,
+and storage replication. These are bulk transfers at line rate, and they are
+sensitive to exactly the thing nobody built.
+
+The direction of travel makes this worse rather than better. 100\,GbE is now the
+baseline in the machines we measure; 400\,GbE is deployed, and 800\,GbE and
+1.6\,Tbps are specified. Per-core receive cost is what binds at these rates, and
+it is the quantity that has not improved.
+
+\subsection{The receive path as it stands}
+
+A packet arriving at the NIC is written by DMA into a page the driver posted on
+a receive ring, and a completion entry is placed on a completion queue. The
+driver does not take an interrupt per packet: it asks the NIC to wait until a
+time or a count threshold is met (\texttt{rx-usecs} and \rxframes). On the
+interrupt, NAPI polls the completion queue, builds socket buffers, and pushes
+them up the stack, where GRO may coalesce consecutive packets of one flow into
+one large \texttt{skb}.
+
+For UDP, delivery means \texttt{\_\_udp\_enqueue\_schedule\_skb()}, which admits
+the packet if the socket's accounted memory plus this packet does not exceed
+\rcvbuf, and drops it otherwise. \texttt{recvmsg} copies out and releases the
+accounting. There is no flow control: a UDP sender is not told that the
+receiver's queue is full, and dropping is the receiver's only response.
+
+Recent kernels have improved the producer side---6.18 replaced a per-socket
+spinlock with a per-node lockless list, so producers batch into the receive
+queue under one lock acquisition---and our results are on top of that. The
+sizing question is orthogonal to the locking question and outlived it.
+
+\subsection{Five problems}
+\label{sec:problems}
+
+What follows is what we measured to be wrong, stated as the design has to
+address it. Each is established in \S\ref{sec:three} or \S\ref{sec:workingset};
+\S\ref{sec:design} takes them in the same order.
+
+\paragraph{P1: the buffer must hold a burst whose size nobody tells the
+application.} The socket buffer must absorb what one moderation window delivers
+while the consumer works through the previous one. On our hardware the driver's
+adaptive controller settles on 128 frames, which at a 9000-byte MTU is about
+1.15\,MB arriving between wake-ups. A 1\,MB buffer---a value an operator might
+well pick---overflows on every window. The frame count is not exposed to the
+socket layer, and the driver changes it at run time in response to load.
+
+\paragraph{P2: what the buffer may cost is a global quantity no socket can
+see.} Throughput falls off a cliff when the total the receive path touches---the
+NIC's descriptor pages plus every socket's queued data---exceeds the last-level
+cache. The threshold is a property of the sum. Eight sockets at 2\,MB and one at
+16\,MB collapse at the same aggregate, so a per-socket limit cannot express it:
+8\,MB is entirely safe for one socket and ruinous as the eighth.
+
+\paragraph{P3: past the consumer's capacity, a larger buffer is actively
+harmful.} What a large buffer costs is not the memory but the hand-off. Data
+queued in a small buffer is still cache-resident when the consumer reaches it;
+data queued in a large one has been evicted. Separating producer from consumer
+and varying only the cache level they share, the 512\,KB-to-18\,MB throughput
+ratio is 0.40 when they share L2 and L3, and 0.94 when they share nothing.
+Consequently ``tune it larger'' is not merely insufficient past the ceiling, it
+is the wrong direction.
+
+\paragraph{P4: the work is spent before the drop.} A packet dropped at the
+socket has already cost descriptor processing, an \texttt{skb} allocation, GRO,
+and a route lookup. Under overload the receiving core spends most of itself on
+packets it will discard, which is why throughput collapses with the core
+measurably idle---63\% busy delivering 33\,Gbps against 56 offered.
+
+\paragraph{P5: buffers are per socket, the bottleneck is per queue.} When TCP
+and UDP share a receive queue, no amount of UDP buffer tuning gives TCP its
+share, because what TCP is short of is not buffer. Allocation cannot arbitrate
+between protocols; only something acting at the queue can.
