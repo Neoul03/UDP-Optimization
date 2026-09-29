@@ -1,0 +1,731 @@
+6.18.53-udpopt20
+ring 128
+===== MTU 1500  (sender 최대 44.39 -> 제공 39G) =====
+  mtu=1500  f=1  udp_plain    #1  got=3.38    busy=86%  tx=39
+  mtu=1500  f=1  udp_sockopt  #1  got=6.42    busy=91%  tx=39
+  mtu=1500  f=1  udp_ours     #1  got=25.95   busy=100% tx=39
+  mtu=1500  f=1  tcp          #1  got=30.9    busy=92%  tx=0
+  mtu=1500  f=1  udp_plain    #2  got=3.4     busy=87%  tx=39
+  mtu=1500  f=1  udp_sockopt  #2  got=6.42    busy=91%  tx=39
+  mtu=1500  f=1  udp_ours     #2  got=26.32   busy=100% tx=39
+  mtu=1500  f=1  tcp          #2  got=30.7    busy=91%  tx=0
+  mtu=1500  f=1  udp_plain    #3  got=4.61    busy=88%  tx=39
+  mtu=1500  f=1  udp_sockopt  #3  got=6.42    busy=91%  tx=39
+  mtu=1500  f=1  udp_ours     #3  got=25.42   busy=100% tx=39
+  mtu=1500  f=1  tcp          #3  got=31      busy=92%  tx=0
+  mtu=1500  f=1  udp_plain    #4  got=3.36    busy=87%  tx=39
+  mtu=1500  f=1  udp_sockopt  #4  got=6.68    busy=92%  tx=39
+  mtu=1500  f=1  udp_ours     #4  got=25.22   busy=100% tx=39
+  mtu=1500  f=1  tcp          #4  got=30.9    busy=92%  tx=0
+  mtu=1500  f=1  udp_plain    #5  got=3.44    busy=87%  tx=39
+  mtu=1500  f=1  udp_sockopt  #5  got=6.37    busy=91%  tx=39
+  mtu=1500  f=1  udp_ours     #5  got=25.93   busy=100% tx=39
+  mtu=1500  f=1  tcp          #5  got=31      busy=92%  tx=0
+  mtu=1500  f=2  udp_plain    #1  got=9.34    busy=99%  tx=38
+  mtu=1500  f=2  udp_sockopt  #1  got=9.99    busy=100% tx=38
+  mtu=1500  f=2  udp_ours     #1  got=23.61   busy=100% tx=38
+  mtu=1500  f=2  tcp          #1  got=31.7    busy=99%  tx=0
+  mtu=1500  f=2  udp_plain    #2  got=9.25    busy=100% tx=38
+  mtu=1500  f=2  udp_sockopt  #2  got=9.43    busy=100% tx=38
+  mtu=1500  f=2  udp_ours     #2  got=23.61   busy=100% tx=38
+  mtu=1500  f=2  tcp          #2  got=31.7    busy=98%  tx=0
+  mtu=1500  f=2  udp_plain    #3  got=9.36    busy=99%  tx=38
+  mtu=1500  f=2  udp_sockopt  #3  got=9.56    busy=100% tx=38
+  mtu=1500  f=2  udp_ours     #3  got=23.58   busy=100% tx=38
+  mtu=1500  f=2  tcp          #3  got=31.7    busy=99%  tx=0
+  mtu=1500  f=2  udp_plain    #4  got=9.26    busy=99%  tx=38
+  mtu=1500  f=2  udp_sockopt  #4  got=9.63    busy=100% tx=38
+  mtu=1500  f=2  udp_ours     #4  got=23.57   busy=100% tx=38
+  mtu=1500  f=2  tcp          #4  got=31.6    busy=99%  tx=0
+  mtu=1500  f=2  udp_plain    #5  got=9.26    busy=99%  tx=38
+  mtu=1500  f=2  udp_sockopt  #5  got=10.15   busy=100% tx=38
+  mtu=1500  f=2  udp_ours     #5  got=23.52   busy=100% tx=38
+  mtu=1500  f=2  tcp          #5  got=31.8    busy=99%  tx=0
+  mtu=1500  f=4  udp_plain    #1  got=12.7    busy=100% tx=36
+  mtu=1500  f=4  udp_sockopt  #1  got=12.95   busy=100% tx=36
+  mtu=1500  f=4  udp_ours     #1  got=22.43   busy=100% tx=36
+  mtu=1500  f=4  tcp          #1  got=30.78   busy=100% tx=0
+  mtu=1500  f=4  udp_plain    #2  got=11.75   busy=100% tx=36
+  mtu=1500  f=4  udp_sockopt  #2  got=11.83   busy=100% tx=36
+  mtu=1500  f=4  udp_ours     #2  got=22.49   busy=100% tx=36
+  mtu=1500  f=4  tcp          #2  got=30.78   busy=100% tx=0
+  mtu=1500  f=4  udp_plain    #3  got=12.48   busy=100% tx=36
+  mtu=1500  f=4  udp_sockopt  #3  got=13.04   busy=100% tx=36
+  mtu=1500  f=4  udp_ours     #3  got=22.37   busy=100% tx=36
+  mtu=1500  f=4  tcp          #3  got=30.86   busy=100% tx=0
+  mtu=1500  f=4  udp_plain    #4  got=13.11   busy=100% tx=36
+  mtu=1500  f=4  udp_sockopt  #4  got=12.81   busy=100% tx=36
+  mtu=1500  f=4  udp_ours     #4  got=22.63   busy=100% tx=36
+  mtu=1500  f=4  tcp          #4  got=30.67   busy=100% tx=0
+  mtu=1500  f=4  udp_plain    #5  got=12.45   busy=100% tx=36
+  mtu=1500  f=4  udp_sockopt  #5  got=12.91   busy=100% tx=36
+  mtu=1500  f=4  udp_ours     #5  got=22.1    busy=100% tx=36
+  mtu=1500  f=4  tcp          #5  got=30.58   busy=100% tx=0
+  mtu=1500  f=8  udp_plain    #1  got=18.94   busy=100% tx=32
+  mtu=1500  f=8  udp_sockopt  #1  got=18.64   busy=100% tx=32
+  mtu=1500  f=8  udp_ours     #1  got=23.21   busy=100% tx=32
+  mtu=1500  f=8  tcp          #1  got=28.6    busy=100% tx=0
+  mtu=1500  f=8  udp_plain    #2  got=18.59   busy=100% tx=32
+  mtu=1500  f=8  udp_sockopt  #2  got=19.09   busy=100% tx=32
+  mtu=1500  f=8  udp_ours     #2  got=22.91   busy=100% tx=32
+  mtu=1500  f=8  tcp          #2  got=28.47   busy=100% tx=0
+  mtu=1500  f=8  udp_plain    #3  got=18.89   busy=100% tx=32
+  mtu=1500  f=8  udp_sockopt  #3  got=19.45   busy=100% tx=32
+  mtu=1500  f=8  udp_ours     #3  got=23.05   busy=100% tx=32
+  mtu=1500  f=8  tcp          #3  got=28.49   busy=100% tx=0
+  mtu=1500  f=8  udp_plain    #4  got=19.07   busy=100% tx=32
+  mtu=1500  f=8  udp_sockopt  #4  got=19.81   busy=100% tx=32
+  mtu=1500  f=8  udp_ours     #4  got=22.66   busy=100% tx=32
+  mtu=1500  f=8  tcp          #4  got=28.48   busy=100% tx=0
+  mtu=1500  f=8  udp_plain    #5  got=18.75   busy=100% tx=32
+  mtu=1500  f=8  udp_sockopt  #5  got=19.6    busy=100% tx=32
+  mtu=1500  f=8  udp_ours     #5  got=23.17   busy=100% tx=32
+  mtu=1500  f=8  tcp          #5  got=28.5    busy=100% tx=0
+  mtu=1500  f=16 udp_plain    #1  got=18.21   busy=100% tx=32
+  mtu=1500  f=16 udp_sockopt  #1  got=17.87   busy=100% tx=32
+  mtu=1500  f=16 udp_ours     #1  got=21.52   busy=100% tx=32
+  mtu=1500  f=16 tcp          #1  got=25.24   busy=100% tx=0
+  mtu=1500  f=16 udp_plain    #2  got=17.89   busy=100% tx=32
+  mtu=1500  f=16 udp_sockopt  #2  got=19.47   busy=100% tx=32
+  mtu=1500  f=16 udp_ours     #2  got=21.78   busy=100% tx=32
+  mtu=1500  f=16 tcp          #2  got=25.52   busy=100% tx=0
+  mtu=1500  f=16 udp_plain    #3  got=17.39   busy=100% tx=32
+  mtu=1500  f=16 udp_sockopt  #3  got=18.76   busy=100% tx=32
+  mtu=1500  f=16 udp_ours     #3  got=21.82   busy=100% tx=32
+  mtu=1500  f=16 tcp          #3  got=25.6    busy=100% tx=0
+  mtu=1500  f=16 udp_plain    #4  got=17.79   busy=100% tx=32
+  mtu=1500  f=16 udp_sockopt  #4  got=19.28   busy=100% tx=32
+  mtu=1500  f=16 udp_ours     #4  got=21.64   busy=100% tx=32
+  mtu=1500  f=16 tcp          #4  got=26.63   busy=100% tx=0
+  mtu=1500  f=16 udp_plain    #5  got=17.42   busy=100% tx=32
+  mtu=1500  f=16 udp_sockopt  #5  got=19.56   busy=100% tx=32
+  mtu=1500  f=16 udp_ours     #5  got=20.94   busy=100% tx=32
+  mtu=1500  f=16 tcp          #5  got=25.65   busy=100% tx=0
+===== MTU 3000  (sender 최대 65.23 -> 제공 58G) =====
+  mtu=3000  f=1  udp_plain    #1  got=16.84   busy=83%  tx=58
+  mtu=3000  f=1  udp_sockopt  #1  got=33.79   busy=98%  tx=58
+  mtu=3000  f=1  udp_ours     #1  got=41.98   busy=100% tx=58
+  mtu=3000  f=1  tcp          #1  got=33      busy=71%  tx=0
+  mtu=3000  f=1  udp_plain    #2  got=16.97   busy=84%  tx=58
+  mtu=3000  f=1  udp_sockopt  #2  got=33.7    busy=98%  tx=58
+  mtu=3000  f=1  udp_ours     #2  got=41.39   busy=100% tx=58
+  mtu=3000  f=1  tcp          #2  got=32.7    busy=70%  tx=0
+  mtu=3000  f=1  udp_plain    #3  got=16.74   busy=84%  tx=58
+  mtu=3000  f=1  udp_sockopt  #3  got=33.56   busy=98%  tx=58
+  mtu=3000  f=1  udp_ours     #3  got=41.71   busy=100% tx=58
+  mtu=3000  f=1  tcp          #3  got=33      busy=71%  tx=0
+  mtu=3000  f=1  udp_plain    #4  got=17.01   busy=85%  tx=58
+  mtu=3000  f=1  udp_sockopt  #4  got=33.71   busy=99%  tx=58
+  mtu=3000  f=1  udp_ours     #4  got=41.23   busy=100% tx=58
+  mtu=3000  f=1  tcp          #4  got=32.9    busy=70%  tx=0
+  mtu=3000  f=1  udp_plain    #5  got=17.09   busy=85%  tx=58
+  mtu=3000  f=1  udp_sockopt  #5  got=33.61   busy=98%  tx=58
+  mtu=3000  f=1  udp_ours     #5  got=41.3    busy=100% tx=58
+  mtu=3000  f=1  tcp          #5  got=32.8    busy=71%  tx=0
+  mtu=3000  f=2  udp_plain    #1  got=30.98   busy=98%  tx=58
+  mtu=3000  f=2  udp_sockopt  #1  got=33.7    busy=100% tx=58
+  mtu=3000  f=2  udp_ours     #1  got=37.99   busy=100% tx=58
+  mtu=3000  f=2  tcp          #1  got=36.3    busy=82%  tx=0
+  mtu=3000  f=2  udp_plain    #2  got=30.93   busy=98%  tx=58
+  mtu=3000  f=2  udp_sockopt  #2  got=33.07   busy=100% tx=58
+  mtu=3000  f=2  udp_ours     #2  got=38.04   busy=100% tx=58
+  mtu=3000  f=2  tcp          #2  got=35.9    busy=80%  tx=0
+  mtu=3000  f=2  udp_plain    #3  got=31.22   busy=99%  tx=58
+  mtu=3000  f=2  udp_sockopt  #3  got=33.29   busy=100% tx=58
+  mtu=3000  f=2  udp_ours     #3  got=37.79   busy=100% tx=58
+  mtu=3000  f=2  tcp          #3  got=35.9    busy=81%  tx=0
+  mtu=3000  f=2  udp_plain    #4  got=30.96   busy=98%  tx=58
+  mtu=3000  f=2  udp_sockopt  #4  got=33.29   busy=100% tx=58
+  mtu=3000  f=2  udp_ours     #4  got=37.89   busy=100% tx=58
+  mtu=3000  f=2  tcp          #4  got=36.2    busy=82%  tx=0
+  mtu=3000  f=2  udp_plain    #5  got=26.01   busy=88%  tx=58
+  mtu=3000  f=2  udp_sockopt  #5  got=32.74   busy=100% tx=58
+  mtu=3000  f=2  udp_ours     #5  got=38.23   busy=100% tx=58
+  mtu=3000  f=2  tcp          #5  got=35.9    busy=81%  tx=0
+  mtu=3000  f=4  udp_plain    #1  got=32.28   busy=100% tx=56
+  mtu=3000  f=4  udp_sockopt  #1  got=33.65   busy=100% tx=56
+  mtu=3000  f=4  udp_ours     #1  got=38.01   busy=100% tx=56
+  mtu=3000  f=4  tcp          #1  got=38.52   busy=91%  tx=0
+  mtu=3000  f=4  udp_plain    #2  got=32.44   busy=100% tx=56
+  mtu=3000  f=4  udp_sockopt  #2  got=32.96   busy=100% tx=56
+  mtu=3000  f=4  udp_ours     #2  got=37.7    busy=100% tx=56
+  mtu=3000  f=4  tcp          #2  got=38.27   busy=90%  tx=0
+  mtu=3000  f=4  udp_plain    #3  got=32.38   busy=100% tx=56
+  mtu=3000  f=4  udp_sockopt  #3  got=33.27   busy=100% tx=56
+  mtu=3000  f=4  udp_ours     #3  got=37.28   busy=100% tx=56
+  mtu=3000  f=4  tcp          #3  got=38.43   busy=91%  tx=0
+  mtu=3000  f=4  udp_plain    #4  got=31.35   busy=100% tx=56
+  mtu=3000  f=4  udp_sockopt  #4  got=33.21   busy=100% tx=56
+  mtu=3000  f=4  udp_ours     #4  got=37.56   busy=100% tx=56
+  mtu=3000  f=4  tcp          #4  got=38.48   busy=91%  tx=0
+  mtu=3000  f=4  udp_plain    #5  got=32.12   busy=100% tx=56
+  mtu=3000  f=4  udp_sockopt  #5  got=33.79   busy=100% tx=56
+  mtu=3000  f=4  udp_ours     #5  got=37.59   busy=100% tx=56
+  mtu=3000  f=4  tcp          #5  got=36.88   busy=86%  tx=0
+  mtu=3000  f=8  udp_plain    #1  got=29.87   busy=100% tx=56
+  mtu=3000  f=8  udp_sockopt  #1  got=32.57   busy=100% tx=56
+  mtu=3000  f=8  udp_ours     #1  got=33.53   busy=100% tx=56
+  mtu=3000  f=8  tcp          #1  got=38.76   busy=94%  tx=0
+  mtu=3000  f=8  udp_plain    #2  got=30.3    busy=100% tx=56
+  mtu=3000  f=8  udp_sockopt  #2  got=31.75   busy=100% tx=56
+  mtu=3000  f=8  udp_ours     #2  got=36.78   busy=100% tx=56
+  mtu=3000  f=8  tcp          #2  got=39.59   busy=96%  tx=0
+  mtu=3000  f=8  udp_plain    #3  got=30.42   busy=100% tx=56
+  mtu=3000  f=8  udp_sockopt  #3  got=32.16   busy=100% tx=56
+  mtu=3000  f=8  udp_ours     #3  got=36.96   busy=100% tx=56
+  mtu=3000  f=8  tcp          #3  got=39.56   busy=97%  tx=0
+  mtu=3000  f=8  udp_plain    #4  got=30.43   busy=100% tx=56
+  mtu=3000  f=8  udp_sockopt  #4  got=31.95   busy=100% tx=56
+  mtu=3000  f=8  udp_ours     #4  got=36.65   busy=100% tx=56
+  mtu=3000  f=8  tcp          #4  got=39.19   busy=96%  tx=0
+  mtu=3000  f=8  udp_plain    #5  got=30.03   busy=100% tx=56
+  mtu=3000  f=8  udp_sockopt  #5  got=32.15   busy=100% tx=56
+  mtu=3000  f=8  udp_ours     #5  got=37.03   busy=100% tx=56
+  mtu=3000  f=8  tcp          #5  got=39.53   busy=96%  tx=0
+  mtu=3000  f=16 udp_plain    #1  got=35      busy=100% tx=48
+  mtu=3000  f=16 udp_sockopt  #1  got=39.36   busy=100% tx=48
+  mtu=3000  f=16 udp_ours     #1  got=35.47   busy=100% tx=48
+  mtu=3000  f=16 tcp          #1  got=36.61   busy=100% tx=0
+  mtu=3000  f=16 udp_plain    #2  got=34.84   busy=100% tx=48
+  mtu=3000  f=16 udp_sockopt  #2  got=39.83   busy=100% tx=48
+  mtu=3000  f=16 udp_ours     #2  got=35.27   busy=100% tx=48
+  mtu=3000  f=16 tcp          #2  got=35.53   busy=100% tx=0
+  mtu=3000  f=16 udp_plain    #3  got=34.28   busy=100% tx=48
+  mtu=3000  f=16 udp_sockopt  #3  got=39.22   busy=100% tx=48
+  mtu=3000  f=16 udp_ours     #3  got=35.84   busy=100% tx=48
+  mtu=3000  f=16 tcp          #3  got=38.15   busy=100% tx=0
+  mtu=3000  f=16 udp_plain    #4  got=34.18   busy=100% tx=48
+  mtu=3000  f=16 udp_sockopt  #4  got=37.6    busy=100% tx=48
+  mtu=3000  f=16 udp_ours     #4  got=31.32   busy=100% tx=48
+  mtu=3000  f=16 tcp          #4  got=36.4    busy=100% tx=0
+  mtu=3000  f=16 udp_plain    #5  got=34.96   busy=100% tx=48
+  mtu=3000  f=16 udp_sockopt  #5  got=35.45   busy=100% tx=48
+  mtu=3000  f=16 udp_ours     #5  got=35.94   busy=100% tx=48
+  mtu=3000  f=16 tcp          #5  got=35.75   busy=100% tx=0
+===== MTU 4500  (sender 최대 77.60 -> 제공 69G) =====
+  mtu=4500  f=1  udp_plain    #1  got=11.76   busy=87%  tx=69
+  mtu=4500  f=1  udp_sockopt  #1  got=24.98   busy=99%  tx=69
+  mtu=4500  f=1  udp_ours     #1  got=35.65   busy=100% tx=69
+  mtu=4500  f=1  tcp          #1  got=35.4    busy=79%  tx=0
+  mtu=4500  f=1  udp_plain    #2  got=11.65   busy=86%  tx=69
+  mtu=4500  f=1  udp_sockopt  #2  got=25.1    busy=98%  tx=69
+  mtu=4500  f=1  udp_ours     #2  got=40.05   busy=100% tx=69
+  mtu=4500  f=1  tcp          #2  got=34.9    busy=78%  tx=0
+  mtu=4500  f=1  udp_plain    #3  got=11.7    busy=87%  tx=69
+  mtu=4500  f=1  udp_sockopt  #3  got=25.3    busy=98%  tx=69
+  mtu=4500  f=1  udp_ours     #3  got=35.3    busy=100% tx=69
+  mtu=4500  f=1  tcp          #3  got=34.6    busy=78%  tx=0
+  mtu=4500  f=1  udp_plain    #4  got=11.67   busy=86%  tx=69
+  mtu=4500  f=1  udp_sockopt  #4  got=25.12   busy=98%  tx=69
+  mtu=4500  f=1  udp_ours     #4  got=35.71   busy=100% tx=69
+  mtu=4500  f=1  tcp          #4  got=35.6    busy=79%  tx=0
+  mtu=4500  f=1  udp_plain    #5  got=11.76   busy=86%  tx=69
+  mtu=4500  f=1  udp_sockopt  #5  got=25.11   busy=99%  tx=69
+  mtu=4500  f=1  udp_ours     #5  got=36.58   busy=100% tx=69
+  mtu=4500  f=1  tcp          #5  got=34.5    busy=79%  tx=0
+  mtu=4500  f=2  udp_plain    #1  got=22.66   busy=99%  tx=68
+  mtu=4500  f=2  udp_sockopt  #1  got=23.09   busy=100% tx=68
+  mtu=4500  f=2  udp_ours     #1  got=32.7    busy=100% tx=68
+  mtu=4500  f=2  tcp          #1  got=37.3    busy=85%  tx=0
+  mtu=4500  f=2  udp_plain    #2  got=22.77   busy=99%  tx=68
+  mtu=4500  f=2  udp_sockopt  #2  got=22.54   busy=100% tx=68
+  mtu=4500  f=2  udp_ours     #2  got=32.77   busy=100% tx=68
+  mtu=4500  f=2  tcp          #2  got=37.4    busy=85%  tx=0
+  mtu=4500  f=2  udp_plain    #3  got=22.93   busy=99%  tx=68
+  mtu=4500  f=2  udp_sockopt  #3  got=23.36   busy=100% tx=68
+  mtu=4500  f=2  udp_ours     #3  got=32.9    busy=100% tx=68
+  mtu=4500  f=2  tcp          #3  got=37.3    busy=85%  tx=0
+  mtu=4500  f=2  udp_plain    #4  got=22.73   busy=99%  tx=68
+  mtu=4500  f=2  udp_sockopt  #4  got=22.82   busy=100% tx=68
+  mtu=4500  f=2  udp_ours     #4  got=32.86   busy=100% tx=68
+  mtu=4500  f=2  tcp          #4  got=37.4    busy=85%  tx=0
+  mtu=4500  f=2  udp_plain    #5  got=22.31   busy=98%  tx=68
+  mtu=4500  f=2  udp_sockopt  #5  got=22.86   busy=100% tx=68
+  mtu=4500  f=2  udp_ours     #5  got=32.9    busy=100% tx=68
+  mtu=4500  f=2  tcp          #5  got=37.4    busy=85%  tx=0
+  mtu=4500  f=4  udp_plain    #1  got=21.13   busy=100% tx=68
+  mtu=4500  f=4  udp_sockopt  #1  got=21.39   busy=100% tx=68
+  mtu=4500  f=4  udp_ours     #1  got=31.75   busy=100% tx=68
+  mtu=4500  f=4  tcp          #1  got=39.04   busy=92%  tx=0
+  mtu=4500  f=4  udp_plain    #2  got=20.78   busy=100% tx=68
+  mtu=4500  f=4  udp_sockopt  #2  got=20.71   busy=100% tx=68
+  mtu=4500  f=4  udp_ours     #2  got=31.77   busy=100% tx=68
+  mtu=4500  f=4  tcp          #2  got=38.7    busy=90%  tx=0
+  mtu=4500  f=4  udp_plain    #3  got=20.67   busy=100% tx=68
+  mtu=4500  f=4  udp_sockopt  #3  got=20.42   busy=100% tx=68
+  mtu=4500  f=4  udp_ours     #3  got=31.51   busy=100% tx=68
+  mtu=4500  f=4  tcp          #3  got=39.25   busy=92%  tx=0
+  mtu=4500  f=4  udp_plain    #4  got=20.91   busy=100% tx=68
+  mtu=4500  f=4  udp_sockopt  #4  got=19.93   busy=100% tx=68
+  mtu=4500  f=4  udp_ours     #4  got=31.76   busy=100% tx=68
+  mtu=4500  f=4  tcp          #4  got=39.23   busy=92%  tx=0
+  mtu=4500  f=4  udp_plain    #5  got=19.68   busy=100% tx=68
+  mtu=4500  f=4  udp_sockopt  #5  got=20.13   busy=100% tx=68
+  mtu=4500  f=4  udp_ours     #5  got=31.22   busy=100% tx=68
+  mtu=4500  f=4  tcp          #5  got=39.48   busy=93%  tx=0
+  mtu=4500  f=8  udp_plain    #1  got=21.49   busy=100% tx=64
+  mtu=4500  f=8  udp_sockopt  #1  got=19.31   busy=100% tx=64
+  mtu=4500  f=8  udp_ours     #1  got=32.42   busy=100% tx=64
+  mtu=4500  f=8  tcp          #1  got=39.74   busy=96%  tx=0
+  mtu=4500  f=8  udp_plain    #2  got=20.75   busy=100% tx=64
+  mtu=4500  f=8  udp_sockopt  #2  got=19.55   busy=100% tx=64
+  mtu=4500  f=8  udp_ours     #2  got=31.97   busy=100% tx=64
+  mtu=4500  f=8  tcp          #2  got=40.14   busy=97%  tx=0
+  mtu=4500  f=8  udp_plain    #3  got=21.69   busy=100% tx=64
+  mtu=4500  f=8  udp_sockopt  #3  got=20.26   busy=100% tx=64
+  mtu=4500  f=8  udp_ours     #3  got=32.79   busy=100% tx=64
+  mtu=4500  f=8  tcp          #3  got=39.81   busy=96%  tx=0
+  mtu=4500  f=8  udp_plain    #4  got=20.69   busy=100% tx=64
+  mtu=4500  f=8  udp_sockopt  #4  got=19.52   busy=100% tx=64
+  mtu=4500  f=8  udp_ours     #4  got=31.7    busy=100% tx=64
+  mtu=4500  f=8  tcp          #4  got=39.93   busy=96%  tx=0
+  mtu=4500  f=8  udp_plain    #5  got=21.03   busy=100% tx=64
+  mtu=4500  f=8  udp_sockopt  #5  got=18.56   busy=100% tx=64
+  mtu=4500  f=8  udp_ours     #5  got=32.45   busy=100% tx=64
+  mtu=4500  f=8  tcp          #5  got=39.82   busy=97%  tx=0
+  mtu=4500  f=16 udp_plain    #1  got=19.84   busy=100% tx=64
+  mtu=4500  f=16 udp_sockopt  #1  got=16.89   busy=100% tx=64
+  mtu=4500  f=16 udp_ours     #1  got=32.08   busy=100% tx=64
+  mtu=4500  f=16 tcp          #1  got=34.76   busy=100% tx=0
+  mtu=4500  f=16 udp_plain    #2  got=17.39   busy=100% tx=64
+  mtu=4500  f=16 udp_sockopt  #2  got=20.12   busy=100% tx=64
+  mtu=4500  f=16 udp_ours     #2  got=31.76   busy=99%  tx=64
+  mtu=4500  f=16 tcp          #2  got=33.82   busy=100% tx=0
+  mtu=4500  f=16 udp_plain    #3  got=18.89   busy=100% tx=64
+  mtu=4500  f=16 udp_sockopt  #3  got=18.07   busy=100% tx=64
+  mtu=4500  f=16 udp_ours     #3  got=31.88   busy=100% tx=64
+  mtu=4500  f=16 tcp          #3  got=35.6    busy=100% tx=0
+  mtu=4500  f=16 udp_plain    #4  got=18.35   busy=100% tx=64
+  mtu=4500  f=16 udp_sockopt  #4  got=15.93   busy=100% tx=64
+  mtu=4500  f=16 udp_ours     #4  got=31.47   busy=100% tx=64
+  mtu=4500  f=16 tcp          #4  got=36.67   busy=100% tx=0
+  mtu=4500  f=16 udp_plain    #5  got=17.26   busy=100% tx=64
+  mtu=4500  f=16 udp_sockopt  #5  got=18.13   busy=100% tx=64
+  mtu=4500  f=16 udp_ours     #5  got=31.51   busy=100% tx=64
+  mtu=4500  f=16 tcp          #5  got=34.79   busy=100% tx=0
+===== MTU 6000  (sender 최대 86.35 -> 제공 77G) =====
+  mtu=6000  f=1  udp_plain    #1  got=15.07   busy=73%  tx=77
+  mtu=6000  f=1  udp_sockopt  #1  got=30.68   busy=90%  tx=77
+  mtu=6000  f=1  udp_ours     #1  got=45.19   busy=86%  tx=77
+  mtu=6000  f=1  tcp          #1  got=34.6    busy=74%  tx=0
+  mtu=6000  f=1  udp_plain    #2  got=15.17   busy=75%  tx=77
+  mtu=6000  f=1  udp_sockopt  #2  got=31.46   busy=92%  tx=77
+  mtu=6000  f=1  udp_ours     #2  got=46.73   busy=100% tx=77
+  mtu=6000  f=1  tcp          #2  got=35.8    busy=73%  tx=0
+  mtu=6000  f=1  udp_plain    #3  got=16.02   busy=71%  tx=77
+  mtu=6000  f=1  udp_sockopt  #3  got=30.64   busy=90%  tx=77
+  mtu=6000  f=1  udp_ours     #3  got=45.13   busy=86%  tx=77
+  mtu=6000  f=1  tcp          #3  got=36.7    busy=75%  tx=0
+  mtu=6000  f=1  udp_plain    #4  got=15.57   busy=73%  tx=77
+  mtu=6000  f=1  udp_sockopt  #4  got=30.64   busy=89%  tx=77
+  mtu=6000  f=1  udp_ours     #4  got=45.02   busy=86%  tx=77
+  mtu=6000  f=1  tcp          #4  got=35.6    busy=74%  tx=0
+  mtu=6000  f=1  udp_plain    #5  got=15.04   busy=74%  tx=77
+  mtu=6000  f=1  udp_sockopt  #5  got=30.62   busy=90%  tx=77
+  mtu=6000  f=1  udp_ours     #5  got=45.71   busy=89%  tx=77
+  mtu=6000  f=1  tcp          #5  got=35.1    busy=74%  tx=0
+  mtu=6000  f=2  udp_plain    #1  got=29.45   busy=90%  tx=76
+  mtu=6000  f=2  udp_sockopt  #1  got=37.03   busy=99%  tx=76
+  mtu=6000  f=2  udp_ours     #1  got=42.84   busy=93%  tx=76
+  mtu=6000  f=2  tcp          #1  got=37.8    busy=79%  tx=0
+  mtu=6000  f=2  udp_plain    #2  got=30.01   busy=92%  tx=76
+  mtu=6000  f=2  udp_sockopt  #2  got=36.6    busy=99%  tx=76
+  mtu=6000  f=2  udp_ours     #2  got=42.9    busy=94%  tx=76
+  mtu=6000  f=2  tcp          #2  got=37.5    busy=77%  tx=0
+  mtu=6000  f=2  udp_plain    #3  got=29.92   busy=92%  tx=76
+  mtu=6000  f=2  udp_sockopt  #3  got=37.25   busy=100% tx=76
+  mtu=6000  f=2  udp_ours     #3  got=42.92   busy=93%  tx=76
+  mtu=6000  f=2  tcp          #3  got=37.9    busy=81%  tx=0
+  mtu=6000  f=2  udp_plain    #4  got=29.19   busy=90%  tx=76
+  mtu=6000  f=2  udp_sockopt  #4  got=37.06   busy=100% tx=76
+  mtu=6000  f=2  udp_ours     #4  got=42.88   busy=93%  tx=76
+  mtu=6000  f=2  tcp          #4  got=38.2    busy=79%  tx=0
+  mtu=6000  f=2  udp_plain    #5  got=29.81   busy=92%  tx=76
+  mtu=6000  f=2  udp_sockopt  #5  got=36.94   busy=100% tx=76
+  mtu=6000  f=2  udp_ours     #5  got=43.96   busy=90%  tx=76
+  mtu=6000  f=2  tcp          #5  got=38.1    busy=79%  tx=0
+  mtu=6000  f=4  udp_plain    #1  got=34.02   busy=99%  tx=76
+  mtu=6000  f=4  udp_sockopt  #1  got=30.56   busy=96%  tx=76
+  mtu=6000  f=4  udp_ours     #1  got=43.97   busy=89%  tx=76
+  mtu=6000  f=4  tcp          #1  got=39.24   busy=84%  tx=0
+  mtu=6000  f=4  udp_plain    #2  got=34.2    busy=100% tx=76
+  mtu=6000  f=4  udp_sockopt  #2  got=33.15   busy=100% tx=76
+  mtu=6000  f=4  udp_ours     #2  got=43.95   busy=88%  tx=76
+  mtu=6000  f=4  tcp          #2  got=39.65   busy=84%  tx=0
+  mtu=6000  f=4  udp_plain    #3  got=34.39   busy=100% tx=76
+  mtu=6000  f=4  udp_sockopt  #3  got=27.15   busy=98%  tx=76
+  mtu=6000  f=4  udp_ours     #3  got=43.48   busy=92%  tx=76
+  mtu=6000  f=4  tcp          #3  got=39.25   busy=83%  tx=0
+  mtu=6000  f=4  udp_plain    #4  got=33.88   busy=100% tx=76
+  mtu=6000  f=4  udp_sockopt  #4  got=33.24   busy=100% tx=76
+  mtu=6000  f=4  udp_ours     #4  got=43.28   busy=90%  tx=76
+  mtu=6000  f=4  tcp          #4  got=39.38   busy=84%  tx=0
+  mtu=6000  f=4  udp_plain    #5  got=34.49   busy=99%  tx=76
+  mtu=6000  f=4  udp_sockopt  #5  got=31.39   busy=100% tx=76
+  mtu=6000  f=4  udp_ours     #5  got=44.03   busy=89%  tx=76
+  mtu=6000  f=4  tcp          #5  got=38.18   busy=80%  tx=0
+  mtu=6000  f=8  udp_plain    #1  got=31.31   busy=100% tx=72
+  mtu=6000  f=8  udp_sockopt  #1  got=32.48   busy=100% tx=72
+  mtu=6000  f=8  udp_ours     #1  got=37.14   busy=100% tx=72
+  mtu=6000  f=8  tcp          #1  got=40.64   busy=88%  tx=0
+  mtu=6000  f=8  udp_plain    #2  got=31.85   busy=100% tx=72
+  mtu=6000  f=8  udp_sockopt  #2  got=32.34   busy=100% tx=72
+  mtu=6000  f=8  udp_ours     #2  got=38.06   busy=100% tx=72
+  mtu=6000  f=8  tcp          #2  got=40.55   busy=88%  tx=0
+  mtu=6000  f=8  udp_plain    #3  got=31.4    busy=100% tx=72
+  mtu=6000  f=8  udp_sockopt  #3  got=30.01   busy=100% tx=72
+  mtu=6000  f=8  udp_ours     #3  got=41.06   busy=97%  tx=72
+  mtu=6000  f=8  tcp          #3  got=40.66   busy=89%  tx=0
+  mtu=6000  f=8  udp_plain    #4  got=31.45   busy=100% tx=72
+  mtu=6000  f=8  udp_sockopt  #4  got=32.14   busy=100% tx=72
+  mtu=6000  f=8  udp_ours     #4  got=43.02   busy=97%  tx=72
+  mtu=6000  f=8  tcp          #4  got=40.45   busy=88%  tx=0
+  mtu=6000  f=8  udp_plain    #5  got=32.84   busy=100% tx=72
+  mtu=6000  f=8  udp_sockopt  #5  got=31.97   busy=100% tx=72
+  mtu=6000  f=8  udp_ours     #5  got=36.41   busy=100% tx=72
+  mtu=6000  f=8  tcp          #5  got=40.21   busy=87%  tx=0
+  mtu=6000  f=16 udp_plain    #1  got=33.63   busy=100% tx=64
+  mtu=6000  f=16 udp_sockopt  #1  got=30.2    busy=100% tx=64
+  mtu=6000  f=16 udp_ours     #1  got=35.56   busy=100% tx=64
+  mtu=6000  f=16 tcp          #1  got=41.74   busy=91%  tx=0
+  mtu=6000  f=16 udp_plain    #2  got=30.27   busy=100% tx=64
+  mtu=6000  f=16 udp_sockopt  #2  got=34.11   busy=100% tx=64
+  mtu=6000  f=16 udp_ours     #2  got=38.94   busy=100% tx=64
+  mtu=6000  f=16 tcp          #2  got=41.55   busy=91%  tx=0
+  mtu=6000  f=16 udp_plain    #3  got=31.55   busy=100% tx=64
+  mtu=6000  f=16 udp_sockopt  #3  got=31.12   busy=100% tx=64
+  mtu=6000  f=16 udp_ours     #3  got=38.41   busy=100% tx=64
+  mtu=6000  f=16 tcp          #3  got=42.08   busy=91%  tx=0
+  mtu=6000  f=16 udp_plain    #4  got=31.69   busy=100% tx=64
+  mtu=6000  f=16 udp_sockopt  #4  got=30.88   busy=100% tx=64
+  mtu=6000  f=16 udp_ours     #4  got=37.45   busy=100% tx=64
+  mtu=6000  f=16 tcp          #4  got=42.59   busy=91%  tx=0
+  mtu=6000  f=16 udp_plain    #5  got=31.29   busy=100% tx=64
+  mtu=6000  f=16 udp_sockopt  #5  got=33.95   busy=100% tx=64
+  mtu=6000  f=16 udp_ours     #5  got=38.25   busy=100% tx=64
+  mtu=6000  f=16 tcp          #5  got=44.5    busy=91%  tx=0
+===== MTU 7500  (sender 최대 92.63 -> 제공 83G) =====
+  mtu=7500  f=1  udp_plain    #1  got=17.96   busy=68%  tx=83
+  mtu=7500  f=1  udp_sockopt  #1  got=32.9    busy=83%  tx=83
+  mtu=7500  f=1  udp_ours     #1  got=46.73   busy=100% tx=83
+  mtu=7500  f=1  tcp          #1  got=36.2    busy=70%  tx=0
+  mtu=7500  f=1  udp_plain    #2  got=17.92   busy=69%  tx=83
+  mtu=7500  f=1  udp_sockopt  #2  got=32.87   busy=83%  tx=83
+  mtu=7500  f=1  udp_ours     #2  got=48.24   busy=97%  tx=83
+  mtu=7500  f=1  tcp          #2  got=35.5    busy=69%  tx=0
+  mtu=7500  f=1  udp_plain    #3  got=17.96   busy=68%  tx=83
+  mtu=7500  f=1  udp_sockopt  #3  got=32.89   busy=83%  tx=83
+  mtu=7500  f=1  udp_ours     #3  got=50.28   busy=99%  tx=83
+  mtu=7500  f=1  tcp          #3  got=35.4    busy=69%  tx=0
+  mtu=7500  f=1  udp_plain    #4  got=17.97   busy=68%  tx=83
+  mtu=7500  f=1  udp_sockopt  #4  got=32.81   busy=83%  tx=83
+  mtu=7500  f=1  udp_ours     #4  got=47.34   busy=95%  tx=83
+  mtu=7500  f=1  tcp          #4  got=35.1    busy=68%  tx=0
+  mtu=7500  f=1  udp_plain    #5  got=17.91   busy=68%  tx=83
+  mtu=7500  f=1  udp_sockopt  #5  got=32.92   busy=83%  tx=83
+  mtu=7500  f=1  udp_ours     #5  got=47.35   busy=94%  tx=83
+  mtu=7500  f=1  tcp          #5  got=35.9    busy=69%  tx=0
+  mtu=7500  f=2  udp_plain    #1  got=32.01   busy=84%  tx=82
+  mtu=7500  f=2  udp_sockopt  #1  got=47.58   busy=100% tx=82
+  mtu=7500  f=2  udp_ours     #1  got=48.87   busy=86%  tx=82
+  mtu=7500  f=2  tcp          #1  got=37.8    busy=75%  tx=0
+  mtu=7500  f=2  udp_plain    #2  got=32.37   busy=85%  tx=82
+  mtu=7500  f=2  udp_sockopt  #2  got=47.3    busy=100% tx=82
+  mtu=7500  f=2  udp_ours     #2  got=48.89   busy=87%  tx=82
+  mtu=7500  f=2  tcp          #2  got=37.8    busy=74%  tx=0
+  mtu=7500  f=2  udp_plain    #3  got=32.35   busy=85%  tx=82
+  mtu=7500  f=2  udp_sockopt  #3  got=46.92   busy=100% tx=82
+  mtu=7500  f=2  udp_ours     #3  got=48.87   busy=87%  tx=82
+  mtu=7500  f=2  tcp          #3  got=38      busy=76%  tx=0
+  mtu=7500  f=2  udp_plain    #4  got=32.63   busy=85%  tx=82
+  mtu=7500  f=2  udp_sockopt  #4  got=48.09   busy=100% tx=82
+  mtu=7500  f=2  udp_ours     #4  got=48.88   busy=87%  tx=82
+  mtu=7500  f=2  tcp          #4  got=38.1    busy=75%  tx=0
+  mtu=7500  f=2  udp_plain    #5  got=32.13   busy=84%  tx=82
+  mtu=7500  f=2  udp_sockopt  #5  got=46.24   busy=100% tx=82
+  mtu=7500  f=2  udp_ours     #5  got=49.17   busy=86%  tx=82
+  mtu=7500  f=2  tcp          #5  got=38.6    busy=77%  tx=0
+  mtu=7500  f=4  udp_plain    #1  got=43.76   busy=100% tx=80
+  mtu=7500  f=4  udp_sockopt  #1  got=42.37   busy=100% tx=80
+  mtu=7500  f=4  udp_ours     #1  got=46.73   busy=94%  tx=80
+  mtu=7500  f=4  tcp          #1  got=39.3    busy=79%  tx=0
+  mtu=7500  f=4  udp_plain    #2  got=34.66   busy=97%  tx=80
+  mtu=7500  f=4  udp_sockopt  #2  got=41.23   busy=100% tx=80
+  mtu=7500  f=4  udp_ours     #2  got=44.92   busy=93%  tx=80
+  mtu=7500  f=4  tcp          #2  got=39.07   busy=80%  tx=0
+  mtu=7500  f=4  udp_plain    #3  got=44.11   busy=100% tx=80
+  mtu=7500  f=4  udp_sockopt  #3  got=38.38   busy=97%  tx=80
+  mtu=7500  f=4  udp_ours     #3  got=48.5    busy=89%  tx=80
+  mtu=7500  f=4  tcp          #3  got=39.57   busy=80%  tx=0
+  mtu=7500  f=4  udp_plain    #4  got=36.75   busy=94%  tx=80
+  mtu=7500  f=4  udp_sockopt  #4  got=42.98   busy=100% tx=80
+  mtu=7500  f=4  udp_ours     #4  got=47.53   busy=89%  tx=80
+  mtu=7500  f=4  tcp          #4  got=39.04   busy=80%  tx=0
+  mtu=7500  f=4  udp_plain    #5  got=45.07   busy=100% tx=80
+  mtu=7500  f=4  udp_sockopt  #5  got=41.98   busy=100% tx=80
+  mtu=7500  f=4  udp_ours     #5  got=46.94   busy=90%  tx=80
+  mtu=7500  f=4  tcp          #5  got=39.61   busy=80%  tx=0
+  mtu=7500  f=8  udp_plain    #1  got=34.04   busy=100% tx=80
+  mtu=7500  f=8  udp_sockopt  #1  got=33.83   busy=100% tx=80
+  mtu=7500  f=8  udp_ours     #1  got=40.71   busy=100% tx=80
+  mtu=7500  f=8  tcp          #1  got=40.36   busy=83%  tx=0
+  mtu=7500  f=8  udp_plain    #2  got=39.31   busy=100% tx=80
+  mtu=7500  f=8  udp_sockopt  #2  got=39.84   busy=100% tx=80
+  mtu=7500  f=8  udp_ours     #2  got=41.97   busy=100% tx=80
+  mtu=7500  f=8  tcp          #2  got=40.21   busy=83%  tx=0
+  mtu=7500  f=8  udp_plain    #3  got=36.86   busy=100% tx=80
+  mtu=7500  f=8  udp_sockopt  #3  got=38.57   busy=100% tx=80
+  mtu=7500  f=8  udp_ours     #3  got=40.26   busy=100% tx=80
+  mtu=7500  f=8  tcp          #3  got=40.2    busy=83%  tx=0
+  mtu=7500  f=8  udp_plain    #4  got=38.65   busy=100% tx=80
+  mtu=7500  f=8  udp_sockopt  #4  got=40.21   busy=100% tx=80
+  mtu=7500  f=8  udp_ours     #4  got=39.88   busy=100% tx=80
+  mtu=7500  f=8  tcp          #4  got=40.4    busy=83%  tx=0
+  mtu=7500  f=8  udp_plain    #5  got=39.82   busy=100% tx=80
+  mtu=7500  f=8  udp_sockopt  #5  got=38.23   busy=100% tx=80
+  mtu=7500  f=8  udp_ours     #5  got=39.28   busy=100% tx=80
+  mtu=7500  f=8  tcp          #5  got=40.39   busy=82%  tx=0
+  mtu=7500  f=16 udp_plain    #1  got=30.99   busy=100% tx=80
+  mtu=7500  f=16 udp_sockopt  #1  got=37.3    busy=100% tx=80
+  mtu=7500  f=16 udp_ours     #1  got=38.48   busy=100% tx=80
+  mtu=7500  f=16 tcp          #1  got=41.46   busy=85%  tx=0
+  mtu=7500  f=16 udp_plain    #2  got=33.35   busy=100% tx=80
+  mtu=7500  f=16 udp_sockopt  #2  got=34.53   busy=100% tx=80
+  mtu=7500  f=16 udp_ours     #2  got=39.21   busy=100% tx=80
+  mtu=7500  f=16 tcp          #2  got=41.4    busy=85%  tx=0
+  mtu=7500  f=16 udp_plain    #3  got=37.01   busy=100% tx=80
+  mtu=7500  f=16 udp_sockopt  #3  got=31.84   busy=100% tx=80
+  mtu=7500  f=16 udp_ours     #3  got=41.78   busy=100% tx=80
+  mtu=7500  f=16 tcp          #3  got=44.18   busy=85%  tx=0
+  mtu=7500  f=16 udp_plain    #4  got=34.33   busy=100% tx=80
+  mtu=7500  f=16 udp_sockopt  #4  got=30.46   busy=100% tx=80
+  mtu=7500  f=16 udp_ours     #4  got=41.25   busy=100% tx=80
+  mtu=7500  f=16 tcp          #4  got=42.95   busy=85%  tx=0
+  mtu=7500  f=16 udp_plain    #5  got=33.39   busy=100% tx=80
+  mtu=7500  f=16 udp_sockopt  #5  got=30.45   busy=100% tx=80
+  mtu=7500  f=16 udp_ours     #5  got=39.09   busy=100% tx=80
+  mtu=7500  f=16 tcp          #5  got=41.37   busy=86%  tx=0
+===== MTU 9000  (sender 최대 98.87 -> 제공 88G) =====
+  mtu=9000  f=1  udp_plain    #1  got=13.37   busy=65%  tx=88
+  mtu=9000  f=1  udp_sockopt  #1  got=23.03   busy=76%  tx=88
+  mtu=9000  f=1  udp_ours     #1  got=50.34   busy=100% tx=88
+  mtu=9000  f=1  tcp          #1  got=57.9    busy=100% tx=0
+  mtu=9000  f=1  udp_plain    #2  got=12.89   busy=67%  tx=88
+  mtu=9000  f=1  udp_sockopt  #2  got=22.37   busy=70%  tx=88
+  mtu=9000  f=1  udp_ours     #2  got=52.11   busy=100% tx=88
+  mtu=9000  f=1  tcp          #2  got=58      busy=99%  tx=0
+  mtu=9000  f=1  udp_plain    #3  got=13.25   busy=66%  tx=88
+  mtu=9000  f=1  udp_sockopt  #3  got=21.57   busy=69%  tx=88
+  mtu=9000  f=1  udp_ours     #3  got=51.9    busy=100% tx=88
+  mtu=9000  f=1  tcp          #3  got=50.3    busy=96%  tx=0
+  mtu=9000  f=1  udp_plain    #4  got=12.89   busy=66%  tx=88
+  mtu=9000  f=1  udp_sockopt  #4  got=23.88   busy=73%  tx=88
+  mtu=9000  f=1  udp_ours     #4  got=55.13   busy=100% tx=88
+  mtu=9000  f=1  tcp          #4  got=58      busy=99%  tx=0
+  mtu=9000  f=1  udp_plain    #5  got=12.53   busy=67%  tx=88
+  mtu=9000  f=1  udp_sockopt  #5  got=25.06   busy=75%  tx=88
+  mtu=9000  f=1  udp_ours     #5  got=51.99   busy=100% tx=88
+  mtu=9000  f=1  tcp          #5  got=58.1    busy=99%  tx=0
+  mtu=9000  f=2  udp_plain    #1  got=18.33   busy=64%  tx=88
+  mtu=9000  f=2  udp_sockopt  #1  got=31.18   busy=81%  tx=88
+  mtu=9000  f=2  udp_ours     #1  got=46.9    busy=100% tx=88
+  mtu=9000  f=2  tcp          #1  got=46.8    busy=99%  tx=0
+  mtu=9000  f=2  udp_plain    #2  got=16.04   busy=64%  tx=88
+  mtu=9000  f=2  udp_sockopt  #2  got=31.13   busy=81%  tx=88
+  mtu=9000  f=2  udp_ours     #2  got=46.75   busy=100% tx=88
+  mtu=9000  f=2  tcp          #2  got=46.7    busy=99%  tx=0
+  mtu=9000  f=2  udp_plain    #3  got=16.43   busy=64%  tx=88
+  mtu=9000  f=2  udp_sockopt  #3  got=32.73   busy=81%  tx=88
+  mtu=9000  f=2  udp_ours     #3  got=46.95   busy=100% tx=88
+  mtu=9000  f=2  tcp          #3  got=52.2    busy=100% tx=0
+  mtu=9000  f=2  udp_plain    #4  got=16.4    busy=64%  tx=88
+  mtu=9000  f=2  udp_sockopt  #4  got=30.77   busy=82%  tx=88
+  mtu=9000  f=2  udp_ours     #4  got=46.52   busy=100% tx=88
+  mtu=9000  f=2  tcp          #4  got=48.8    busy=100% tx=0
+  mtu=9000  f=2  udp_plain    #5  got=16.91   busy=65%  tx=88
+  mtu=9000  f=2  udp_sockopt  #5  got=30.92   busy=81%  tx=88
+  mtu=9000  f=2  udp_ours     #5  got=46.37   busy=100% tx=88
+  mtu=9000  f=2  tcp          #5  got=52.1    busy=100% tx=0
+  mtu=9000  f=4  udp_plain    #1  got=30.74   busy=85%  tx=88
+  mtu=9000  f=4  udp_sockopt  #1  got=44.06   busy=100% tx=88
+  mtu=9000  f=4  udp_ours     #1  got=43.84   busy=100% tx=88
+  mtu=9000  f=4  tcp          #1  got=43.9    busy=100% tx=0
+  mtu=9000  f=4  udp_plain    #2  got=28.49   busy=86%  tx=88
+  mtu=9000  f=4  udp_sockopt  #2  got=44.47   busy=100% tx=88
+  mtu=9000  f=4  udp_ours     #2  got=44.09   busy=100% tx=88
+  mtu=9000  f=4  tcp          #2  got=44.2    busy=100% tx=0
+  mtu=9000  f=4  udp_plain    #3  got=29.41   busy=84%  tx=88
+  mtu=9000  f=4  udp_sockopt  #3  got=42.21   busy=100% tx=88
+  mtu=9000  f=4  udp_ours     #3  got=44.33   busy=100% tx=88
+  mtu=9000  f=4  tcp          #3  got=43.6    busy=100% tx=0
+  mtu=9000  f=4  udp_plain    #4  got=30.06   busy=85%  tx=88
+  mtu=9000  f=4  udp_sockopt  #4  got=41.65   busy=100% tx=88
+  mtu=9000  f=4  udp_ours     #4  got=45.27   busy=100% tx=88
+  mtu=9000  f=4  tcp          #4  got=44.5    busy=100% tx=0
+  mtu=9000  f=4  udp_plain    #5  got=32.75   busy=86%  tx=88
+  mtu=9000  f=4  udp_sockopt  #5  got=42.5    busy=100% tx=88
+  mtu=9000  f=4  udp_ours     #5  got=45.52   busy=100% tx=88
+  mtu=9000  f=4  tcp          #5  got=43.3    busy=100% tx=0
+  mtu=9000  f=8  udp_plain    #1  got=34.29   busy=100% tx=88
+  mtu=9000  f=8  udp_sockopt  #1  got=38.85   busy=100% tx=88
+  mtu=9000  f=8  udp_ours     #1  got=43.76   busy=100% tx=88
+  mtu=9000  f=8  tcp          #1  got=42.64   busy=100% tx=0
+  mtu=9000  f=8  udp_plain    #2  got=35.08   busy=100% tx=88
+  mtu=9000  f=8  udp_sockopt  #2  got=37.56   busy=100% tx=88
+  mtu=9000  f=8  udp_ours     #2  got=44.06   busy=100% tx=88
+  mtu=9000  f=8  tcp          #2  got=42.74   busy=100% tx=0
+  mtu=9000  f=8  udp_plain    #3  got=38.62   busy=100% tx=88
+  mtu=9000  f=8  udp_sockopt  #3  got=38      busy=100% tx=88
+  mtu=9000  f=8  udp_ours     #3  got=42.15   busy=100% tx=88
+  mtu=9000  f=8  tcp          #3  got=42.42   busy=100% tx=0
+  mtu=9000  f=8  udp_plain    #4  got=38.4    busy=100% tx=88
+  mtu=9000  f=8  udp_sockopt  #4  got=38.35   busy=100% tx=88
+  mtu=9000  f=8  udp_ours     #4  got=41.79   busy=100% tx=88
+  mtu=9000  f=8  tcp          #4  got=42.88   busy=100% tx=0
+  mtu=9000  f=8  udp_plain    #5  got=34.4    busy=100% tx=88
+  mtu=9000  f=8  udp_sockopt  #5  got=38.72   busy=100% tx=88
+  mtu=9000  f=8  udp_ours     #5  got=44.15   busy=100% tx=88
+  mtu=9000  f=8  tcp          #5  got=42.19   busy=100% tx=0
+  mtu=9000  f=16 udp_plain    #1  got=36.94   busy=100% tx=80
+  mtu=9000  f=16 udp_sockopt  #1  got=37.13   busy=100% tx=80
+  mtu=9000  f=16 udp_ours     #1  got=41.01   busy=100% tx=80
+  mtu=9000  f=16 tcp          #1  got=35.49   busy=100% tx=0
+  mtu=9000  f=16 udp_plain    #2  got=35.66   busy=100% tx=80
+  mtu=9000  f=16 udp_sockopt  #2  got=36.01   busy=100% tx=80
+  mtu=9000  f=16 udp_ours     #2  got=46.19   busy=100% tx=80
+  mtu=9000  f=16 tcp          #2  got=35.71   busy=100% tx=0
+  mtu=9000  f=16 udp_plain    #3  got=39.89   busy=100% tx=80
+  mtu=9000  f=16 udp_sockopt  #3  got=38.86   busy=100% tx=80
+  mtu=9000  f=16 udp_ours     #3  got=46.02   busy=100% tx=80
+  mtu=9000  f=16 tcp          #3  got=35.38   busy=100% tx=0
+  mtu=9000  f=16 udp_plain    #4  got=37.42   busy=100% tx=80
+  mtu=9000  f=16 udp_sockopt  #4  got=37.02   busy=100% tx=80
+  mtu=9000  f=16 udp_ours     #4  got=45.17   busy=100% tx=80
+  mtu=9000  f=16 tcp          #4  got=37.43   busy=100% tx=0
+  mtu=9000  f=16 udp_plain    #5  got=37.94   busy=100% tx=80
+  mtu=9000  f=16 udp_sockopt  #5  got=35.42   busy=100% tx=80
+  mtu=9000  f=16 udp_ours     #5  got=44.82   busy=100% tx=80
+  mtu=9000  f=16 tcp          #5  got=35.94   busy=100% tx=0
+
+=========== 격자 요약 ===========
+MTU 1500  flows 1   tcp          got= 30.90  busy= 92%  (n=5)
+MTU 1500  flows 1   udp_ours     got= 25.77  busy=100%  (n=5)
+MTU 1500  flows 1   udp_plain    got=  3.64  busy= 87%  (n=5)
+MTU 1500  flows 1   udp_sockopt  got=  6.46  busy= 91%  (n=5)
+MTU 1500  flows 2   tcp          got= 31.70  busy= 99%  (n=5)
+MTU 1500  flows 2   udp_ours     got= 23.58  busy=100%  (n=5)
+MTU 1500  flows 2   udp_plain    got=  9.29  busy= 99%  (n=5)
+MTU 1500  flows 2   udp_sockopt  got=  9.75  busy=100%  (n=5)
+MTU 1500  flows 4   tcp          got= 30.73  busy=100%  (n=5)
+MTU 1500  flows 4   udp_ours     got= 22.40  busy=100%  (n=5)
+MTU 1500  flows 4   udp_plain    got= 12.50  busy=100%  (n=5)
+MTU 1500  flows 4   udp_sockopt  got= 12.71  busy=100%  (n=5)
+MTU 1500  flows 8   tcp          got= 28.51  busy=100%  (n=5)
+MTU 1500  flows 8   udp_ours     got= 23.00  busy=100%  (n=5)
+MTU 1500  flows 8   udp_plain    got= 18.85  busy=100%  (n=5)
+MTU 1500  flows 8   udp_sockopt  got= 19.32  busy=100%  (n=5)
+MTU 1500  flows 16  tcp          got= 25.73  busy=100%  (n=5)
+MTU 1500  flows 16  udp_ours     got= 21.54  busy=100%  (n=5)
+MTU 1500  flows 16  udp_plain    got= 17.74  busy=100%  (n=5)
+MTU 1500  flows 16  udp_sockopt  got= 18.99  busy=100%  (n=5)
+MTU 3000  flows 1   tcp          got= 32.88  busy= 71%  (n=5)
+MTU 3000  flows 1   udp_ours     got= 41.52  busy=100%  (n=5)
+MTU 3000  flows 1   udp_plain    got= 16.93  busy= 84%  (n=5)
+MTU 3000  flows 1   udp_sockopt  got= 33.67  busy= 98%  (n=5)
+MTU 3000  flows 2   tcp          got= 36.04  busy= 81%  (n=5)
+MTU 3000  flows 2   udp_ours     got= 37.99  busy=100%  (n=5)
+MTU 3000  flows 2   udp_plain    got= 30.02  busy= 96%  (n=5)
+MTU 3000  flows 2   udp_sockopt  got= 33.22  busy=100%  (n=5)
+MTU 3000  flows 4   tcp          got= 38.12  busy= 90%  (n=5)
+MTU 3000  flows 4   udp_ours     got= 37.63  busy=100%  (n=5)
+MTU 3000  flows 4   udp_plain    got= 32.11  busy=100%  (n=5)
+MTU 3000  flows 4   udp_sockopt  got= 33.38  busy=100%  (n=5)
+MTU 3000  flows 8   tcp          got= 39.33  busy= 96%  (n=5)
+MTU 3000  flows 8   udp_ours     got= 36.19  busy=100%  (n=5)
+MTU 3000  flows 8   udp_plain    got= 30.21  busy=100%  (n=5)
+MTU 3000  flows 8   udp_sockopt  got= 32.12  busy=100%  (n=5)
+MTU 3000  flows 16  tcp          got= 36.49  busy=100%  (n=5)
+MTU 3000  flows 16  udp_ours     got= 34.77  busy=100%  (n=5)
+MTU 3000  flows 16  udp_plain    got= 34.65  busy=100%  (n=5)
+MTU 3000  flows 16  udp_sockopt  got= 38.29  busy=100%  (n=5)
+MTU 4500  flows 1   tcp          got= 35.00  busy= 79%  (n=5)
+MTU 4500  flows 1   udp_ours     got= 36.66  busy=100%  (n=5)
+MTU 4500  flows 1   udp_plain    got= 11.71  busy= 86%  (n=5)
+MTU 4500  flows 1   udp_sockopt  got= 25.12  busy= 98%  (n=5)
+MTU 4500  flows 2   tcp          got= 37.36  busy= 85%  (n=5)
+MTU 4500  flows 2   udp_ours     got= 32.83  busy=100%  (n=5)
+MTU 4500  flows 2   udp_plain    got= 22.68  busy= 99%  (n=5)
+MTU 4500  flows 2   udp_sockopt  got= 22.93  busy=100%  (n=5)
+MTU 4500  flows 4   tcp          got= 39.14  busy= 92%  (n=5)
+MTU 4500  flows 4   udp_ours     got= 31.60  busy=100%  (n=5)
+MTU 4500  flows 4   udp_plain    got= 20.63  busy=100%  (n=5)
+MTU 4500  flows 4   udp_sockopt  got= 20.52  busy=100%  (n=5)
+MTU 4500  flows 8   tcp          got= 39.89  busy= 96%  (n=5)
+MTU 4500  flows 8   udp_ours     got= 32.27  busy=100%  (n=5)
+MTU 4500  flows 8   udp_plain    got= 21.13  busy=100%  (n=5)
+MTU 4500  flows 8   udp_sockopt  got= 19.44  busy=100%  (n=5)
+MTU 4500  flows 16  tcp          got= 35.13  busy=100%  (n=5)
+MTU 4500  flows 16  udp_ours     got= 31.74  busy=100%  (n=5)
+MTU 4500  flows 16  udp_plain    got= 18.35  busy=100%  (n=5)
+MTU 4500  flows 16  udp_sockopt  got= 17.83  busy=100%  (n=5)
+MTU 6000  flows 1   tcp          got= 35.56  busy= 74%  (n=5)
+MTU 6000  flows 1   udp_ours     got= 45.56  busy= 89%  (n=5)
+MTU 6000  flows 1   udp_plain    got= 15.37  busy= 73%  (n=5)
+MTU 6000  flows 1   udp_sockopt  got= 30.81  busy= 90%  (n=5)
+MTU 6000  flows 2   tcp          got= 37.90  busy= 79%  (n=5)
+MTU 6000  flows 2   udp_ours     got= 43.10  busy= 93%  (n=5)
+MTU 6000  flows 2   udp_plain    got= 29.68  busy= 91%  (n=5)
+MTU 6000  flows 2   udp_sockopt  got= 36.98  busy=100%  (n=5)
+MTU 6000  flows 4   tcp          got= 39.14  busy= 83%  (n=5)
+MTU 6000  flows 4   udp_ours     got= 43.74  busy= 90%  (n=5)
+MTU 6000  flows 4   udp_plain    got= 34.20  busy=100%  (n=5)
+MTU 6000  flows 4   udp_sockopt  got= 31.10  busy= 99%  (n=5)
+MTU 6000  flows 8   tcp          got= 40.50  busy= 88%  (n=5)
+MTU 6000  flows 8   udp_ours     got= 39.14  busy= 99%  (n=5)
+MTU 6000  flows 8   udp_plain    got= 31.77  busy=100%  (n=5)
+MTU 6000  flows 8   udp_sockopt  got= 31.79  busy=100%  (n=5)
+MTU 6000  flows 16  tcp          got= 42.49  busy= 91%  (n=5)
+MTU 6000  flows 16  udp_ours     got= 37.72  busy=100%  (n=5)
+MTU 6000  flows 16  udp_plain    got= 31.69  busy=100%  (n=5)
+MTU 6000  flows 16  udp_sockopt  got= 32.05  busy=100%  (n=5)
+MTU 7500  flows 1   tcp          got= 35.62  busy= 69%  (n=5)
+MTU 7500  flows 1   udp_ours     got= 47.99  busy= 97%  (n=5)
+MTU 7500  flows 1   udp_plain    got= 17.94  busy= 68%  (n=5)
+MTU 7500  flows 1   udp_sockopt  got= 32.88  busy= 83%  (n=5)
+MTU 7500  flows 2   tcp          got= 38.06  busy= 75%  (n=5)
+MTU 7500  flows 2   udp_ours     got= 48.94  busy= 87%  (n=5)
+MTU 7500  flows 2   udp_plain    got= 32.30  busy= 85%  (n=5)
+MTU 7500  flows 2   udp_sockopt  got= 47.23  busy=100%  (n=5)
+MTU 7500  flows 4   tcp          got= 39.32  busy= 80%  (n=5)
+MTU 7500  flows 4   udp_ours     got= 46.92  busy= 91%  (n=5)
+MTU 7500  flows 4   udp_plain    got= 40.87  busy= 98%  (n=5)
+MTU 7500  flows 4   udp_sockopt  got= 41.39  busy= 99%  (n=5)
+MTU 7500  flows 8   tcp          got= 40.31  busy= 83%  (n=5)
+MTU 7500  flows 8   udp_ours     got= 40.42  busy=100%  (n=5)
+MTU 7500  flows 8   udp_plain    got= 37.74  busy=100%  (n=5)
+MTU 7500  flows 8   udp_sockopt  got= 38.14  busy=100%  (n=5)
+MTU 7500  flows 16  tcp          got= 42.27  busy= 85%  (n=5)
+MTU 7500  flows 16  udp_ours     got= 39.96  busy=100%  (n=5)
+MTU 7500  flows 16  udp_plain    got= 33.81  busy=100%  (n=5)
+MTU 7500  flows 16  udp_sockopt  got= 32.92  busy=100%  (n=5)
+MTU 9000  flows 1   tcp          got= 56.46  busy= 99%  (n=5)
+MTU 9000  flows 1   udp_ours     got= 52.29  busy=100%  (n=5)
+MTU 9000  flows 1   udp_plain    got= 12.99  busy= 66%  (n=5)
+MTU 9000  flows 1   udp_sockopt  got= 23.18  busy= 73%  (n=5)
+MTU 9000  flows 2   tcp          got= 49.32  busy=100%  (n=5)
+MTU 9000  flows 2   udp_ours     got= 46.70  busy=100%  (n=5)
+MTU 9000  flows 2   udp_plain    got= 16.82  busy= 64%  (n=5)
+MTU 9000  flows 2   udp_sockopt  got= 31.35  busy= 81%  (n=5)
+MTU 9000  flows 4   tcp          got= 43.90  busy=100%  (n=5)
+MTU 9000  flows 4   udp_ours     got= 44.61  busy=100%  (n=5)
+MTU 9000  flows 4   udp_plain    got= 30.29  busy= 85%  (n=5)
+MTU 9000  flows 4   udp_sockopt  got= 42.98  busy=100%  (n=5)
+MTU 9000  flows 8   tcp          got= 42.57  busy=100%  (n=5)
+MTU 9000  flows 8   udp_ours     got= 43.18  busy=100%  (n=5)
+MTU 9000  flows 8   udp_plain    got= 36.16  busy=100%  (n=5)
+MTU 9000  flows 8   udp_sockopt  got= 38.30  busy=100%  (n=5)
+MTU 9000  flows 16  tcp          got= 35.99  busy=100%  (n=5)
+MTU 9000  flows 16  udp_ours     got= 44.64  busy=100%  (n=5)
+MTU 9000  flows 16  udp_plain    got= 37.57  busy=100%  (n=5)
+MTU 9000  flows 16  udp_sockopt  got= 36.89  busy=100%  (n=5)
+clean
