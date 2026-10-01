@@ -1,0 +1,42 @@
+6.18.53-udpopt21
+ring 128
+quiche: datagram 1350B, recv_from 1회/datagram, UDP_GRO/SO_RCVBUF 미사용
+===== 동시 연결 1 =====
+  stock conns=1   #1  got=2.65    bytes=2147483648    elapsed=6.48   busy=22%
+  ours  conns=1   #1  got=2.31    bytes=2147483648    elapsed=7.44   busy=25%
+  stock conns=1   #2  got=2.68    bytes=2147483648    elapsed=6.40   busy=22%
+  ours  conns=1   #2  got=2.36    bytes=2147483648    elapsed=7.27   busy=25%
+  stock conns=1   #3  got=2.78    bytes=2147483648    elapsed=6.17   busy=21%
+  ours  conns=1   #3  got=2.40    bytes=2147483648    elapsed=7.15   busy=24%
+===== 동시 연결 2 =====
+  stock conns=2   #1  got=2.94    bytes=4294967296    elapsed=11.70  busy=52%
+  ours  conns=2   #1  got=2.74    bytes=4294967296    elapsed=12.52  busy=53%
+  stock conns=2   #2  got=2.94    bytes=4294967296    elapsed=11.67  busy=52%
+  ours  conns=2   #2  got=2.75    bytes=4294967296    elapsed=12.49  busy=53%
+  stock conns=2   #3  got=2.90    bytes=4294967296    elapsed=11.86  busy=54%
+  ours  conns=2   #3  got=2.73    bytes=4294967296    elapsed=12.57  busy=53%
+===== 동시 연결 4 =====
+  stock conns=4   #1  got=2.86    bytes=8589934592    elapsed=24.06  busy=89%
+  ours  conns=4   #1  got=2.78    bytes=8589934592    elapsed=24.73  busy=85%
+  stock conns=4   #2  got=2.63    bytes=8589934592    elapsed=26.17  busy=83%
+  ours  conns=4   #2  got=2.95    bytes=8589934592    elapsed=23.26  busy=87%
+  stock conns=4   #3  got=2.72    bytes=8589934592    elapsed=25.30  busy=83%
+  ours  conns=4   #3  got=2.90    bytes=8589934592    elapsed=23.72  busy=87%
+===== 동시 연결 8 =====
+  stock conns=8   #1  got=2.76    bytes=17179869184   elapsed=49.71  busy=67%
+  ours  conns=8   #1  got=2.83    bytes=17179869184   elapsed=48.64  busy=65%
+  stock conns=8   #2  got=2.69    bytes=17179869184   elapsed=51.06  busy=66%
+  ours  conns=8   #2  got=2.71    bytes=17179869184   elapsed=50.65  busy=53%
+  stock conns=8   #3  got=2.62    bytes=17179869184   elapsed=52.52  busy=56%
+  ours  conns=8   #3  got=2.84    bytes=17179869184   elapsed=48.35  busy=63%
+
+=========== 요약 (평균±sd) ===========
+conns 1   ours   got=  2.36 +- 0.04  busy= 25%  (n=3)
+conns 1   stock  got=  2.70 +- 0.06  busy= 22%  (n=3)
+conns 2   ours   got=  2.74 +- 0.01  busy= 53%  (n=3)
+conns 2   stock  got=  2.93 +- 0.02  busy= 53%  (n=3)
+conns 4   ours   got=  2.88 +- 0.07  busy= 86%  (n=3)
+conns 4   stock  got=  2.74 +- 0.09  busy= 85%  (n=3)
+conns 8   ours   got=  2.79 +- 0.06  busy= 60%  (n=3)
+conns 8   stock  got=  2.69 +- 0.06  busy= 63%  (n=3)
+clean

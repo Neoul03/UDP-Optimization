@@ -1,0 +1,20 @@
+6.18.53-udpopt21
+  off   #1  got=2.23    elapsed=7.69   busy=28%   RcvbufErrors=18350
+  auto  #1  got=2.33    elapsed=7.38   busy=24%   RcvbufErrors=197
+  shed  #1  got=2.66    elapsed=6.45   busy=22%   RcvbufErrors=5147
+  both  #1  got=2.17    elapsed=7.90   busy=30%   RcvbufErrors=778
+  off   #2  got=2.71    elapsed=6.35   busy=22%   RcvbufErrors=11280
+  auto  #2  got=2.30    elapsed=7.48   busy=26%   RcvbufErrors=293
+  shed  #2  got=2.73    elapsed=6.30   busy=22%   RcvbufErrors=4944
+  both  #2  got=2.36    elapsed=7.28   busy=25%   RcvbufErrors=186
+  off   #3  got=2.62    elapsed=6.56   busy=22%   RcvbufErrors=13559
+  auto  #3  got=2.40    elapsed=7.16   busy=24%   RcvbufErrors=317
+  shed  #3  got=2.63    elapsed=6.54   busy=25%   RcvbufErrors=6426
+  both  #3  got=2.33    elapsed=7.38   busy=27%   RcvbufErrors=379
+
+=========== 요약 (평균±sd) ===========
+auto  got=  2.34 +- 0.04  busy= 25%  RcvbufErrors=      269  (n=3)
+both  got=  2.29 +- 0.08  busy= 27%  RcvbufErrors=      448  (n=3)
+off   got=  2.52 +- 0.21  busy= 24%  RcvbufErrors=    14396  (n=3)
+shed  got=  2.67 +- 0.04  busy= 23%  RcvbufErrors=     5506  (n=3)
+clean

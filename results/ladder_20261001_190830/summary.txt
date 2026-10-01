@@ -1,0 +1,311 @@
+6.18.53-udpopt21
+ring 128
+Adaptive RX: on  TX: on
+4096	131072	33554432
+===== 요청 5 Gb/s =====
+  udp_sockopt  rate=5   #1  got=5.00    tx=5.00    busy=12%
+  udp_ours     rate=5   #1  got=5.00    tx=5.00    busy=12%
+  tcp          rate=5   #1  got=5.00    tx=5.00    busy=9%
+  udp_sockopt  rate=5   #2  got=5.00    tx=5.00    busy=12%
+  udp_ours     rate=5   #2  got=5.00    tx=5.00    busy=12%
+  tcp          rate=5   #2  got=5.00    tx=5.00    busy=9%
+  udp_sockopt  rate=5   #3  got=5.00    tx=5.00    busy=12%
+  udp_ours     rate=5   #3  got=5.00    tx=5.00    busy=12%
+  tcp          rate=5   #3  got=5.00    tx=5.00    busy=8%
+  udp_sockopt  rate=5   #4  got=5.00    tx=5.00    busy=12%
+  udp_ours     rate=5   #4  got=5.00    tx=5.00    busy=12%
+  tcp          rate=5   #4  got=5.00    tx=5.00    busy=9%
+  udp_sockopt  rate=5   #5  got=5.00    tx=5.00    busy=12%
+  udp_ours     rate=5   #5  got=5.00    tx=5.00    busy=12%
+  tcp          rate=5   #5  got=5.00    tx=5.00    busy=10%
+===== 요청 10 Gb/s =====
+  udp_sockopt  rate=10  #1  got=10.00   tx=10.00   busy=26%
+  udp_ours     rate=10  #1  got=10.00   tx=10.00   busy=25%
+  tcp          rate=10  #1  got=10.0    tx=10.0    busy=19%
+  udp_sockopt  rate=10  #2  got=6.44    tx=10.00   busy=15%
+  udp_ours     rate=10  #2  got=10.00   tx=10.00   busy=24%
+  tcp          rate=10  #2  got=10.0    tx=10.0    busy=19%
+  udp_sockopt  rate=10  #3  got=6.48    tx=10.00   busy=16%
+  udp_ours     rate=10  #3  got=10.00   tx=10.00   busy=24%
+  tcp          rate=10  #3  got=10.0    tx=10.0    busy=19%
+  udp_sockopt  rate=10  #4  got=10.00   tx=10.00   busy=24%
+  udp_ours     rate=10  #4  got=10.00   tx=10.00   busy=24%
+  tcp          rate=10  #4  got=10.0    tx=10.0    busy=19%
+  udp_sockopt  rate=10  #5  got=6.47    tx=10.00   busy=17%
+  udp_ours     rate=10  #5  got=10.00   tx=10.00   busy=25%
+  tcp          rate=10  #5  got=10.0    tx=10.0    busy=19%
+===== 요청 15 Gb/s =====
+  udp_sockopt  rate=15  #1  got=15.00   tx=15.00   busy=35%
+  udp_ours     rate=15  #1  got=15.00   tx=15.00   busy=36%
+  tcp          rate=15  #1  got=15.0    tx=15.0    busy=29%
+  udp_sockopt  rate=15  #2  got=9.10    tx=15.00   busy=14%
+  udp_ours     rate=15  #2  got=15.00   tx=15.00   busy=38%
+  tcp          rate=15  #2  got=15.0    tx=15.0    busy=29%
+  udp_sockopt  rate=15  #3  got=9.11    tx=15.00   busy=14%
+  udp_ours     rate=15  #3  got=15.00   tx=15.00   busy=19%
+  tcp          rate=15  #3  got=15.0    tx=15.0    busy=29%
+  udp_sockopt  rate=15  #4  got=14.99   tx=15.00   busy=37%
+  udp_ours     rate=15  #4  got=15.00   tx=15.00   busy=37%
+  tcp          rate=15  #4  got=15.0    tx=15.0    busy=29%
+  udp_sockopt  rate=15  #5  got=9.10    tx=15.00   busy=19%
+  udp_ours     rate=15  #5  got=15.00   tx=15.00   busy=38%
+  tcp          rate=15  #5  got=15.0    tx=15.0    busy=28%
+===== 요청 20 Gb/s =====
+  udp_sockopt  rate=20  #1  got=12.04   tx=20.00   busy=23%
+  udp_ours     rate=20  #1  got=20.00   tx=20.00   busy=30%
+  tcp          rate=20  #1  got=20.0    tx=20.0    busy=37%
+  udp_sockopt  rate=20  #2  got=12.01   tx=20.00   busy=23%
+  udp_ours     rate=20  #2  got=20.00   tx=20.00   busy=30%
+  tcp          rate=20  #2  got=20.0    tx=20.0    busy=38%
+  udp_sockopt  rate=20  #3  got=12.04   tx=20.00   busy=23%
+  udp_ours     rate=20  #3  got=20.00   tx=20.00   busy=30%
+  tcp          rate=20  #3  got=20.0    tx=20.0    busy=37%
+  udp_sockopt  rate=20  #4  got=12.00   tx=20.00   busy=23%
+  udp_ours     rate=20  #4  got=20.00   tx=20.00   busy=30%
+  tcp          rate=20  #4  got=20.0    tx=20.0    busy=37%
+  udp_sockopt  rate=20  #5  got=12.01   tx=20.00   busy=23%
+  udp_ours     rate=20  #5  got=20.00   tx=20.00   busy=30%
+  tcp          rate=20  #5  got=20.0    tx=20.0    busy=36%
+===== 요청 25 Gb/s =====
+  udp_sockopt  rate=25  #1  got=15.07   tx=25.00   busy=29%
+  udp_ours     rate=25  #1  got=24.99   tx=25.00   busy=38%
+  tcp          rate=25  #1  got=25.0    tx=25.0    busy=46%
+  udp_sockopt  rate=25  #2  got=15.01   tx=25.00   busy=29%
+  udp_ours     rate=25  #2  got=24.99   tx=25.00   busy=38%
+  tcp          rate=25  #2  got=25.0    tx=25.0    busy=45%
+  udp_sockopt  rate=25  #3  got=15.06   tx=25.00   busy=29%
+  udp_ours     rate=25  #3  got=24.99   tx=25.00   busy=38%
+  tcp          rate=25  #3  got=25.0    tx=25.0    busy=46%
+  udp_sockopt  rate=25  #4  got=15.01   tx=25.00   busy=29%
+  udp_ours     rate=25  #4  got=25.00   tx=25.00   busy=37%
+  tcp          rate=25  #4  got=25.0    tx=25.0    busy=46%
+  udp_sockopt  rate=25  #5  got=15.01   tx=25.00   busy=29%
+  udp_ours     rate=25  #5  got=24.99   tx=25.00   busy=37%
+  tcp          rate=25  #5  got=25.0    tx=25.0    busy=46%
+===== 요청 30 Gb/s =====
+  udp_sockopt  rate=30  #1  got=16.74   tx=30.00   busy=35%
+  udp_ours     rate=30  #1  got=29.99   tx=30.00   busy=45%
+  tcp          rate=30  #1  got=30.0    tx=30.0    busy=55%
+  udp_sockopt  rate=30  #2  got=16.75   tx=30.00   busy=34%
+  udp_ours     rate=30  #2  got=29.99   tx=30.00   busy=42%
+  tcp          rate=30  #2  got=30.0    tx=30.0    busy=55%
+  udp_sockopt  rate=30  #3  got=16.70   tx=30.00   busy=35%
+  udp_ours     rate=30  #3  got=29.99   tx=30.00   busy=43%
+  tcp          rate=30  #3  got=30.0    tx=30.0    busy=55%
+  udp_sockopt  rate=30  #4  got=16.70   tx=30.00   busy=33%
+  udp_ours     rate=30  #4  got=29.99   tx=30.00   busy=46%
+  tcp          rate=30  #4  got=30.0    tx=30.0    busy=53%
+  udp_sockopt  rate=30  #5  got=16.76   tx=30.00   busy=34%
+  udp_ours     rate=30  #5  got=29.99   tx=30.00   busy=45%
+  tcp          rate=30  #5  got=30.0    tx=30.0    busy=55%
+===== 요청 35 Gb/s =====
+  udp_sockopt  rate=35  #1  got=19.12   tx=35.00   busy=40%
+  udp_ours     rate=35  #1  got=34.99   tx=35.00   busy=53%
+  tcp          rate=35  #1  got=35.0    tx=35.0    busy=64%
+  udp_sockopt  rate=35  #2  got=19.08   tx=35.00   busy=38%
+  udp_ours     rate=35  #2  got=34.99   tx=35.00   busy=52%
+  tcp          rate=35  #2  got=35.0    tx=35.0    busy=64%
+  udp_sockopt  rate=35  #3  got=19.12   tx=35.00   busy=39%
+  udp_ours     rate=35  #3  got=34.99   tx=35.00   busy=53%
+  tcp          rate=35  #3  got=35.0    tx=35.0    busy=64%
+  udp_sockopt  rate=35  #4  got=19.06   tx=35.00   busy=38%
+  udp_ours     rate=35  #4  got=34.99   tx=35.00   busy=53%
+  tcp          rate=35  #4  got=35.0    tx=35.0    busy=63%
+  udp_sockopt  rate=35  #5  got=19.19   tx=35.00   busy=39%
+  udp_ours     rate=35  #5  got=34.99   tx=35.00   busy=53%
+  tcp          rate=35  #5  got=35.0    tx=35.0    busy=64%
+===== 요청 40 Gb/s =====
+  udp_sockopt  rate=40  #1  got=21.20   tx=40.00   busy=45%
+  udp_ours     rate=40  #1  got=39.99   tx=40.00   busy=60%
+  tcp          rate=40  #1  got=40.0    tx=40.0    busy=71%
+  udp_sockopt  rate=40  #2  got=21.27   tx=40.00   busy=46%
+  udp_ours     rate=40  #2  got=39.98   tx=40.00   busy=61%
+  tcp          rate=40  #2  got=40.0    tx=40.0    busy=71%
+  udp_sockopt  rate=40  #3  got=21.25   tx=40.00   busy=45%
+  udp_ours     rate=40  #3  got=39.99   tx=40.00   busy=59%
+  tcp          rate=40  #3  got=40.0    tx=40.0    busy=71%
+  udp_sockopt  rate=40  #4  got=21.29   tx=40.00   busy=46%
+  udp_ours     rate=40  #4  got=39.99   tx=40.00   busy=59%
+  tcp          rate=40  #4  got=40.0    tx=40.0    busy=71%
+  udp_sockopt  rate=40  #5  got=21.21   tx=40.00   busy=46%
+  udp_ours     rate=40  #5  got=39.99   tx=40.00   busy=61%
+  tcp          rate=40  #5  got=40.0    tx=40.0    busy=71%
+===== 요청 45 Gb/s =====
+  udp_sockopt  rate=45  #1  got=13.03   tx=45.00   busy=37%
+  udp_ours     rate=45  #1  got=44.81   tx=45.00   busy=72%
+  tcp          rate=45  #1  got=45.0    tx=45.0    busy=79%
+  udp_sockopt  rate=45  #2  got=13.04   tx=45.00   busy=46%
+  udp_ours     rate=45  #2  got=44.83   tx=45.00   busy=73%
+  tcp          rate=45  #2  got=45.0    tx=45.0    busy=79%
+  udp_sockopt  rate=45  #3  got=13.81   tx=45.00   busy=40%
+  udp_ours     rate=45  #3  got=44.77   tx=45.00   busy=72%
+  tcp          rate=45  #3  got=45.0    tx=45.0    busy=80%
+  udp_sockopt  rate=45  #4  got=28.21   tx=45.00   busy=66%
+  udp_ours     rate=45  #4  got=44.69   tx=45.00   busy=68%
+  tcp          rate=45  #4  got=45.0    tx=45.0    busy=79%
+  udp_sockopt  rate=45  #5  got=13.07   tx=45.00   busy=38%
+  udp_ours     rate=45  #5  got=44.90   tx=45.00   busy=79%
+  tcp          rate=45  #5  got=45.0    tx=45.0    busy=79%
+===== 요청 50 Gb/s =====
+  udp_sockopt  rate=50  #1  got=13.69   tx=50.00   busy=36%
+  udp_ours     rate=50  #1  got=49.90   tx=50.00   busy=79%
+  tcp          rate=50  #1  got=50.0    tx=50.0    busy=88%
+  udp_sockopt  rate=50  #2  got=20.47   tx=50.00   busy=57%
+  udp_ours     rate=50  #2  got=49.90   tx=50.00   busy=78%
+  tcp          rate=50  #2  got=50.0    tx=50.0    busy=88%
+  udp_sockopt  rate=50  #3  got=13.45   tx=50.00   busy=46%
+  udp_ours     rate=50  #3  got=49.94   tx=50.00   busy=75%
+  tcp          rate=50  #3  got=50.0    tx=50.0    busy=88%
+  udp_sockopt  rate=50  #4  got=13.71   tx=50.00   busy=48%
+  udp_ours     rate=50  #4  got=49.90   tx=50.00   busy=73%
+  tcp          rate=50  #4  got=50.0    tx=50.0    busy=88%
+  udp_sockopt  rate=50  #5  got=13.51   tx=50.00   busy=44%
+  udp_ours     rate=50  #5  got=49.92   tx=50.00   busy=75%
+  tcp          rate=50  #5  got=50.0    tx=50.0    busy=88%
+===== 요청 55 Gb/s =====
+  udp_sockopt  rate=55  #1  got=13.02   tx=55.00   busy=42%
+  udp_ours     rate=55  #1  got=54.40   tx=55.00   busy=86%
+  tcp          rate=55  #1  got=49.7    tx=49.7    busy=88%
+  udp_sockopt  rate=55  #2  got=16.71   tx=55.00   busy=52%
+  udp_ours     rate=55  #2  got=54.34   tx=55.00   busy=85%
+  tcp          rate=55  #2  got=55.0    tx=55.0    busy=96%
+  udp_sockopt  rate=55  #3  got=13.06   tx=55.00   busy=31%
+  udp_ours     rate=55  #3  got=54.39   tx=55.00   busy=83%
+  tcp          rate=55  #3  got=55.0    tx=55.0    busy=96%
+  udp_sockopt  rate=55  #4  got=16.30   tx=55.00   busy=32%
+  udp_ours     rate=55  #4  got=54.09   tx=55.00   busy=82%
+  tcp          rate=55  #4  got=55.0    tx=55.0    busy=96%
+  udp_sockopt  rate=55  #5  got=17.75   tx=55.00   busy=31%
+  udp_ours     rate=55  #5  got=54.40   tx=55.00   busy=83%
+  tcp          rate=55  #5  got=55.0    tx=55.0    busy=97%
+===== 요청 60 Gb/s =====
+  udp_sockopt  rate=60  #1  got=13.51   tx=60.00   busy=47%
+  udp_ours     rate=60  #1  got=59.60   tx=60.00   busy=94%
+  tcp          rate=60  #1  got=48.6    tx=48.6    busy=86%
+  udp_sockopt  rate=60  #2  got=13.50   tx=60.00   busy=48%
+  udp_ours     rate=60  #2  got=59.86   tx=60.00   busy=93%
+  tcp          rate=60  #2  got=57.2    tx=57.2    busy=100%
+  udp_sockopt  rate=60  #3  got=13.48   tx=60.00   busy=48%
+  udp_ours     rate=60  #3  got=56.60   tx=60.00   busy=100%
+  tcp          rate=60  #3  got=55.5    tx=55.5    busy=95%
+  udp_sockopt  rate=60  #4  got=13.49   tx=60.00   busy=47%
+  udp_ours     rate=60  #4  got=56.47   tx=60.00   busy=100%
+  tcp          rate=60  #4  got=58.4    tx=58.4    busy=100%
+  udp_sockopt  rate=60  #5  got=13.50   tx=60.00   busy=47%
+  udp_ours     rate=60  #5  got=56.45   tx=60.00   busy=100%
+  tcp          rate=60  #5  got=56.7    tx=56.7    busy=99%
+===== 요청 65 Gb/s =====
+  udp_sockopt  rate=65  #1  got=13.99   tx=65.00   busy=51%
+  udp_ours     rate=65  #1  got=61.76   tx=65.00   busy=100%
+  tcp          rate=65  #1  got=58.1    tx=58.1    busy=100%
+  udp_sockopt  rate=65  #2  got=14.07   tx=65.00   busy=51%
+  udp_ours     rate=65  #2  got=55.08   tx=65.00   busy=100%
+  tcp          rate=65  #2  got=56.5    tx=56.5    busy=100%
+  udp_sockopt  rate=65  #3  got=14.30   tx=65.00   busy=51%
+  udp_ours     rate=65  #3  got=58.57   tx=65.00   busy=100%
+  tcp          rate=65  #3  got=47.5    tx=47.5    busy=100%
+  udp_sockopt  rate=65  #4  got=26.75   tx=65.00   busy=65%
+  udp_ours     rate=65  #4  got=59.25   tx=65.00   busy=100%
+  tcp          rate=65  #4  got=56.1    tx=56.1    busy=97%
+  udp_sockopt  rate=65  #5  got=14.07   tx=65.00   busy=52%
+  udp_ours     rate=65  #5  got=62.12   tx=65.00   busy=100%
+  tcp          rate=65  #5  got=55.3    tx=55.3    busy=100%
+===== 요청 70 Gb/s =====
+  udp_sockopt  rate=70  #1  got=14.42   tx=70.00   busy=51%
+  udp_ours     rate=70  #1  got=61.06   tx=70.00   busy=100%
+  tcp          rate=70  #1  got=57.9    tx=57.9    busy=100%
+  udp_sockopt  rate=70  #2  got=14.47   tx=70.00   busy=49%
+  udp_ours     rate=70  #2  got=60.98   tx=70.00   busy=100%
+  tcp          rate=70  #2  got=56.6    tx=56.6    busy=99%
+  udp_sockopt  rate=70  #3  got=14.44   tx=70.00   busy=43%
+  udp_ours     rate=70  #3  got=59.42   tx=70.00   busy=100%
+  tcp          rate=70  #3  got=57.2    tx=57.2    busy=99%
+  udp_sockopt  rate=70  #4  got=14.33   tx=70.00   busy=51%
+  udp_ours     rate=70  #4  got=57.72   tx=70.00   busy=100%
+  tcp          rate=70  #4  got=55.8    tx=55.8    busy=94%
+  udp_sockopt  rate=70  #5  got=14.50   tx=70.00   busy=48%
+  udp_ours     rate=70  #5  got=60.36   tx=70.00   busy=100%
+  tcp          rate=70  #5  got=57.1    tx=57.1    busy=100%
+===== 요청 75 Gb/s =====
+  udp_sockopt  rate=75  #1  got=15.33   tx=75.00   busy=56%
+  udp_ours     rate=75  #1  got=60.20   tx=75.00   busy=100%
+  tcp          rate=75  #1  got=54.9    tx=54.9    busy=96%
+  udp_sockopt  rate=75  #2  got=15.29   tx=75.00   busy=56%
+  udp_ours     rate=75  #2  got=54.52   tx=75.00   busy=100%
+  tcp          rate=75  #2  got=57.2    tx=57.2    busy=100%
+  udp_sockopt  rate=75  #3  got=15.11   tx=75.00   busy=56%
+  udp_ours     rate=75  #3  got=54.66   tx=75.00   busy=100%
+  tcp          rate=75  #3  got=50.6    tx=50.6    busy=88%
+  udp_sockopt  rate=75  #4  got=18.34   tx=75.00   busy=58%
+  udp_ours     rate=75  #4  got=54.17   tx=75.00   busy=100%
+  tcp          rate=75  #4  got=57.0    tx=57.0    busy=99%
+  udp_sockopt  rate=75  #5  got=15.22   tx=75.00   busy=56%
+  udp_ours     rate=75  #5  got=60.12   tx=75.00   busy=100%
+  tcp          rate=75  #5  got=56.4    tx=56.4    busy=100%
+===== 요청 80 Gb/s =====
+  udp_sockopt  rate=80  #1  got=15.81   tx=80.00   busy=59%
+  udp_ours     rate=80  #1  got=53.68   tx=80.00   busy=100%
+  tcp          rate=80  #1  got=49.1    tx=49.1    busy=85%
+  udp_sockopt  rate=80  #2  got=15.78   tx=80.00   busy=59%
+  udp_ours     rate=80  #2  got=53.80   tx=80.00   busy=100%
+  tcp          rate=80  #2  got=57.0    tx=57.0    busy=100%
+  udp_sockopt  rate=80  #3  got=15.67   tx=80.00   busy=59%
+  udp_ours     rate=80  #3  got=53.33   tx=80.00   busy=100%
+  tcp          rate=80  #3  got=56.4    tx=56.4    busy=100%
+  udp_sockopt  rate=80  #4  got=21.44   tx=80.00   busy=65%
+  udp_ours     rate=80  #4  got=53.08   tx=80.00   busy=100%
+  tcp          rate=80  #4  got=57.3    tx=57.3    busy=100%
+  udp_sockopt  rate=80  #5  got=15.75   tx=80.00   busy=59%
+  udp_ours     rate=80  #5  got=53.45   tx=80.00   busy=100%
+  tcp          rate=80  #5  got=40.9    tx=40.9    busy=100%
+
+=========== 요약 (평균±sd) ===========
+rate 5    tcp           got=  5.00 +- 0.00  tx=  5.00  busy=  9%  (n=5)
+rate 5    udp_ours      got=  5.00 +- 0.00  tx=  5.00  busy= 12%  (n=5)
+rate 5    udp_sockopt   got=  5.00 +- 0.00  tx=  5.00  busy= 12%  (n=5)
+rate 10   tcp           got= 10.00 +- 0.00  tx= 10.00  busy= 19%  (n=5)
+rate 10   udp_ours      got= 10.00 +- 0.00  tx= 10.00  busy= 24%  (n=5)
+rate 10   udp_sockopt   got=  7.88 +- 1.73  tx= 10.00  busy= 20%  (n=5)
+rate 15   tcp           got= 15.00 +- 0.00  tx= 15.00  busy= 29%  (n=5)
+rate 15   udp_ours      got= 15.00 +- 0.00  tx= 15.00  busy= 34%  (n=5)
+rate 15   udp_sockopt   got= 11.46 +- 2.89  tx= 15.00  busy= 24%  (n=5)
+rate 20   tcp           got= 20.00 +- 0.00  tx= 20.00  busy= 37%  (n=5)
+rate 20   udp_ours      got= 20.00 +- 0.00  tx= 20.00  busy= 30%  (n=5)
+rate 20   udp_sockopt   got= 12.02 +- 0.02  tx= 20.00  busy= 23%  (n=5)
+rate 25   tcp           got= 25.00 +- 0.00  tx= 25.00  busy= 46%  (n=5)
+rate 25   udp_ours      got= 24.99 +- 0.00  tx= 25.00  busy= 38%  (n=5)
+rate 25   udp_sockopt   got= 15.03 +- 0.03  tx= 25.00  busy= 29%  (n=5)
+rate 30   tcp           got= 30.00 +- 0.00  tx= 30.00  busy= 55%  (n=5)
+rate 30   udp_ours      got= 29.99 +- 0.00  tx= 30.00  busy= 44%  (n=5)
+rate 30   udp_sockopt   got= 16.73 +- 0.03  tx= 30.00  busy= 34%  (n=5)
+rate 35   tcp           got= 35.00 +- 0.00  tx= 35.00  busy= 64%  (n=5)
+rate 35   udp_ours      got= 34.99 +- 0.00  tx= 35.00  busy= 53%  (n=5)
+rate 35   udp_sockopt   got= 19.11 +- 0.04  tx= 35.00  busy= 39%  (n=5)
+rate 40   tcp           got= 40.00 +- 0.00  tx= 40.00  busy= 71%  (n=5)
+rate 40   udp_ours      got= 39.99 +- 0.00  tx= 40.00  busy= 60%  (n=5)
+rate 40   udp_sockopt   got= 21.24 +- 0.03  tx= 40.00  busy= 46%  (n=5)
+rate 45   tcp           got= 45.00 +- 0.00  tx= 45.00  busy= 79%  (n=5)
+rate 45   udp_ours      got= 44.80 +- 0.07  tx= 45.00  busy= 73%  (n=5)
+rate 45   udp_sockopt   got= 16.23 +- 6.00  tx= 45.00  busy= 45%  (n=5)
+rate 50   tcp           got= 50.00 +- 0.00  tx= 50.00  busy= 88%  (n=5)
+rate 50   udp_ours      got= 49.91 +- 0.02  tx= 50.00  busy= 76%  (n=5)
+rate 50   udp_sockopt   got= 14.97 +- 2.75  tx= 50.00  busy= 46%  (n=5)
+rate 55   tcp           got= 53.94 +- 2.12  tx= 53.94  busy= 95%  (n=5)
+rate 55   udp_ours      got= 54.32 +- 0.12  tx= 55.00  busy= 84%  (n=5)
+rate 55   udp_sockopt   got= 15.37 +- 1.96  tx= 55.00  busy= 38%  (n=5)
+rate 60   tcp           got= 55.28 +- 3.47  tx= 55.28  busy= 96%  (n=5)
+rate 60   udp_ours      got= 57.80 +- 1.58  tx= 60.00  busy= 97%  (n=5)
+rate 60   udp_sockopt   got= 13.50 +- 0.01  tx= 60.00  busy= 47%  (n=5)
+rate 65   tcp           got= 54.70 +- 3.71  tx= 54.70  busy= 99%  (n=5)
+rate 65   udp_ours      got= 59.36 +- 2.54  tx= 65.00  busy=100%  (n=5)
+rate 65   udp_sockopt   got= 16.64 +- 5.06  tx= 65.00  busy= 54%  (n=5)
+rate 70   tcp           got= 56.92 +- 0.70  tx= 56.92  busy= 98%  (n=5)
+rate 70   udp_ours      got= 59.91 +- 1.24  tx= 70.00  busy=100%  (n=5)
+rate 70   udp_sockopt   got= 14.43 +- 0.06  tx= 70.00  busy= 48%  (n=5)
+rate 75   tcp           got= 55.22 +- 2.45  tx= 55.22  busy= 97%  (n=5)
+rate 75   udp_ours      got= 56.73 +- 2.80  tx= 75.00  busy=100%  (n=5)
+rate 75   udp_sockopt   got= 15.86 +- 1.24  tx= 75.00  busy= 56%  (n=5)
+rate 80   tcp           got= 52.14 +- 6.39  tx= 52.14  busy= 97%  (n=5)
+rate 80   udp_ours      got= 53.47 +- 0.25  tx= 80.00  busy=100%  (n=5)
+rate 80   udp_sockopt   got= 16.89 +- 2.28  tx= 80.00  busy= 60%  (n=5)
+clean
