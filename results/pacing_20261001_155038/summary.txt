@@ -1,0 +1,87 @@
+6.18.53-udpopt20
+ring 128
+Adaptive RX: on  TX: on
+양 끝 iperf3 고정, --pacing-timer 만 변경. MTU 9000, 요청 65G, 단일 flow
+===== --pacing-timer 20 us =====
+  udp   timer=20us   #1  got=28.5    tx=65.0    loss=56%     busy=71%
+  ours  timer=20us   #1  got=49.7    tx=64.6    loss=23%     busy=100%
+  udp   timer=20us   #2  got=16.3    tx=65.0    loss=75%     busy=53%
+  ours  timer=20us   #2  got=50.0    tx=64.6    loss=22%     busy=100%
+  udp   timer=20us   #3  got=28.2    tx=65.0    loss=57%     busy=72%
+  ours  timer=20us   #3  got=47.8    tx=64.6    loss=26%     busy=100%
+  udp   timer=20us   #4  got=17.7    tx=65.0    loss=73%     busy=63%
+  ours  timer=20us   #4  got=51.0    tx=64.6    loss=21%     busy=100%
+  udp   timer=20us   #5  got=24.5    tx=65.0    loss=62%     busy=70%
+  ours  timer=20us   #5  got=50.1    tx=64.6    loss=22%     busy=100%
+===== --pacing-timer 100 us =====
+  udp   timer=100us  #1  got=28.4    tx=65.0    loss=56%     busy=65%
+  ours  timer=100us  #1  got=53.2    tx=65.0    loss=18%     busy=100%
+  udp   timer=100us  #2  got=28.1    tx=65.0    loss=57%     busy=69%
+  ours  timer=100us  #2  got=49.9    tx=64.6    loss=23%     busy=100%
+  udp   timer=100us  #3  got=27.8    tx=65.0    loss=57%     busy=70%
+  ours  timer=100us  #3  got=49.9    tx=64.9    loss=23%     busy=100%
+  udp   timer=100us  #4  got=26.9    tx=65.0    loss=59%     busy=74%
+  ours  timer=100us  #4  got=50.4    tx=64.7    loss=22%     busy=100%
+  udp   timer=100us  #5  got=22.2    tx=65.0    loss=66%     busy=69%
+  ours  timer=100us  #5  got=51.5    tx=64.8    loss=20%     busy=100%
+===== --pacing-timer 250 us =====
+  udp   timer=250us  #1  got=28.6    tx=65.0    loss=56%     busy=70%
+  ours  timer=250us  #1  got=50.3    tx=64.6    loss=22%     busy=100%
+  udp   timer=250us  #2  got=23.4    tx=65.0    loss=64%     busy=70%
+  ours  timer=250us  #2  got=50.5    tx=64.6    loss=22%     busy=100%
+  udp   timer=250us  #3  got=28.3    tx=65.0    loss=57%     busy=68%
+  ours  timer=250us  #3  got=50.9    tx=64.7    loss=21%     busy=100%
+  udp   timer=250us  #4  got=28.1    tx=65.0    loss=57%     busy=71%
+  ours  timer=250us  #4  got=49.9    tx=64.0    loss=22%     busy=100%
+  udp   timer=250us  #5  got=19.7    tx=65.0    loss=70%     busy=42%
+  ours  timer=250us  #5  got=50.6    tx=64.7    loss=22%     busy=100%
+===== --pacing-timer 1000 us =====
+  udp   timer=1000us #1  got=28.2    tx=65.0    loss=57%     busy=70%
+  ours  timer=1000us #1  got=51.0    tx=64.7    loss=21%     busy=100%
+  udp   timer=1000us #2  got=28.4    tx=65.0    loss=56%     busy=73%
+  ours  timer=1000us #2  got=50.5    tx=64.9    loss=22%     busy=100%
+  udp   timer=1000us #3  got=28.0    tx=65.0    loss=57%     busy=70%
+  ours  timer=1000us #3  got=33.0    tx=41.9    loss=21%     busy=54%  <-- FLAKE
+  udp   timer=1000us #4  got=28.2    tx=65.0    loss=57%     busy=71%
+  ours  timer=1000us #4  got=45.6    tx=64.8    loss=30%     busy=99%
+  udp   timer=1000us #5  got=28.1    tx=65.0    loss=57%     busy=70%
+  ours  timer=1000us #5  got=53.8    tx=64.7    loss=17%     busy=100%
+===== --pacing-timer 4000 us =====
+  udp   timer=4000us #1  got=28.3    tx=65.0    loss=57%     busy=69%
+  ours  timer=4000us #1  got=47.7    tx=62.9    loss=24%     busy=100%
+  udp   timer=4000us #2  got=28.9    tx=65.0    loss=56%     busy=73%
+  ours  timer=4000us #2  got=49.8    tx=64.7    loss=23%     busy=100%
+  udp   timer=4000us #3  got=25.1    tx=65.0    loss=61%     busy=69%
+  ours  timer=4000us #3  got=49.7    tx=64.7    loss=23%     busy=100%
+  udp   timer=4000us #4  got=28.5    tx=65.0    loss=56%     busy=71%
+  ours  timer=4000us #4  got=50.2    tx=64.7    loss=22%     busy=100%
+  udp   timer=4000us #5  got=26.4    tx=65.0    loss=59%     busy=70%
+  ours  timer=4000us #5  got=54.5    tx=64.7    loss=16%     busy=100%
+===== --pacing-timer 10000 us =====
+  udp   timer=10000us #1  got=28.5    tx=65.0    loss=56%     busy=71%
+  ours  timer=10000us #1  got=49.6    tx=64.7    loss=23%     busy=100%
+  udp   timer=10000us #2  got=27.6    tx=65.0    loss=58%     busy=70%
+  ours  timer=10000us #2  got=49.8    tx=64.8    loss=23%     busy=100%
+  udp   timer=10000us #3  got=22.8    tx=65.0    loss=65%     busy=51%
+  ours  timer=10000us #3  got=50.5    tx=64.9    loss=22%     busy=100%
+  udp   timer=10000us #4  got=27.4    tx=63.8    loss=57%     busy=70%
+  ours  timer=10000us #4  got=53.4    tx=64.7    loss=17%     busy=100%
+  udp   timer=10000us #5  got=28.2    tx=65.0    loss=57%     busy=68%
+  ours  timer=10000us #5  got=49.9    tx=64.8    loss=23%     busy=100%
+
+=========== 요약 (평균±sd) ===========
+timer 20us   ours   got= 49.72 +- 1.05  loss= 22.8%  busy=100%  (n=5)
+timer 20us   udp    got= 23.04 +- 5.15  loss= 64.6%  busy= 66%  (n=5)
+timer 100us  ours   got= 50.98 +- 1.25  loss= 21.2%  busy=100%  (n=5)
+timer 100us  udp    got= 26.68 +- 2.30  loss= 59.0%  busy= 69%  (n=5)
+timer 250us  ours   got= 50.44 +- 0.33  loss= 21.8%  busy=100%  (n=5)
+timer 250us  udp    got= 25.62 +- 3.53  loss= 60.8%  busy= 64%  (n=5)
+timer 1000us ours   got= 50.22 +- 2.95  loss= 22.5%  busy=100%  (n=4)
+timer 1000us udp    got= 28.18 +- 0.13  loss= 56.8%  busy= 71%  (n=5)
+timer 4000us ours   got= 50.38 +- 2.24  loss= 21.6%  busy=100%  (n=5)
+timer 4000us udp    got= 27.44 +- 1.45  loss= 57.8%  busy= 70%  (n=5)
+timer 10000us ours   got= 50.64 +- 1.41  loss= 21.6%  busy=100%  (n=5)
+timer 10000us udp    got= 26.90 +- 2.09  loss= 58.6%  busy= 66%  (n=5)
+
+참고: 같은 조건 udp_blast(스핀, 완전 균일) = 14.70 +- 0.86 / iperf3 기본(1000us) = 27.24 +- 1.17
+clean

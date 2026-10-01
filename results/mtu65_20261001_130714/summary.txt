@@ -1,0 +1,157 @@
+6.18.53-udpopt20
+ring 128
+Adaptive RX: on  TX: on
+요청 65 Gb/s 고정, 단일 flow
+===== MTU 1500  (segs=42, sendmsg당 61824B, sender 최대 95.53) =====
+  mtu=1500  udp       #1  got=0.25    tx=65.00   busy=100%
+  mtu=1500  ours      #1  got=25.91   tx=65.00   busy=100%
+  mtu=1500  tcp       #1  got=31.2    tx=31.2    busy=93%
+  mtu=1500  ours_lock #1  got=21.98   tx=65.00   busy=91%
+  mtu=1500  udp       #2  got=0.28    tx=65.00   busy=100%
+  mtu=1500  ours      #2  got=26.84   tx=65.00   busy=100%
+  mtu=1500  tcp       #2  got=31.0    tx=31.0    busy=92%
+  mtu=1500  ours_lock #2  got=21.47   tx=65.00   busy=87%
+  mtu=1500  udp       #3  got=0.25    tx=65.00   busy=100%
+  mtu=1500  ours      #3  got=26.71   tx=65.00   busy=100%
+  mtu=1500  tcp       #3  got=30.9    tx=30.9    busy=92%
+  mtu=1500  ours_lock #3  got=22.33   tx=65.00   busy=91%
+  mtu=1500  udp       #4  got=0.29    tx=65.00   busy=100%
+  mtu=1500  ours      #4  got=26.26   tx=65.00   busy=100%
+  mtu=1500  tcp       #4  got=31.0    tx=31.0    busy=92%
+  mtu=1500  ours_lock #4  got=21.71   tx=65.00   busy=88%
+  mtu=1500  udp       #5  got=0.27    tx=65.00   busy=100%
+  mtu=1500  ours      #5  got=26.68   tx=65.00   busy=100%
+  mtu=1500  tcp       #5  got=31.0    tx=31.0    busy=92%
+  mtu=1500  ours_lock #5  got=21.42   tx=65.00   busy=86%
+===== MTU 3000  (segs=21, sendmsg당 62412B, sender 최대 97.44) =====
+  mtu=3000  udp       #1  got=36.04   tx=65.00   busy=97%
+  mtu=3000  ours      #1  got=47.22   tx=65.00   busy=100%
+  mtu=3000  tcp       #1  got=33.1    tx=33.1    busy=72%
+  mtu=3000  ours_lock #1  got=30.40   tx=65.00   busy=68%
+  mtu=3000  udp       #2  got=33.01   tx=65.00   busy=96%
+  mtu=3000  ours      #2  got=47.38   tx=65.00   busy=100%
+  mtu=3000  tcp       #2  got=33.3    tx=33.3    busy=73%
+  mtu=3000  ours_lock #2  got=30.38   tx=65.00   busy=68%
+  mtu=3000  udp       #3  got=25.39   tx=65.00   busy=89%
+  mtu=3000  ours      #3  got=47.20   tx=65.00   busy=100%
+  mtu=3000  tcp       #3  got=32.8    tx=32.8    busy=71%
+  mtu=3000  ours_lock #3  got=30.39   tx=65.00   busy=68%
+  mtu=3000  udp       #4  got=26.80   tx=65.00   busy=89%
+  mtu=3000  ours      #4  got=46.24   tx=65.00   busy=100%
+  mtu=3000  tcp       #4  got=31.3    tx=31.3    busy=69%
+  mtu=3000  ours_lock #4  got=28.84   tx=65.00   busy=67%
+  mtu=3000  udp       #5  got=31.55   tx=65.00   busy=94%
+  mtu=3000  ours      #5  got=47.07   tx=65.00   busy=100%
+  mtu=3000  tcp       #5  got=32.8    tx=32.8    busy=70%
+  mtu=3000  ours_lock #5  got=30.45   tx=65.00   busy=68%
+===== MTU 4500  (segs=14, sendmsg당 62608B, sender 최대 98.38) =====
+  mtu=4500  udp       #1  got=27.67   tx=65.00   busy=96%
+  mtu=4500  ours      #1  got=42.47   tx=65.00   busy=100%
+  mtu=4500  tcp       #1  got=35.1    tx=35.1    busy=78%
+  mtu=4500  ours_lock #1  got=26.13   tx=65.00   busy=73%
+  mtu=4500  udp       #2  got=20.47   tx=65.00   busy=85%
+  mtu=4500  ours      #2  got=38.97   tx=65.00   busy=100%
+  mtu=4500  tcp       #2  got=35.3    tx=35.3    busy=78%
+  mtu=4500  ours_lock #2  got=28.15   tx=65.00   busy=75%
+  mtu=4500  udp       #3  got=20.39   tx=65.00   busy=84%
+  mtu=4500  ours      #3  got=37.12   tx=65.00   busy=100%
+  mtu=4500  tcp       #3  got=35.3    tx=35.3    busy=79%
+  mtu=4500  ours_lock #3  got=24.69   tx=65.00   busy=63%
+  mtu=4500  udp       #4  got=27.44   tx=65.00   busy=95%
+  mtu=4500  ours      #4  got=43.23   tx=65.00   busy=100%
+  mtu=4500  tcp       #4  got=34.3    tx=34.9    busy=77%
+  mtu=4500  ours_lock #4  got=26.95   tx=65.00   busy=72%
+  mtu=4500  udp       #5  got=20.44   tx=65.00   busy=85%
+  mtu=4500  ours      #5  got=43.36   tx=65.00   busy=100%
+  mtu=4500  tcp       #5  got=35.2    tx=35.2    busy=78%
+  mtu=4500  ours_lock #5  got=26.82   tx=65.00   busy=71%
+===== MTU 6000  (segs=10, sendmsg당 59720B, sender 최대 96.22) =====
+  mtu=6000  udp       #1  got=26.12   tx=65.00   busy=82%
+  mtu=6000  ours      #1  got=42.22   tx=65.00   busy=100%
+  mtu=6000  tcp       #1  got=35.9    tx=35.9    busy=72%
+  mtu=6000  ours_lock #1  got=29.15   tx=65.00   busy=65%
+  mtu=6000  udp       #2  got=28.55   tx=65.00   busy=82%
+  mtu=6000  ours      #2  got=42.17   tx=65.00   busy=100%
+  mtu=6000  tcp       #2  got=35.8    tx=35.8    busy=72%
+  mtu=6000  ours_lock #2  got=36.23   tx=65.00   busy=74%
+  mtu=6000  udp       #3  got=29.25   tx=65.00   busy=84%
+  mtu=6000  ours      #3  got=42.27   tx=65.00   busy=100%
+  mtu=6000  tcp       #3  got=35.3    tx=35.3    busy=73%
+  mtu=6000  ours_lock #3  got=36.23   tx=65.00   busy=74%
+  mtu=6000  udp       #4  got=29.24   tx=65.00   busy=82%
+  mtu=6000  ours      #4  got=44.57   tx=65.00   busy=100%
+  mtu=6000  tcp       #4  got=35.5    tx=35.5    busy=72%
+  mtu=6000  ours_lock #4  got=35.51   tx=65.00   busy=73%
+  mtu=6000  udp       #5  got=25.84   tx=65.00   busy=81%
+  mtu=6000  ours      #5  got=42.31   tx=65.00   busy=100%
+  mtu=6000  tcp       #5  got=35.6    tx=35.6    busy=71%
+  mtu=6000  ours_lock #5  got=29.46   tx=65.00   busy=66%
+===== MTU 7500  (segs=8, sendmsg당 59776B, sender 최대 95.91) =====
+  mtu=7500  udp       #1  got=31.36   tx=65.00   busy=82%
+  mtu=7500  ours      #1  got=48.80   tx=65.00   busy=100%
+  mtu=7500  tcp       #1  got=35.3    tx=35.3    busy=70%
+  mtu=7500  ours_lock #1  got=33.62   tx=65.00   busy=65%
+  mtu=7500  udp       #2  got=29.05   tx=65.00   busy=72%
+  mtu=7500  ours      #2  got=51.16   tx=65.00   busy=100%
+  mtu=7500  tcp       #2  got=34.0    tx=34.0    busy=64%
+  mtu=7500  ours_lock #2  got=33.56   tx=65.00   busy=65%
+  mtu=7500  udp       #3  got=28.95   tx=65.00   busy=73%
+  mtu=7500  ours      #3  got=48.70   tx=65.00   busy=100%
+  mtu=7500  tcp       #3  got=34.9    tx=34.9    busy=67%
+  mtu=7500  ours_lock #3  got=33.54   tx=65.00   busy=64%
+  mtu=7500  udp       #4  got=28.97   tx=65.00   busy=73%
+  mtu=7500  ours      #4  got=50.45   tx=65.00   busy=100%
+  mtu=7500  tcp       #4  got=35.4    tx=35.4    busy=67%
+  mtu=7500  ours_lock #4  got=33.69   tx=65.00   busy=62%
+  mtu=7500  udp       #5  got=28.83   tx=65.00   busy=73%
+  mtu=7500  ours      #5  got=48.67   tx=65.00   busy=100%
+  mtu=7500  tcp       #5  got=35.9    tx=35.9    busy=69%
+  mtu=7500  ours_lock #5  got=32.63   tx=65.00   busy=66%
+===== MTU 9000  (segs=7, sendmsg당 62804B, sender 최대 98.54) =====
+  mtu=9000  udp       #1  got=15.30   tx=65.00   busy=51%
+  mtu=9000  ours      #1  got=61.72   tx=65.00   busy=100%
+  mtu=9000  tcp       #1  got=55.1    tx=55.1    busy=96%
+  mtu=9000  ours_lock #1  got=29.81   tx=65.00   busy=55%
+  mtu=9000  udp       #2  got=13.92   tx=65.00   busy=51%
+  mtu=9000  ours      #2  got=58.66   tx=65.00   busy=100%
+  mtu=9000  tcp       #2  got=56.8    tx=56.8    busy=99%
+  mtu=9000  ours_lock #2  got=29.63   tx=65.00   busy=55%
+  mtu=9000  udp       #3  got=13.94   tx=65.00   busy=51%
+  mtu=9000  ours      #3  got=56.90   tx=65.00   busy=100%
+  mtu=9000  tcp       #3  got=57.3    tx=57.3    busy=98%
+  mtu=9000  ours_lock #3  got=30.40   tx=65.00   busy=56%
+  mtu=9000  udp       #4  got=13.99   tx=65.00   busy=52%
+  mtu=9000  ours      #4  got=55.58   tx=65.00   busy=100%
+  mtu=9000  tcp       #4  got=53.8    tx=53.8    busy=100%
+  mtu=9000  ours_lock #4  got=29.91   tx=65.00   busy=55%
+  mtu=9000  udp       #5  got=13.98   tx=65.00   busy=51%
+  mtu=9000  ours      #5  got=61.53   tx=65.00   busy=100%
+  mtu=9000  tcp       #5  got=51.9    tx=52.0    busy=92%
+  mtu=9000  ours_lock #5  got=29.63   tx=65.00   busy=56%
+
+=========== 요약 (평균±sd) ===========
+MTU 1500   tcp        got= 31.02 +- 0.10  tx= 31.02  busy= 92%  (n=5)
+MTU 1500   udp        got=  0.27 +- 0.02  tx= 65.00  busy=100%  (n=5)
+MTU 1500   ours       got= 26.48 +- 0.35  tx= 65.00  busy=100%  (n=5)
+MTU 1500   ours_lock  got= 21.78 +- 0.34  tx= 65.00  busy= 89%  (n=5)
+MTU 3000   tcp        got= 32.66 +- 0.71  tx= 32.66  busy= 71%  (n=5)
+MTU 3000   udp        got= 30.56 +- 3.95  tx= 65.00  busy= 93%  (n=5)
+MTU 3000   ours       got= 47.02 +- 0.40  tx= 65.00  busy=100%  (n=5)
+MTU 3000   ours_lock  got= 30.09 +- 0.63  tx= 65.00  busy= 68%  (n=5)
+MTU 4500   tcp        got= 35.04 +- 0.38  tx= 35.16  busy= 78%  (n=5)
+MTU 4500   udp        got= 23.28 +- 3.49  tx= 65.00  busy= 89%  (n=5)
+MTU 4500   ours       got= 41.03 +- 2.52  tx= 65.00  busy=100%  (n=5)
+MTU 4500   ours_lock  got= 26.55 +- 1.13  tx= 65.00  busy= 71%  (n=5)
+MTU 6000   tcp        got= 35.62 +- 0.21  tx= 35.62  busy= 72%  (n=5)
+MTU 6000   udp        got= 27.80 +- 1.51  tx= 65.00  busy= 82%  (n=5)
+MTU 6000   ours       got= 42.71 +- 0.93  tx= 65.00  busy=100%  (n=5)
+MTU 6000   ours_lock  got= 33.32 +- 3.29  tx= 65.00  busy= 70%  (n=5)
+MTU 7500   tcp        got= 35.10 +- 0.64  tx= 35.10  busy= 67%  (n=5)
+MTU 7500   udp        got= 29.43 +- 0.97  tx= 65.00  busy= 75%  (n=5)
+MTU 7500   ours       got= 49.56 +- 1.05  tx= 65.00  busy=100%  (n=5)
+MTU 7500   ours_lock  got= 33.41 +- 0.39  tx= 65.00  busy= 64%  (n=5)
+MTU 9000   tcp        got= 54.98 +- 1.98  tx= 55.00  busy= 97%  (n=5)
+MTU 9000   udp        got= 14.23 +- 0.54  tx= 65.00  busy= 51%  (n=5)
+MTU 9000   ours       got= 58.88 +- 2.45  tx= 65.00  busy=100%  (n=5)
+MTU 9000   ours_lock  got= 29.88 +- 0.28  tx= 65.00  busy= 55%  (n=5)
+clean

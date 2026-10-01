@@ -1,0 +1,311 @@
+6.18.53-udpopt20
+ring 128
+Adaptive RX: on  TX: on
+도구: iperf3 단일. MTU 9000, 단일 flow, GRO on (앱 setsockopt)
+===== 요청 5 Gb/s =====
+  udp   rate=5   #1  got=5.00    tx=5.00    loss=0.016%  busy=13%
+  ours  rate=5   #1  got=5.00    tx=5.00    loss=0.006%  busy=12%
+  tcp   rate=5   #1  got=5.00    tx=5.00    loss=NA%     busy=9%
+  udp   rate=5   #2  got=5.00    tx=5.00    loss=0.019%  busy=12%
+  ours  rate=5   #2  got=5.00    tx=5.00    loss=0.0032% busy=13%
+  tcp   rate=5   #2  got=5.00    tx=5.00    loss=NA%     busy=9%
+  udp   rate=5   #3  got=5.00    tx=5.00    loss=0.02%   busy=13%
+  ours  rate=5   #3  got=5.00    tx=5.00    loss=0.018%  busy=14%
+  tcp   rate=5   #3  got=5.00    tx=5.00    loss=NA%     busy=9%
+  udp   rate=5   #4  got=5.00    tx=5.00    loss=0.019%  busy=13%
+  ours  rate=5   #4  got=5.00    tx=5.00    loss=0.0047% busy=13%
+  tcp   rate=5   #4  got=5.00    tx=5.00    loss=NA%     busy=9%
+  udp   rate=5   #5  got=5.00    tx=5.00    loss=0.036%  busy=13%
+  ours  rate=5   #5  got=5.00    tx=5.00    loss=0.0032% busy=12%
+  tcp   rate=5   #5  got=5.00    tx=5.00    loss=NA%     busy=9%
+===== 요청 10 Gb/s =====
+  udp   rate=10  #1  got=10.0    tx=10.0    loss=0.023%  busy=29%
+  ours  rate=10  #1  got=10.0    tx=10.0    loss=0%      busy=6%
+  tcp   rate=10  #1  got=10.0    tx=10.0    loss=NA%     busy=18%
+  udp   rate=10  #2  got=10.0    tx=10.0    loss=0.024%  busy=21%
+  ours  rate=10  #2  got=10.0    tx=10.0    loss=0.0066% busy=12%
+  tcp   rate=10  #2  got=10.0    tx=10.0    loss=NA%     busy=18%
+  udp   rate=10  #3  got=10.0    tx=10.0    loss=0.036%  busy=7%
+  ours  rate=10  #3  got=10.0    tx=10.0    loss=0.031%  busy=24%
+  tcp   rate=10  #3  got=10.0    tx=10.0    loss=NA%     busy=21%
+  udp   rate=10  #4  got=10.0    tx=10.0    loss=0.028%  busy=28%
+  ours  rate=10  #4  got=10.0    tx=10.0    loss=0.0054% busy=7%
+  tcp   rate=10  #4  got=10.0    tx=10.0    loss=NA%     busy=19%
+  udp   rate=10  #5  got=10.0    tx=10.0    loss=0.034%  busy=9%
+  ours  rate=10  #5  got=10.0    tx=10.0    loss=0.0019% busy=29%
+  tcp   rate=10  #5  got=10.0    tx=10.0    loss=NA%     busy=19%
+===== 요청 15 Gb/s =====
+  udp   rate=15  #1  got=15.0    tx=15.0    loss=0.027%  busy=26%
+  ours  rate=15  #1  got=15.0    tx=15.0    loss=0%      busy=33%
+  tcp   rate=15  #1  got=15.0    tx=15.0    loss=NA%     busy=29%
+  udp   rate=15  #2  got=15.0    tx=15.0    loss=0.042%  busy=34%
+  ours  rate=15  #2  got=15.0    tx=15.0    loss=0.015%  busy=24%
+  tcp   rate=15  #2  got=15.0    tx=15.0    loss=NA%     busy=29%
+  udp   rate=15  #3  got=15.0    tx=15.0    loss=0.032%  busy=32%
+  ours  rate=15  #3  got=15.0    tx=15.0    loss=0.014%  busy=27%
+  tcp   rate=15  #3  got=15.0    tx=15.0    loss=NA%     busy=29%
+  udp   rate=15  #4  got=12.4    tx=15.0    loss=18%     busy=28%
+  ours  rate=15  #4  got=15.0    tx=15.0    loss=0.018%  busy=29%
+  tcp   rate=15  #4  got=15.0    tx=15.0    loss=NA%     busy=29%
+  udp   rate=15  #5  got=14.5    tx=15.0    loss=3.4%    busy=33%
+  ours  rate=15  #5  got=15.0    tx=15.0    loss=0.02%   busy=25%
+  tcp   rate=15  #5  got=15.0    tx=15.0    loss=NA%     busy=29%
+===== 요청 20 Gb/s =====
+  udp   rate=20  #1  got=20.0    tx=20.0    loss=0.038%  busy=32%
+  ours  rate=20  #1  got=20.0    tx=20.0    loss=0.0058% busy=32%
+  tcp   rate=20  #1  got=20.0    tx=20.0    loss=NA%     busy=36%
+  udp   rate=20  #2  got=20.0    tx=20.0    loss=0.029%  busy=35%
+  ours  rate=20  #2  got=20.0    tx=20.0    loss=0.011%  busy=39%
+  tcp   rate=20  #2  got=20.0    tx=20.0    loss=NA%     busy=37%
+  udp   rate=20  #3  got=20.0    tx=20.0    loss=0.047%  busy=33%
+  ours  rate=20  #3  got=20.0    tx=20.0    loss=0.0098% busy=33%
+  tcp   rate=20  #3  got=20.0    tx=20.0    loss=NA%     busy=37%
+  udp   rate=20  #4  got=20.0    tx=20.0    loss=0.044%  busy=34%
+  ours  rate=20  #4  got=20.0    tx=20.0    loss=0.0003% busy=33%
+  tcp   rate=20  #4  got=20.0    tx=20.0    loss=NA%     busy=37%
+  udp   rate=20  #5  got=20.0    tx=20.0    loss=0.043%  busy=33%
+  ours  rate=20  #5  got=20.0    tx=20.0    loss=0.013%  busy=32%
+  tcp   rate=20  #5  got=20.0    tx=20.0    loss=NA%     busy=37%
+===== 요청 25 Gb/s =====
+  udp   rate=25  #1  got=16.8    tx=25.0    loss=33%     busy=30%
+  ours  rate=25  #1  got=25.0    tx=25.0    loss=0.012%  busy=43%
+  tcp   rate=25  #1  got=25.0    tx=25.0    loss=NA%     busy=46%
+  udp   rate=25  #2  got=23.7    tx=25.0    loss=5.3%    busy=57%
+  ours  rate=25  #2  got=25.0    tx=25.0    loss=0.026%  busy=43%
+  tcp   rate=25  #2  got=25.0    tx=25.0    loss=NA%     busy=45%
+  udp   rate=25  #3  got=25.0    tx=25.0    loss=0.039%  busy=42%
+  ours  rate=25  #3  got=25.0    tx=25.0    loss=0.023%  busy=40%
+  tcp   rate=25  #3  got=25.0    tx=25.0    loss=NA%     busy=46%
+  udp   rate=25  #4  got=25.0    tx=25.0    loss=0.066%  busy=30%
+  ours  rate=25  #4  got=25.0    tx=25.0    loss=0.022%  busy=47%
+  tcp   rate=25  #4  got=25.0    tx=25.0    loss=NA%     busy=46%
+  udp   rate=25  #5  got=20.8    tx=25.0    loss=17%     busy=43%
+  ours  rate=25  #5  got=25.0    tx=25.0    loss=0.02%   busy=50%
+  tcp   rate=25  #5  got=25.0    tx=25.0    loss=NA%     busy=46%
+===== 요청 30 Gb/s =====
+  udp   rate=30  #1  got=24.7    tx=27.9    loss=11%     busy=38%  <-- FLAKE
+  ours  rate=30  #1  got=29.9    tx=29.9    loss=0.033%  busy=44%
+  tcp   rate=30  #1  got=30.0    tx=30.0    loss=NA%     busy=54%
+  udp   rate=30  #2  got=24.6    tx=29.4    loss=16%     busy=41%
+  ours  rate=30  #2  got=30.0    tx=30.0    loss=0.018%  busy=62%
+  tcp   rate=30  #2  got=30.0    tx=30.0    loss=NA%     busy=55%
+  udp   rate=30  #3  got=17.4    tx=30.0    loss=43%     busy=38%
+  ours  rate=30  #3  got=29.6    tx=29.6    loss=0.027%  busy=31%
+  tcp   rate=30  #3  got=30.0    tx=30.0    loss=NA%     busy=55%
+  udp   rate=30  #4  got=17.8    tx=30.0    loss=42%     busy=26%
+  ours  rate=30  #4  got=29.0    tx=29.5    loss=1.5%    busy=48%
+  tcp   rate=30  #4  got=30.0    tx=30.0    loss=NA%     busy=54%
+  udp   rate=30  #5  got=28.9    tx=29.6    loss=2.3%    busy=41%
+  ours  rate=30  #5  got=28.9    tx=29.3    loss=1.3%    busy=51%
+  tcp   rate=30  #5  got=30.0    tx=30.0    loss=NA%     busy=55%
+===== 요청 35 Gb/s =====
+  udp   rate=35  #1  got=19.3    tx=35.0    loss=45%     busy=46%
+  ours  rate=35  #1  got=33.4    tx=35.0    loss=4.6%    busy=58%
+  tcp   rate=35  #1  got=35.0    tx=35.0    loss=NA%     busy=64%
+  udp   rate=35  #2  got=28.6    tx=35.0    loss=18%     busy=51%
+  ours  rate=35  #2  got=35.0    tx=35.0    loss=0.02%   busy=57%
+  tcp   rate=35  #2  got=35.0    tx=35.0    loss=NA%     busy=64%
+  udp   rate=35  #3  got=26.0    tx=35.0    loss=26%     busy=49%
+  ours  rate=35  #3  got=14.9    tx=14.9    loss=0.019%  busy=25%  <-- FLAKE
+  tcp   rate=35  #3  got=35.0    tx=35.0    loss=NA%     busy=64%
+  udp   rate=35  #4  got=29.3    tx=35.0    loss=16%     busy=47%
+  ours  rate=35  #4  got=35.0    tx=35.0    loss=0.033%  busy=57%
+  tcp   rate=35  #4  got=35.0    tx=35.0    loss=NA%     busy=64%
+  udp   rate=35  #5  got=24.7    tx=35.0    loss=30%     busy=50%
+  ours  rate=35  #5  got=35.0    tx=35.0    loss=0.038%  busy=55%
+  tcp   rate=35  #5  got=35.0    tx=35.0    loss=NA%     busy=63%
+===== 요청 40 Gb/s =====
+  udp   rate=40  #1  got=25.2    tx=40.0    loss=37%     busy=51%
+  ours  rate=40  #1  got=40.0    tx=40.0    loss=0.021%  busy=63%
+  tcp   rate=40  #1  got=40.0    tx=40.0    loss=NA%     busy=72%
+  udp   rate=40  #2  got=24.7    tx=40.0    loss=39%     busy=51%
+  ours  rate=40  #2  got=35.0    tx=40.0    loss=12%     busy=62%
+  tcp   rate=40  #2  got=40.0    tx=40.0    loss=NA%     busy=72%
+  udp   rate=40  #3  got=24.3    tx=40.0    loss=39%     busy=49%
+  ours  rate=40  #3  got=40.0    tx=40.0    loss=0.073%  busy=65%
+  tcp   rate=40  #3  got=40.0    tx=40.0    loss=NA%     busy=71%
+  udp   rate=40  #4  got=24.5    tx=40.0    loss=39%     busy=51%
+  ours  rate=40  #4  got=37.6    tx=40.0    loss=5.9%    busy=67%
+  tcp   rate=40  #4  got=40.0    tx=40.0    loss=NA%     busy=72%
+  udp   rate=40  #5  got=24.4    tx=40.0    loss=39%     busy=52%
+  ours  rate=40  #5  got=40.0    tx=40.0    loss=0.1%    busy=66%
+  tcp   rate=40  #5  got=40.0    tx=40.0    loss=NA%     busy=71%
+===== 요청 45 Gb/s =====
+  udp   rate=45  #1  got=21.2    tx=45.0    loss=53%     busy=50%
+  ours  rate=45  #1  got=45.0    tx=45.0    loss=0.021%  busy=75%
+  tcp   rate=45  #1  got=45.0    tx=45.0    loss=NA%     busy=80%
+  udp   rate=45  #2  got=23.0    tx=45.0    loss=49%     busy=52%
+  ours  rate=45  #2  got=45.0    tx=45.0    loss=0.028%  busy=75%
+  tcp   rate=45  #2  got=45.0    tx=45.0    loss=NA%     busy=79%
+  udp   rate=45  #3  got=22.2    tx=45.0    loss=51%     busy=55%
+  ours  rate=45  #3  got=45.0    tx=45.0    loss=0.045%  busy=74%
+  tcp   rate=45  #3  got=45.0    tx=45.0    loss=NA%     busy=79%
+  udp   rate=45  #4  got=21.1    tx=45.0    loss=54%     busy=47%
+  ours  rate=45  #4  got=44.6    tx=45.0    loss=0.79%   busy=77%
+  tcp   rate=45  #4  got=45.0    tx=45.0    loss=NA%     busy=80%
+  udp   rate=45  #5  got=21.1    tx=45.0    loss=54%     busy=48%
+  ours  rate=45  #5  got=45.0    tx=45.0    loss=0.078%  busy=74%
+  tcp   rate=45  #5  got=45.0    tx=45.0    loss=NA%     busy=79%
+===== 요청 50 Gb/s =====
+  udp   rate=50  #1  got=25.5    tx=50.0    loss=49%     busy=53%
+  ours  rate=50  #1  got=49.4    tx=50.0    loss=1.1%    busy=84%
+  tcp   rate=50  #1  got=50.0    tx=50.0    loss=NA%     busy=88%
+  udp   rate=50  #2  got=20.7    tx=49.1    loss=58%     busy=53%
+  ours  rate=50  #2  got=49.8    tx=50.0    loss=0.31%   busy=76%
+  tcp   rate=50  #2  got=48.7    tx=48.7    loss=NA%     busy=85%
+  udp   rate=50  #3  got=25.6    tx=50.0    loss=49%     busy=56%
+  ours  rate=50  #3  got=49.9    tx=50.0    loss=0.27%   busy=82%
+  tcp   rate=50  #3  got=50.0    tx=50.0    loss=NA%     busy=87%
+  udp   rate=50  #4  got=22.1    tx=49.4    loss=56%     busy=48%
+  ours  rate=50  #4  got=49.7    tx=50.0    loss=0.51%   busy=82%
+  tcp   rate=50  #4  got=50.0    tx=50.0    loss=NA%     busy=88%
+  udp   rate=50  #5  got=21.1    tx=49.3    loss=58%     busy=51%
+  ours  rate=50  #5  got=49.8    tx=50.0    loss=0.3%    busy=82%
+  tcp   rate=50  #5  got=49.4    tx=49.4    loss=NA%     busy=89%
+===== 요청 55 Gb/s =====
+  udp   rate=55  #1  got=20.9    tx=50.0    loss=59%     busy=47%  <-- FLAKE
+  ours  rate=55  #1  got=51.9    tx=55.0    loss=5.6%    busy=99%
+  tcp   rate=55  #1  got=55.0    tx=55.0    loss=NA%     busy=96%
+  udp   rate=55  #2  got=20.9    tx=50.5    loss=59%     busy=52%  <-- FLAKE
+  ours  rate=55  #2  got=51.9    tx=55.0    loss=5.5%    busy=99%
+  tcp   rate=55  #2  got=55.0    tx=55.0    loss=NA%     busy=96%
+  udp   rate=55  #3  got=21.6    tx=54.0    loss=60%     busy=56%
+  ours  rate=55  #3  got=52.1    tx=55.0    loss=5.1%    busy=100%
+  tcp   rate=55  #3  got=55.0    tx=55.0    loss=NA%     busy=96%
+  udp   rate=55  #4  got=22.4    tx=54.2    loss=59%     busy=53%
+  ours  rate=55  #4  got=52.4    tx=55.0    loss=4.7%    busy=96%
+  tcp   rate=55  #4  got=55.0    tx=55.0    loss=NA%     busy=97%
+  udp   rate=55  #5  got=22.1    tx=53.3    loss=59%     busy=56%
+  ours  rate=55  #5  got=51.8    tx=55.0    loss=5.8%    busy=99%
+  tcp   rate=55  #5  got=55.0    tx=55.0    loss=NA%     busy=97%
+===== 요청 60 Gb/s =====
+  udp   rate=60  #1  got=24.0    tx=60.0    loss=60%     busy=63%
+  ours  rate=60  #1  got=50.9    tx=60.0    loss=15%     busy=100%
+  tcp   rate=60  #1  got=58.4    tx=58.4    loss=NA%     busy=99%
+  udp   rate=60  #2  got=27.9    tx=60.0    loss=54%     busy=67%
+  ours  rate=60  #2  got=51.2    tx=60.0    loss=14%     busy=100%
+  tcp   rate=60  #2  got=57.5    tx=57.5    loss=NA%     busy=100%
+  udp   rate=60  #3  got=27.6    tx=60.0    loss=54%     busy=67%
+  ours  rate=60  #3  got=51.7    tx=60.0    loss=14%     busy=100%
+  tcp   rate=60  #3  got=55.4    tx=55.4    loss=NA%     busy=95%
+  udp   rate=60  #4  got=27.6    tx=60.0    loss=54%     busy=66%
+  ours  rate=60  #4  got=55.2    tx=60.0    loss=7.9%    busy=100%
+  tcp   rate=60  #4  got=57.6    tx=57.6    loss=NA%     busy=100%
+  udp   rate=60  #5  got=27.6    tx=60.0    loss=54%     busy=66%
+  ours  rate=60  #5  got=50.6    tx=60.0    loss=15%     busy=100%
+  tcp   rate=60  #5  got=54.1    tx=54.1    loss=NA%     busy=93%
+===== 요청 65 Gb/s =====
+  udp   rate=65  #1  got=23.2    tx=36.8    loss=37%     busy=41%  <-- FLAKE
+  ours  rate=65  #1  got=50.2    tx=64.7    loss=22%     busy=100%
+  tcp   rate=65  #1  got=57.0    tx=57.0    loss=NA%     busy=100%
+  udp   rate=65  #2  got=28.2    tx=65.0    loss=57%     busy=70%
+  ours  rate=65  #2  got=52.0    tx=64.7    loss=20%     busy=100%
+  tcp   rate=65  #2  got=57.2    tx=57.2    loss=NA%     busy=98%
+  udp   rate=65  #3  got=27.9    tx=65.0    loss=57%     busy=70%
+  ours  rate=65  #3  got=50.3    tx=64.7    loss=22%     busy=100%
+  tcp   rate=65  #3  got=48.5    tx=48.5    loss=NA%     busy=85%
+  udp   rate=65  #4  got=23.3    tx=57.4    loss=59%     busy=61%  <-- FLAKE
+  ours  rate=65  #4  got=49.9    tx=64.9    loss=23%     busy=100%
+  tcp   rate=65  #4  got=56.7    tx=56.7    loss=NA%     busy=99%
+  udp   rate=65  #5  got=27.9    tx=65.0    loss=57%     busy=69%
+  ours  rate=65  #5  got=50.4    tx=65.0    loss=22%     busy=100%
+  tcp   rate=65  #5  got=57.2    tx=57.2    loss=NA%     busy=99%
+===== 요청 70 Gb/s =====
+  udp   rate=70  #1  got=16.7    tx=70.0    loss=76%     busy=60%
+  ours  rate=70  #1  got=49.3    tx=69.5    loss=29%     busy=100%
+  tcp   rate=70  #1  got=56.4    tx=56.4    loss=NA%     busy=96%
+  udp   rate=70  #2  got=26.6    tx=70.0    loss=62%     busy=72%
+  ours  rate=70  #2  got=49.7    tx=69.8    loss=29%     busy=100%
+  tcp   rate=70  #2  got=58.7    tx=58.7    loss=NA%     busy=100%
+  udp   rate=70  #3  got=23.0    tx=25.8    loss=11%     busy=41%  <-- FLAKE
+  ours  rate=70  #3  got=49.8    tx=69.4    loss=28%     busy=100%
+  tcp   rate=70  #3  got=55.0    tx=55.0    loss=NA%     busy=97%
+  udp   rate=70  #4  got=23.2    tx=39.5    loss=41%     busy=44%  <-- FLAKE
+  ours  rate=70  #4  got=50.6    tx=69.6    loss=27%     busy=100%
+  tcp   rate=70  #4  got=57.0    tx=57.0    loss=NA%     busy=100%
+  udp   rate=70  #5  got=27.0    tx=70.0    loss=61%     busy=71%
+  ours  rate=70  #5  got=51.2    tx=69.3    loss=26%     busy=100%
+  tcp   rate=70  #5  got=57.0    tx=57.0    loss=NA%     busy=99%
+===== 요청 75 Gb/s =====
+  udp   rate=75  #1  got=23.6    tx=75.0    loss=69%     busy=71%
+  ours  rate=75  #1  got=52.9    tx=75.0    loss=29%     busy=100%
+  tcp   rate=75  #1  got=56.4    tx=56.4    loss=NA%     busy=100%
+  udp   rate=75  #2  got=25.9    tx=75.0    loss=66%     busy=73%
+  ours  rate=75  #2  got=48.9    tx=75.0    loss=35%     busy=100%
+  tcp   rate=75  #2  got=49.1    tx=49.1    loss=NA%     busy=87%
+  udp   rate=75  #3  got=26.3    tx=75.0    loss=65%     busy=76%
+  ours  rate=75  #3  got=53.9    tx=75.0    loss=28%     busy=100%
+  tcp   rate=75  #3  got=51.5    tx=51.5    loss=NA%     busy=100%
+  udp   rate=75  #4  got=28.8    tx=73.9    loss=61%     busy=82%
+  ours  rate=75  #4  got=49.0    tx=75.0    loss=34%     busy=100%
+  tcp   rate=75  #4  got=56.7    tx=56.7    loss=NA%     busy=99%
+  udp   rate=75  #5  got=24.2    tx=75.0    loss=68%     busy=72%
+  ours  rate=75  #5  got=50.7    tx=75.0    loss=32%     busy=100%
+  tcp   rate=75  #5  got=58.9    tx=58.9    loss=NA%     busy=100%
+===== 요청 80 Gb/s =====
+  udp   rate=80  #1  got=23.1    tx=80.0    loss=71%     busy=72%
+  ours  rate=80  #1  got=48.9    tx=80.0    loss=39%     busy=100%
+  tcp   rate=80  #1  got=58.8    tx=58.8    loss=NA%     busy=100%
+  udp   rate=80  #2  got=25.2    tx=80.0    loss=68%     busy=75%
+  ours  rate=80  #2  got=48.6    tx=80.0    loss=39%     busy=100%
+  tcp   rate=80  #2  got=56.7    tx=56.7    loss=NA%     busy=97%
+  udp   rate=80  #3  got=23.0    tx=80.0    loss=71%     busy=73%
+  ours  rate=80  #3  got=54.3    tx=80.0    loss=32%     busy=100%
+  tcp   rate=80  #3  got=49.5    tx=49.5    loss=NA%     busy=84%
+  udp   rate=80  #4  got=23.2    tx=80.0    loss=71%     busy=73%
+  ours  rate=80  #4  got=49.3    tx=80.0    loss=38%     busy=100%
+  tcp   rate=80  #4  got=54.9    tx=54.9    loss=NA%     busy=100%
+  udp   rate=80  #5  got=24.8    tx=80.0    loss=69%     busy=74%
+  ours  rate=80  #5  got=49.5    tx=80.0    loss=38%     busy=100%
+  tcp   rate=80  #5  got=56.7    tx=56.7    loss=NA%     busy=99%
+
+=========== 요약 (평균±sd) ===========
+rate 5    tcp    got=  5.00 +- 0.00  tx=  5.00  loss=  0.0%  busy=  9%  (n=5)
+rate 5    udp    got=  5.00 +- 0.00  tx=  5.00  loss=  0.0%  busy= 13%  (n=5)
+rate 5    ours   got=  5.00 +- 0.00  tx=  5.00  loss=  0.0%  busy= 13%  (n=5)
+rate 10   tcp    got= 10.00 +- 0.00  tx= 10.00  loss=  0.0%  busy= 19%  (n=5)
+rate 10   udp    got= 10.00 +- 0.00  tx= 10.00  loss=  0.0%  busy= 19%  (n=5)
+rate 10   ours   got= 10.00 +- 0.00  tx= 10.00  loss=  0.0%  busy= 16%  (n=5)
+rate 15   tcp    got= 15.00 +- 0.00  tx= 15.00  loss=  0.0%  busy= 29%  (n=5)
+rate 15   udp    got= 14.38 +- 1.01  tx= 15.00  loss=  4.3%  busy= 31%  (n=5)
+rate 15   ours   got= 15.00 +- 0.00  tx= 15.00  loss=  0.0%  busy= 28%  (n=5)
+rate 20   tcp    got= 20.00 +- 0.00  tx= 20.00  loss=  0.0%  busy= 37%  (n=5)
+rate 20   udp    got= 20.00 +- 0.00  tx= 20.00  loss=  0.0%  busy= 33%  (n=5)
+rate 20   ours   got= 20.00 +- 0.00  tx= 20.00  loss=  0.0%  busy= 34%  (n=5)
+rate 25   tcp    got= 25.00 +- 0.00  tx= 25.00  loss=  0.0%  busy= 46%  (n=5)
+rate 25   udp    got= 22.26 +- 3.13  tx= 25.00  loss= 11.1%  busy= 40%  (n=5)
+rate 25   ours   got= 25.00 +- 0.00  tx= 25.00  loss=  0.0%  busy= 45%  (n=5)
+rate 30   tcp    got= 30.00 +- 0.00  tx= 30.00  loss=  0.0%  busy= 55%  (n=5)
+rate 30   udp    got= 22.17 +- 4.82  tx= 29.75  loss= 25.8%  busy= 36%  (n=4)
+rate 30   ours   got= 29.48 +- 0.45  tx= 29.66  loss=  0.6%  busy= 47%  (n=5)
+rate 35   tcp    got= 35.00 +- 0.00  tx= 35.00  loss=  0.0%  busy= 64%  (n=5)
+rate 35   udp    got= 25.58 +- 3.56  tx= 35.00  loss= 27.0%  busy= 49%  (n=5)
+rate 35   ours   got= 34.60 +- 0.69  tx= 35.00  loss=  1.2%  busy= 57%  (n=4)
+rate 40   tcp    got= 40.00 +- 0.00  tx= 40.00  loss=  0.0%  busy= 72%  (n=5)
+rate 40   udp    got= 24.62 +- 0.32  tx= 40.00  loss= 38.6%  busy= 51%  (n=5)
+rate 40   ours   got= 38.52 +- 1.99  tx= 40.00  loss=  3.6%  busy= 65%  (n=5)
+rate 45   tcp    got= 45.00 +- 0.00  tx= 45.00  loss=  0.0%  busy= 79%  (n=5)
+rate 45   udp    got= 21.72 +- 0.76  tx= 45.00  loss= 52.2%  busy= 50%  (n=5)
+rate 45   ours   got= 44.92 +- 0.16  tx= 45.00  loss=  0.2%  busy= 75%  (n=5)
+rate 50   tcp    got= 49.62 +- 0.52  tx= 49.62  loss=  0.0%  busy= 87%  (n=5)
+rate 50   udp    got= 23.00 +- 2.13  tx= 49.56  loss= 54.0%  busy= 52%  (n=5)
+rate 50   ours   got= 49.72 +- 0.17  tx= 50.00  loss=  0.5%  busy= 81%  (n=5)
+rate 55   tcp    got= 55.00 +- 0.00  tx= 55.00  loss=  0.0%  busy= 96%  (n=5)
+rate 55   udp    got= 22.03 +- 0.33  tx= 53.83  loss= 59.3%  busy= 55%  (n=3)
+rate 55   ours   got= 52.02 +- 0.21  tx= 55.00  loss=  5.3%  busy= 99%  (n=5)
+rate 60   tcp    got= 56.60 +- 1.60  tx= 56.60  loss=  0.0%  busy= 97%  (n=5)
+rate 60   udp    got= 26.94 +- 1.47  tx= 60.00  loss= 55.2%  busy= 66%  (n=5)
+rate 60   ours   got= 51.92 +- 1.68  tx= 60.00  loss= 13.2%  busy=100%  (n=5)
+rate 65   tcp    got= 55.32 +- 3.41  tx= 55.32  loss=  0.0%  busy= 96%  (n=5)
+rate 65   udp    got= 28.00 +- 0.14  tx= 65.00  loss= 57.0%  busy= 70%  (n=3)
+rate 65   ours   got= 50.56 +- 0.74  tx= 64.80  loss= 21.8%  busy=100%  (n=5)
+rate 70   tcp    got= 56.82 +- 1.19  tx= 56.82  loss=  0.0%  busy= 98%  (n=5)
+rate 70   udp    got= 23.43 +- 4.76  tx= 70.00  loss= 66.3%  busy= 68%  (n=3)
+rate 70   ours   got= 50.12 +- 0.69  tx= 69.52  loss= 27.8%  busy=100%  (n=5)
+rate 75   tcp    got= 54.52 +- 3.63  tx= 54.52  loss=  0.0%  busy= 97%  (n=5)
+rate 75   udp    got= 25.76 +- 1.82  tx= 74.78  loss= 65.8%  busy= 75%  (n=5)
+rate 75   ours   got= 51.08 +- 2.02  tx= 75.00  loss= 31.6%  busy=100%  (n=5)
+rate 80   tcp    got= 55.32 +- 3.16  tx= 55.32  loss=  0.0%  busy= 96%  (n=5)
+rate 80   udp    got= 23.86 +- 0.94  tx= 80.00  loss= 70.0%  busy= 73%  (n=5)
+rate 80   ours   got= 50.12 +- 2.11  tx= 80.00  loss= 37.2%  busy=100%  (n=5)
+clean

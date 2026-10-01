@@ -1,0 +1,262 @@
+6.18.53-udpopt20
+ring 128
+Adaptive RX: on  TX: on
+0 0 0 (autotune cache_pct shed)
+===== 제공 40G =====
+  208K   rate=40  #1  got=17.72   tx=40.00   busy=37%  rb212992
+  208K   rate=40  #2  got=10.74   tx=40.00   busy=35%  rb212992
+  208K   rate=40  #3  got=10.51   tx=40.00   busy=34%  rb212992
+  208K   rate=40  #4  got=10.50   tx=40.00   busy=35%  rb212992
+  208K   rate=40  #5  got=10.71   tx=40.00   busy=35%  rb212992
+  256K   rate=40  #1  got=12.49   tx=40.00   busy=35%  rb262144
+  256K   rate=40  #2  got=12.45   tx=40.00   busy=36%  rb262144
+  256K   rate=40  #3  got=12.47   tx=40.00   busy=36%  rb262144
+  256K   rate=40  #4  got=12.37   tx=40.00   busy=35%  rb262144
+  256K   rate=40  #5  got=12.35   tx=40.00   busy=35%  rb262144
+  384K   rate=40  #1  got=18.79   tx=40.00   busy=39%  rb393216
+  384K   rate=40  #2  got=19.01   tx=40.00   busy=37%  rb393216
+  384K   rate=40  #3  got=18.99   tx=40.00   busy=37%  rb393216
+  384K   rate=40  #4  got=18.91   tx=40.00   busy=40%  rb393216
+  384K   rate=40  #5  got=18.86   tx=40.00   busy=38%  rb393216
+  512K   rate=40  #1  got=26.15   tx=40.00   busy=49%  rb524288
+  512K   rate=40  #2  got=26.84   tx=40.00   busy=50%  rb524288
+  512K   rate=40  #3  got=26.15   tx=40.00   busy=49%  rb524288
+  512K   rate=40  #4  got=26.14   tx=40.00   busy=49%  rb524288
+  512K   rate=40  #5  got=26.15   tx=40.00   busy=48%  rb524288
+  768K   rate=40  #1  got=39.92   tx=40.00   busy=61%  rb786432
+  768K   rate=40  #2  got=39.92   tx=40.00   busy=60%  rb786432
+  768K   rate=40  #3  got=39.92   tx=40.00   busy=60%  rb786432
+  768K   rate=40  #4  got=39.92   tx=40.00   busy=59%  rb786432
+  768K   rate=40  #5  got=39.92   tx=40.00   busy=61%  rb786432
+  1M     rate=40  #1  got=39.98   tx=40.00   busy=59%  rb1048576
+  1M     rate=40  #2  got=39.99   tx=40.00   busy=60%  rb1048576
+  1M     rate=40  #3  got=39.98   tx=40.00   busy=60%  rb1048576
+  1M     rate=40  #4  got=39.98   tx=40.00   busy=61%  rb1048576
+  1M     rate=40  #5  got=39.98   tx=40.00   busy=60%  rb1048576
+  1.5M   rate=40  #1  got=39.98   tx=40.00   busy=60%  rb1572864
+  1.5M   rate=40  #2  got=39.98   tx=40.00   busy=59%  rb1572864
+  1.5M   rate=40  #3  got=39.98   tx=40.00   busy=61%  rb1572864
+  1.5M   rate=40  #4  got=39.98   tx=40.00   busy=60%  rb1572864
+  1.5M   rate=40  #5  got=39.98   tx=40.00   busy=60%  rb1572864
+  2M     rate=40  #1  got=39.98   tx=40.00   busy=60%  rb2097152
+  2M     rate=40  #2  got=39.98   tx=40.00   busy=60%  rb2097152
+  2M     rate=40  #3  got=39.98   tx=40.00   busy=60%  rb2097152
+  2M     rate=40  #4  got=39.98   tx=40.00   busy=60%  rb2097152
+  2M     rate=40  #5  got=39.98   tx=40.00   busy=62%  rb2097152
+  3M     rate=40  #1  got=39.99   tx=40.00   busy=60%  rb3145728
+  3M     rate=40  #2  got=39.98   tx=40.00   busy=61%  rb3145728
+  3M     rate=40  #3  got=39.98   tx=40.00   busy=60%  rb3145728
+  3M     rate=40  #4  got=39.98   tx=40.00   busy=59%  rb3145728
+  3M     rate=40  #5  got=39.98   tx=40.00   busy=61%  rb3145728
+  4M     rate=40  #1  got=39.98   tx=40.00   busy=59%  rb4194304
+  4M     rate=40  #2  got=39.98   tx=40.00   busy=61%  rb4194304
+  4M     rate=40  #3  got=39.98   tx=40.00   busy=60%  rb4194304
+  4M     rate=40  #4  got=39.98   tx=40.00   busy=59%  rb4194304
+  4M     rate=40  #5  got=39.98   tx=40.00   busy=62%  rb4194304
+  6M     rate=40  #1  got=39.98   tx=40.00   busy=60%  rb6291456
+  6M     rate=40  #2  got=39.98   tx=40.00   busy=60%  rb6291456
+  6M     rate=40  #3  got=39.98   tx=40.00   busy=61%  rb6291456
+  6M     rate=40  #4  got=39.98   tx=40.00   busy=59%  rb6291456
+  6M     rate=40  #5  got=39.98   tx=40.00   busy=60%  rb6291456
+  8M     rate=40  #1  got=39.99   tx=40.00   busy=61%  rb8388608
+  8M     rate=40  #2  got=39.98   tx=40.00   busy=59%  rb8388608
+  8M     rate=40  #3  got=39.98   tx=40.00   busy=60%  rb8388608
+  8M     rate=40  #4  got=39.98   tx=40.00   busy=60%  rb8388608
+  8M     rate=40  #5  got=39.98   tx=40.00   busy=60%  rb8388608
+  12M    rate=40  #1  got=39.98   tx=40.00   busy=60%  rb12582912
+  12M    rate=40  #2  got=39.98   tx=40.00   busy=61%  rb12582912
+  12M    rate=40  #3  got=39.98   tx=40.00   busy=59%  rb12582912
+  12M    rate=40  #4  got=39.98   tx=40.00   busy=60%  rb12582912
+  12M    rate=40  #5  got=39.98   tx=40.00   busy=61%  rb12582912
+  18M    rate=40  #1  got=39.99   tx=40.00   busy=59%  rb18874368
+  18M    rate=40  #2  got=39.98   tx=40.00   busy=60%  rb18874368
+  18M    rate=40  #3  got=39.98   tx=40.00   busy=62%  rb18874368
+  18M    rate=40  #4  got=39.98   tx=40.00   busy=60%  rb18874368
+  18M    rate=40  #5  got=39.98   tx=40.00   busy=59%  rb18874368
+===== 제공 56G =====
+  208K   rate=56  #1  got=7.03    tx=56.00   busy=33%  rb212992
+  208K   rate=56  #2  got=10.52   tx=56.00   busy=36%  rb212992
+  208K   rate=56  #3  got=15.58   tx=56.00   busy=53%  rb212992
+  208K   rate=56  #4  got=9.54    tx=56.00   busy=40%  rb212992
+  208K   rate=56  #5  got=16.62   tx=56.00   busy=51%  rb212992
+  256K   rate=56  #1  got=16.33   tx=56.00   busy=52%  rb262144
+  256K   rate=56  #2  got=12.07   tx=56.00   busy=34%  rb262144
+  256K   rate=56  #3  got=8.48    tx=56.00   busy=36%  rb262144
+  256K   rate=56  #4  got=18.94   tx=56.00   busy=40%  rb262144
+  256K   rate=56  #5  got=8.54    tx=56.00   busy=42%  rb262144
+  384K   rate=56  #1  got=12.47   tx=56.00   busy=46%  rb393216
+  384K   rate=56  #2  got=12.30   tx=56.00   busy=41%  rb393216
+  384K   rate=56  #3  got=18.23   tx=56.00   busy=42%  rb393216
+  384K   rate=56  #4  got=15.42   tx=56.00   busy=33%  rb393216
+  384K   rate=56  #5  got=12.99   tx=56.00   busy=40%  rb393216
+  512K   rate=56  #1  got=28.70   tx=56.00   busy=62%  rb524288
+  512K   rate=56  #2  got=20.36   tx=56.00   busy=59%  rb524288
+  512K   rate=56  #3  got=19.83   tx=56.00   busy=50%  rb524288
+  512K   rate=56  #4  got=17.68   tx=56.00   busy=51%  rb524288
+  512K   rate=56  #5  got=37.65   tx=56.00   busy=87%  rb524288
+  768K   rate=56  #1  got=28.91   tx=56.00   busy=62%  rb786432
+  768K   rate=56  #2  got=27.34   tx=56.00   busy=62%  rb786432
+  768K   rate=56  #3  got=25.88   tx=56.00   busy=57%  rb786432
+  768K   rate=56  #4  got=25.18   tx=56.00   busy=59%  rb786432
+  768K   rate=56  #5  got=26.02   tx=56.00   busy=58%  rb786432
+  1M     rate=56  #1  got=34.54   tx=56.00   busy=65%  rb1048576
+  1M     rate=56  #2  got=33.01   tx=56.00   busy=62%  rb1048576
+  1M     rate=56  #3  got=32.34   tx=56.00   busy=65%  rb1048576
+  1M     rate=56  #4  got=32.88   tx=56.00   busy=65%  rb1048576
+  1M     rate=56  #5  got=33.25   tx=56.00   busy=58%  rb1048576
+  1.5M   rate=56  #1  got=48.01   tx=56.00   busy=79%  rb1572864
+  1.5M   rate=56  #2  got=48.04   tx=56.00   busy=80%  rb1572864
+  1.5M   rate=56  #3  got=47.50   tx=56.00   busy=80%  rb1572864
+  1.5M   rate=56  #4  got=47.56   tx=56.00   busy=80%  rb1572864
+  1.5M   rate=56  #5  got=47.89   tx=56.00   busy=79%  rb1572864
+  2M     rate=56  #1  got=55.28   tx=56.00   busy=86%  rb2097152
+  2M     rate=56  #2  got=52.69   tx=56.00   busy=87%  rb2097152
+  2M     rate=56  #3  got=54.74   tx=56.00   busy=86%  rb2097152
+  2M     rate=56  #4  got=53.02   tx=56.00   busy=86%  rb2097152
+  2M     rate=56  #5  got=54.23   tx=56.00   busy=86%  rb2097152
+  3M     rate=56  #1  got=52.89   tx=56.00   busy=86%  rb3145728
+  3M     rate=56  #2  got=53.22   tx=56.00   busy=87%  rb3145728
+  3M     rate=56  #3  got=55.40   tx=56.00   busy=86%  rb3145728
+  3M     rate=56  #4  got=54.48   tx=56.00   busy=86%  rb3145728
+  3M     rate=56  #5  got=54.87   tx=56.00   busy=86%  rb3145728
+  4M     rate=56  #1  got=54.74   tx=56.00   busy=86%  rb4194304
+  4M     rate=56  #2  got=55.39   tx=56.00   busy=86%  rb4194304
+  4M     rate=56  #3  got=54.95   tx=56.00   busy=86%  rb4194304
+  4M     rate=56  #4  got=52.91   tx=56.00   busy=86%  rb4194304
+  4M     rate=56  #5  got=55.27   tx=56.00   busy=86%  rb4194304
+  6M     rate=56  #1  got=53.23   tx=56.00   busy=87%  rb6291456
+  6M     rate=56  #2  got=52.53   tx=56.00   busy=86%  rb6291456
+  6M     rate=56  #3  got=54.74   tx=56.00   busy=86%  rb6291456
+  6M     rate=56  #4  got=55.30   tx=56.00   busy=86%  rb6291456
+  6M     rate=56  #5  got=52.73   tx=56.00   busy=87%  rb6291456
+  8M     rate=56  #1  got=55.12   tx=56.00   busy=86%  rb8388608
+  8M     rate=56  #2  got=54.86   tx=56.00   busy=87%  rb8388608
+  8M     rate=56  #3  got=55.31   tx=56.00   busy=86%  rb8388608
+  8M     rate=56  #4  got=53.08   tx=56.00   busy=86%  rb8388608
+  8M     rate=56  #5  got=55.32   tx=56.00   busy=86%  rb8388608
+  12M    rate=56  #1  got=43.67   tx=56.00   busy=100% rb12582912
+  12M    rate=56  #2  got=44.60   tx=56.00   busy=100% rb12582912
+  12M    rate=56  #3  got=44.17   tx=56.00   busy=100% rb12582912
+  12M    rate=56  #4  got=44.36   tx=56.00   busy=100% rb12582912
+  12M    rate=56  #5  got=44.46   tx=56.00   busy=100% rb12582912
+  18M    rate=56  #1  got=35.38   tx=56.00   busy=100% rb18874368
+  18M    rate=56  #2  got=35.46   tx=56.00   busy=100% rb18874368
+  18M    rate=56  #3  got=35.52   tx=56.00   busy=100% rb18874368
+  18M    rate=56  #4  got=34.43   tx=56.00   busy=100% rb18874368
+  18M    rate=56  #5  got=34.76   tx=56.00   busy=100% rb18874368
+===== 제공 88G =====
+  208K   rate=88  #1  got=13.54   tx=88.00   busy=66%  rb212992
+  208K   rate=88  #2  got=12.78   tx=88.00   busy=66%  rb212992
+  208K   rate=88  #3  got=11.38   tx=88.00   busy=61%  rb212992
+  208K   rate=88  #4  got=12.87   tx=88.00   busy=67%  rb212992
+  208K   rate=88  #5  got=13.30   tx=88.00   busy=68%  rb212992
+  256K   rate=88  #1  got=14.10   tx=88.00   busy=65%  rb262144
+  256K   rate=88  #2  got=14.28   tx=88.00   busy=65%  rb262144
+  256K   rate=88  #3  got=16.20   tx=88.00   busy=68%  rb262144
+  256K   rate=88  #4  got=14.37   tx=88.00   busy=66%  rb262144
+  256K   rate=88  #5  got=16.53   tx=88.00   busy=68%  rb262144
+  384K   rate=88  #1  got=23.19   tx=88.00   busy=76%  rb393216
+  384K   rate=88  #2  got=24.24   tx=88.00   busy=78%  rb393216
+  384K   rate=88  #3  got=21.95   tx=88.00   busy=72%  rb393216
+  384K   rate=88  #4  got=21.59   tx=88.00   busy=72%  rb393216
+  384K   rate=88  #5  got=20.31   tx=88.00   busy=68%  rb393216
+  512K   rate=88  #1  got=28.98   tx=88.00   busy=78%  rb524288
+  512K   rate=88  #2  got=29.12   tx=88.00   busy=75%  rb524288
+  512K   rate=88  #3  got=28.25   tx=88.00   busy=74%  rb524288
+  512K   rate=88  #4  got=25.37   tx=88.00   busy=74%  rb524288
+  512K   rate=88  #5  got=29.47   tx=88.00   busy=78%  rb524288
+  768K   rate=88  #1  got=41.84   tx=88.00   busy=85%  rb786432
+  768K   rate=88  #2  got=47.13   tx=88.00   busy=93%  rb786432
+  768K   rate=88  #3  got=36.60   tx=88.00   busy=87%  rb786432
+  768K   rate=88  #4  got=30.52   tx=88.00   busy=76%  rb786432
+  768K   rate=88  #5  got=34.59   tx=88.00   busy=84%  rb786432
+  1M     rate=88  #1  got=40.55   tx=88.00   busy=88%  rb1048576
+  1M     rate=88  #2  got=39.81   tx=88.00   busy=87%  rb1048576
+  1M     rate=88  #3  got=39.73   tx=88.00   busy=86%  rb1048576
+  1M     rate=88  #4  got=39.81   tx=88.00   busy=86%  rb1048576
+  1M     rate=88  #5  got=39.78   tx=88.00   busy=87%  rb1048576
+  1.5M   rate=88  #1  got=53.54   tx=88.00   busy=100% rb1572864
+  1.5M   rate=88  #2  got=53.66   tx=88.00   busy=100% rb1572864
+  1.5M   rate=88  #3  got=53.52   tx=88.00   busy=100% rb1572864
+  1.5M   rate=88  #4  got=53.59   tx=88.00   busy=100% rb1572864
+  1.5M   rate=88  #5  got=53.48   tx=88.00   busy=100% rb1572864
+  2M     rate=88  #1  got=50.99   tx=88.00   busy=100% rb2097152
+  2M     rate=88  #2  got=51.43   tx=88.00   busy=100% rb2097152
+  2M     rate=88  #3  got=51.24   tx=88.00   busy=100% rb2097152
+  2M     rate=88  #4  got=51.46   tx=88.00   busy=100% rb2097152
+  2M     rate=88  #5  got=51.36   tx=88.00   busy=100% rb2097152
+  3M     rate=88  #1  got=49.81   tx=88.00   busy=100% rb3145728
+  3M     rate=88  #2  got=49.70   tx=88.00   busy=100% rb3145728
+  3M     rate=88  #3  got=49.70   tx=88.00   busy=100% rb3145728
+  3M     rate=88  #4  got=49.73   tx=88.00   busy=100% rb3145728
+  3M     rate=88  #5  got=49.76   tx=88.00   busy=100% rb3145728
+  4M     rate=88  #1  got=48.67   tx=88.00   busy=100% rb4194304
+  4M     rate=88  #2  got=48.38   tx=88.00   busy=100% rb4194304
+  4M     rate=88  #3  got=48.11   tx=88.00   busy=100% rb4194304
+  4M     rate=88  #4  got=48.52   tx=88.00   busy=100% rb4194304
+  4M     rate=88  #5  got=48.67   tx=88.00   busy=100% rb4194304
+  6M     rate=88  #1  got=42.82   tx=88.00   busy=100% rb6291456
+  6M     rate=88  #2  got=43.74   tx=88.00   busy=100% rb6291456
+  6M     rate=88  #3  got=43.02   tx=88.00   busy=100% rb6291456
+  6M     rate=88  #4  got=44.14   tx=88.00   busy=100% rb6291456
+  6M     rate=88  #5  got=43.91   tx=88.00   busy=100% rb6291456
+  8M     rate=88  #1  got=40.07   tx=88.00   busy=100% rb8388608
+  8M     rate=88  #2  got=40.14   tx=88.00   busy=100% rb8388608
+  8M     rate=88  #3  got=40.47   tx=88.00   busy=100% rb8388608
+  8M     rate=88  #4  got=40.07   tx=88.00   busy=100% rb8388608
+  8M     rate=88  #5  got=40.28   tx=88.00   busy=100% rb8388608
+  12M    rate=88  #1  got=32.72   tx=88.00   busy=100% rb12582912
+  12M    rate=88  #2  got=34.44   tx=88.00   busy=100% rb12582912
+  12M    rate=88  #3  got=33.12   tx=88.00   busy=100% rb12582912
+  12M    rate=88  #4  got=32.39   tx=88.00   busy=100% rb12582912
+  12M    rate=88  #5  got=32.96   tx=88.00   busy=100% rb12582912
+  18M    rate=88  #1  got=26.13   tx=88.00   busy=100% rb18874368
+  18M    rate=88  #2  got=26.23   tx=88.00   busy=100% rb18874368
+  18M    rate=88  #3  got=26.33   tx=88.00   busy=100% rb18874368
+  18M    rate=88  #4  got=26.25   tx=88.00   busy=100% rb18874368
+  18M    rate=88  #5  got=26.31   tx=88.00   busy=100% rb18874368
+
+=========== 요약 (평균±sd) ===========
+rate 40   buf 212992     got= 12.04 +- 2.84  tx= 40.00  busy= 35%  rb212992 (n=5)
+rate 40   buf 262144     got= 12.43 +- 0.06  tx= 40.00  busy= 35%  rb262144 (n=5)
+rate 40   buf 393216     got= 18.91 +- 0.08  tx= 40.00  busy= 38%  rb393216 (n=5)
+rate 40   buf 524288     got= 26.29 +- 0.28  tx= 40.00  busy= 49%  rb524288 (n=5)
+rate 40   buf 786432     got= 39.92 +- 0.00  tx= 40.00  busy= 60%  rb786432 (n=5)
+rate 40   buf 1048576    got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb1048576 (n=5)
+rate 40   buf 1572864    got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb1572864 (n=5)
+rate 40   buf 2097152    got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb2097152 (n=5)
+rate 40   buf 3145728    got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb3145728 (n=5)
+rate 40   buf 4194304    got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb4194304 (n=5)
+rate 40   buf 6291456    got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb6291456 (n=5)
+rate 40   buf 8388608    got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb8388608 (n=5)
+rate 40   buf 12582912   got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb12582912 (n=5)
+rate 40   buf 18874368   got= 39.98 +- 0.00  tx= 40.00  busy= 60%  rb18874368 (n=5)
+rate 56   buf 212992     got= 11.86 +- 3.66  tx= 56.00  busy= 43%  rb212992 (n=5)
+rate 56   buf 262144     got= 12.87 +- 4.18  tx= 56.00  busy= 41%  rb262144 (n=5)
+rate 56   buf 393216     got= 14.28 +- 2.27  tx= 56.00  busy= 40%  rb393216 (n=5)
+rate 56   buf 524288     got= 24.84 +- 7.42  tx= 56.00  busy= 62%  rb524288 (n=5)
+rate 56   buf 786432     got= 26.67 +- 1.32  tx= 56.00  busy= 60%  rb786432 (n=5)
+rate 56   buf 1048576    got= 33.20 +- 0.73  tx= 56.00  busy= 63%  rb1048576 (n=5)
+rate 56   buf 1572864    got= 47.80 +- 0.23  tx= 56.00  busy= 80%  rb1572864 (n=5)
+rate 56   buf 2097152    got= 53.99 +- 0.99  tx= 56.00  busy= 86%  rb2097152 (n=5)
+rate 56   buf 3145728    got= 54.17 +- 0.96  tx= 56.00  busy= 86%  rb3145728 (n=5)
+rate 56   buf 4194304    got= 54.65 +- 0.90  tx= 56.00  busy= 86%  rb4194304 (n=5)
+rate 56   buf 6291456    got= 53.71 +- 1.11  tx= 56.00  busy= 86%  rb6291456 (n=5)
+rate 56   buf 8388608    got= 54.74 +- 0.85  tx= 56.00  busy= 86%  rb8388608 (n=5)
+rate 56   buf 12582912   got= 44.25 +- 0.32  tx= 56.00  busy=100%  rb12582912 (n=5)
+rate 56   buf 18874368   got= 35.11 +- 0.44  tx= 56.00  busy=100%  rb18874368 (n=5)
+rate 88   buf 212992     got= 12.77 +- 0.75  tx= 88.00  busy= 66%  rb212992 (n=5)
+rate 88   buf 262144     got= 15.10 +- 1.04  tx= 88.00  busy= 66%  rb262144 (n=5)
+rate 88   buf 393216     got= 22.26 +- 1.35  tx= 88.00  busy= 73%  rb393216 (n=5)
+rate 88   buf 524288     got= 28.24 +- 1.49  tx= 88.00  busy= 76%  rb524288 (n=5)
+rate 88   buf 786432     got= 38.14 +- 5.79  tx= 88.00  busy= 85%  rb786432 (n=5)
+rate 88   buf 1048576    got= 39.94 +- 0.31  tx= 88.00  busy= 87%  rb1048576 (n=5)
+rate 88   buf 1572864    got= 53.56 +- 0.06  tx= 88.00  busy=100%  rb1572864 (n=5)
+rate 88   buf 2097152    got= 51.30 +- 0.17  tx= 88.00  busy=100%  rb2097152 (n=5)
+rate 88   buf 3145728    got= 49.74 +- 0.04  tx= 88.00  busy=100%  rb3145728 (n=5)
+rate 88   buf 4194304    got= 48.47 +- 0.21  tx= 88.00  busy=100%  rb4194304 (n=5)
+rate 88   buf 6291456    got= 43.53 +- 0.51  tx= 88.00  busy=100%  rb6291456 (n=5)
+rate 88   buf 8388608    got= 40.21 +- 0.15  tx= 88.00  busy=100%  rb8388608 (n=5)
+rate 88   buf 12582912   got= 33.13 +- 0.70  tx= 88.00  busy=100%  rb12582912 (n=5)
+rate 88   buf 18874368   got= 26.25 +- 0.07  tx= 88.00  busy=100%  rb18874368 (n=5)
+clean

@@ -1,0 +1,121 @@
+6.18.53-udpopt20
+ring 128
+Adaptive RX: on  TX: on
+도구: iperf3 단일. 요청 65 Gb/s 고정, 단일 flow, GRO on (앱 setsockopt)
+===== MTU 1500 (요청 65 Gb/s) =====
+  mtu=1500  udp   #1  got=4.48    tx=65.0    loss=93%     busy=100%
+  mtu=1500  ours  #1  got=25.6    tx=64.9    loss=61%     busy=100%
+  mtu=1500  tcp   #1  got=31.0    tx=31.0    loss=NA%     busy=92%
+  mtu=1500  udp   #2  got=4.55    tx=65.0    loss=93%     busy=100%
+  mtu=1500  ours  #2  got=24.9    tx=64.8    loss=62%     busy=100%
+  mtu=1500  tcp   #2  got=31.0    tx=31.0    loss=NA%     busy=92%
+  mtu=1500  udp   #3  got=11.2    tx=44.3    loss=75%     busy=76%  <-- FLAKE
+  mtu=1500  ours  #3  got=25.6    tx=64.9    loss=61%     busy=100%
+  mtu=1500  tcp   #3  got=31.0    tx=31.0    loss=NA%     busy=92%
+  mtu=1500  udp   #4  got=4.48    tx=65.0    loss=93%     busy=100%
+  mtu=1500  ours  #4  got=29.0    tx=29.0    loss=0.11%   busy=88%  <-- FLAKE
+  mtu=1500  tcp   #4  got=31.1    tx=31.1    loss=NA%     busy=93%
+  mtu=1500  udp   #5  got=4.59    tx=65.0    loss=93%     busy=100%
+  mtu=1500  ours  #5  got=24.9    tx=65.0    loss=62%     busy=100%
+  mtu=1500  tcp   #5  got=31.0    tx=31.0    loss=NA%     busy=92%
+===== MTU 3000 (요청 65 Gb/s) =====
+  mtu=3000  udp   #1  got=30.3    tx=65.0    loss=53%     busy=89%
+  mtu=3000  ours  #1  got=36.1    tx=55.3    loss=35%     busy=75%  <-- FLAKE
+  mtu=3000  tcp   #1  got=32.7    tx=32.7    loss=NA%     busy=71%
+  mtu=3000  udp   #2  got=24.6    tx=38.2    loss=36%     busy=55%  <-- FLAKE
+  mtu=3000  ours  #2  got=42.7    tx=64.1    loss=33%     busy=100%
+  mtu=3000  tcp   #2  got=32.7    tx=32.7    loss=NA%     busy=71%
+  mtu=3000  udp   #3  got=24.9    tx=44.6    loss=44%     busy=62%  <-- FLAKE
+  mtu=3000  ours  #3  got=44.0    tx=64.6    loss=32%     busy=100%
+  mtu=3000  tcp   #3  got=32.3    tx=32.3    loss=NA%     busy=69%
+  mtu=3000  udp   #4  got=30.4    tx=65.0    loss=53%     busy=90%
+  mtu=3000  ours  #4  got=44.0    tx=64.6    loss=32%     busy=100%
+  mtu=3000  tcp   #4  got=32.0    tx=32.0    loss=NA%     busy=71%
+  mtu=3000  udp   #5  got=30.5    tx=65.0    loss=53%     busy=90%
+  mtu=3000  ours  #5  got=43.0    tx=65.0    loss=34%     busy=100%
+  mtu=3000  tcp   #5  got=32.9    tx=32.9    loss=NA%     busy=72%
+===== MTU 4500 (요청 65 Gb/s) =====
+  mtu=4500  udp   #1  got=24.5    tx=65.0    loss=62%     busy=91%
+  mtu=4500  ours  #1  got=36.3    tx=64.8    loss=44%     busy=100%
+  mtu=4500  tcp   #1  got=35.3    tx=35.3    loss=NA%     busy=79%
+  mtu=4500  udp   #2  got=20.5    tx=65.0    loss=68%     busy=86%
+  mtu=4500  ours  #2  got=35.6    tx=65.0    loss=45%     busy=100%
+  mtu=4500  tcp   #2  got=34.8    tx=34.8    loss=NA%     busy=78%
+  mtu=4500  udp   #3  got=24.2    tx=65.0    loss=63%     busy=90%
+  mtu=4500  ours  #3  got=29.0    tx=29.0    loss=0.028%  busy=67%  <-- FLAKE
+  mtu=4500  tcp   #3  got=34.5    tx=34.5    loss=NA%     busy=78%
+  mtu=4500  udp   #4  got=24.6    tx=65.0    loss=62%     busy=91%
+  mtu=4500  ours  #4  got=33.1    tx=64.8    loss=49%     busy=100%
+  mtu=4500  tcp   #4  got=35.3    tx=35.3    loss=NA%     busy=78%
+  mtu=4500  udp   #5  got=24.1    tx=65.0    loss=63%     busy=90%
+  mtu=4500  ours  #5  got=34.3    tx=64.9    loss=47%     busy=100%
+  mtu=4500  tcp   #5  got=33.9    tx=33.9    loss=NA%     busy=78%
+===== MTU 6000 (요청 65 Gb/s) =====
+  mtu=6000  udp   #1  got=28.7    tx=65.0    loss=56%     busy=80%
+  mtu=6000  ours  #1  got=43.9    tx=65.0    loss=32%     busy=100%
+  mtu=6000  tcp   #1  got=33.8    tx=33.8    loss=NA%     busy=71%
+  mtu=6000  udp   #2  got=32.4    tx=65.0    loss=50%     busy=83%
+  mtu=6000  ours  #2  got=43.8    tx=63.5    loss=31%     busy=96%
+  mtu=6000  tcp   #2  got=35.8    tx=35.8    loss=NA%     busy=72%
+  mtu=6000  udp   #3  got=32.4    tx=65.0    loss=50%     busy=83%
+  mtu=6000  ours  #3  got=42.3    tx=63.2    loss=33%     busy=100%
+  mtu=6000  tcp   #3  got=36.1    tx=36.1    loss=NA%     busy=74%
+  mtu=6000  udp   #4  got=32.6    tx=65.0    loss=50%     busy=84%
+  mtu=6000  ours  #4  got=42.5    tx=63.5    loss=33%     busy=100%
+  mtu=6000  tcp   #4  got=35.9    tx=35.9    loss=NA%     busy=74%
+  mtu=6000  udp   #5  got=26.1    tx=56.9    loss=54%     busy=69%  <-- FLAKE
+  mtu=6000  ours  #5  got=42.2    tx=64.1    loss=34%     busy=100%
+  mtu=6000  tcp   #5  got=35.7    tx=35.7    loss=NA%     busy=75%
+===== MTU 7500 (요청 65 Gb/s) =====
+  mtu=7500  udp   #1  got=30.9    tx=65.0    loss=52%     busy=72%
+  mtu=7500  ours  #1  got=49.1    tx=64.8    loss=24%     busy=100%
+  mtu=7500  tcp   #1  got=36.3    tx=36.3    loss=NA%     busy=70%
+  mtu=7500  udp   #2  got=29.3    tx=65.0    loss=55%     busy=56%
+  mtu=7500  ours  #2  got=47.4    tx=64.9    loss=27%     busy=100%
+  mtu=7500  tcp   #2  got=35.4    tx=35.4    loss=NA%     busy=70%
+  mtu=7500  udp   #3  got=30.9    tx=65.0    loss=52%     busy=73%
+  mtu=7500  ours  #3  got=39.7    tx=64.9    loss=39%     busy=86%
+  mtu=7500  tcp   #3  got=35.4    tx=35.4    loss=NA%     busy=69%
+  mtu=7500  udp   #4  got=31.0    tx=65.0    loss=52%     busy=74%
+  mtu=7500  ours  #4  got=42.8    tx=64.8    loss=34%     busy=94%
+  mtu=7500  tcp   #4  got=35.1    tx=35.1    loss=NA%     busy=68%
+  mtu=7500  udp   #5  got=30.9    tx=65.0    loss=52%     busy=73%
+  mtu=7500  ours  #5  got=47.3    tx=64.9    loss=27%     busy=100%
+  mtu=7500  tcp   #5  got=34.7    tx=34.7    loss=NA%     busy=66%
+===== MTU 9000 (요청 65 Gb/s) =====
+  mtu=9000  udp   #1  got=28.2    tx=65.0    loss=57%     busy=70%
+  mtu=9000  ours  #1  got=36.5    tx=51.4    loss=29%     busy=66%  <-- FLAKE
+  mtu=9000  tcp   #1  got=55.4    tx=55.4    loss=NA%     busy=96%
+  mtu=9000  udp   #2  got=28.2    tx=65.0    loss=57%     busy=70%
+  mtu=9000  ours  #2  got=50.3    tx=64.6    loss=22%     busy=100%
+  mtu=9000  tcp   #2  got=56.4    tx=56.4    loss=NA%     busy=100%
+  mtu=9000  udp   #3  got=28.1    tx=65.0    loss=57%     busy=70%
+  mtu=9000  ours  #3  got=50.1    tx=63.4    loss=21%     busy=100%
+  mtu=9000  tcp   #3  got=57.3    tx=57.3    loss=NA%     busy=100%
+  mtu=9000  udp   #4  got=27.9    tx=65.0    loss=57%     busy=70%
+  mtu=9000  ours  #4  got=50.1    tx=64.7    loss=22%     busy=100%
+  mtu=9000  tcp   #4  got=56.0    tx=56.0    loss=NA%     busy=96%
+  mtu=9000  udp   #5  got=28.0    tx=65.0    loss=57%     busy=70%
+  mtu=9000  ours  #5  got=50.1    tx=63.5    loss=21%     busy=100%
+  mtu=9000  tcp   #5  got=57.9    tx=57.9    loss=NA%     busy=99%
+
+=========== 요약 (평균±sd) ===========
+MTU 1500   tcp    got= 31.02 +- 0.04  tx= 31.02  loss=  0.0%  busy= 92%  (n=5)
+MTU 1500   udp    got=  4.53 +- 0.05  tx= 65.00  loss= 93.0%  busy=100%  (n=4)
+MTU 1500   ours   got= 25.25 +- 0.35  tx= 64.90  loss= 61.5%  busy=100%  (n=4)
+MTU 3000   tcp    got= 32.52 +- 0.32  tx= 32.52  loss=  0.0%  busy= 71%  (n=5)
+MTU 3000   udp    got= 30.40 +- 0.08  tx= 65.00  loss= 53.0%  busy= 90%  (n=3)
+MTU 3000   ours   got= 43.42 +- 0.58  tx= 64.57  loss= 32.8%  busy=100%  (n=4)
+MTU 4500   tcp    got= 34.76 +- 0.53  tx= 34.76  loss=  0.0%  busy= 78%  (n=5)
+MTU 4500   udp    got= 23.58 +- 1.55  tx= 65.00  loss= 63.6%  busy= 90%  (n=5)
+MTU 4500   ours   got= 34.83 +- 1.23  tx= 64.88  loss= 46.2%  busy=100%  (n=4)
+MTU 6000   tcp    got= 35.46 +- 0.84  tx= 35.46  loss=  0.0%  busy= 73%  (n=5)
+MTU 6000   udp    got= 31.52 +- 1.63  tx= 65.00  loss= 51.5%  busy= 82%  (n=4)
+MTU 6000   ours   got= 42.94 +- 0.75  tx= 63.86  loss= 32.6%  busy= 99%  (n=5)
+MTU 7500   tcp    got= 35.38 +- 0.53  tx= 35.38  loss=  0.0%  busy= 69%  (n=5)
+MTU 7500   udp    got= 30.60 +- 0.65  tx= 65.00  loss= 52.6%  busy= 70%  (n=5)
+MTU 7500   ours   got= 45.26 +- 3.48  tx= 64.86  loss= 30.2%  busy= 96%  (n=5)
+MTU 9000   tcp    got= 56.60 +- 0.90  tx= 56.60  loss=  0.0%  busy= 98%  (n=5)
+MTU 9000   udp    got= 28.08 +- 0.12  tx= 65.00  loss= 57.0%  busy= 70%  (n=5)
+MTU 9000   ours   got= 50.15 +- 0.09  tx= 64.05  loss= 21.5%  busy=100%  (n=4)
+clean
